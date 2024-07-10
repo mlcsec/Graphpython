@@ -1,0 +1,6 @@
+requests
+PyJWT
+dnspython
+tqdm
+tabulate
+cryptography
