@@ -41,8 +41,8 @@ It covers various Microsoft services, including Entra ID (Azure AD), Office 365 
 ## Install
 
 ```
-git clone https://github.com/mlcsec/graphpython.git
-cd graphpython
+git clone https://github.com/mlcsec/Graphpython.git
+cd Graphpython
 pip3 install -r requirements.txt
 ```
 
