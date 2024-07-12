@@ -11,17 +11,9 @@ GraphPython covers external reconnaissance, authentication/token manipulation, e
 ## Index
 
 - [Install](#Install)
-- [Commands](#Commands)
 - [Usage](#Usage)
-- [Command Wiki](#Command-Wiki)
-    - [Outsider](#Outsider) 
-    - [Authentication](#Authentication)
-    - [Post-Auth Enumeration](#Post-Auth-Enumeration)
-    - [Post-Auth Exploitation](#Post-Auth-Exploitation)
-    - [Post-Auth Intune Enumeration](#Post-Auth-Intune-Enumeration)
-    - [Post-Auth Intune Exploitation](#Post-Auth-Intune-Exploitation)
-    - [Cleanup](#Cleanup)
-- [Demo](#Demo)
+- [Commands](#Commands)
+- [Demos](#Demos)
     - [Invoke-ReconAsOutsider](#Invoke-ReconAsOutsider)
     - [Get-GraphTokens](#Get-GraphTokens)
     - [Invoke-ESTSCookieToAccessToken](#Invoke-ESTSCookieToAccessToken)
@@ -44,157 +36,6 @@ GraphPython covers external reconnaissance, authentication/token manipulation, e
 git clone https://github.com/mlcsec/Graphpython.git
 cd Graphpython
 pip3 install -r requirements.txt
-```
-
-## Commands
-
-- ALL commands are case-insensitive
-- ALL flags and switches are position-independent
-- User prompted for any required flags that are missing
-
-```
-# graphpython.py --list-commands
-
-Outsider
-================================================================================
-Invoke-ReconAsOutsider            Perform outsider recon of the target domain
-Invoke-UserEnumerationAsOutsider  Checks whether the uer exists within Azure AD
-
-Authentication
-================================================================================
-Get-GraphTokens                        Obtain graph token via device code phish (saved to graph_tokens.txt)
-Get-TenantID                           Get tenant ID for target domain
-Get-TokenScope                         Get scope of supplied token
-Decode-AccessToken                     Get all token payload attributes
-Invoke-RefreshToMSGraphToken           Convert refresh token to Microsoft Graph token (saved to new_graph_tokens.txt)
-Invoke-RefreshToAzureManagementToken   Convert refresh token to Azure Management token (saved to az_tokens.txt)
-Invoke-RefreshToVaultToken             Convert refresh token to Azure Vault token (saved to vault_tokens.txt)
-Invoke-RefreshToMSTeamsToken           Convert refresh token to MS Teams token (saved to teams_tokens.txt)
-Invoke-RefreshToOfficeAppsToken        Convert refresh token to Office Apps token (saved to officeapps_tokens.txt)
-Invoke-RefreshToOfficeManagementToken  Convert refresh token to Office Management token (saved to officemanagement_tokens.txt)
-Invoke-RefreshToOutlookToken           Convert refresh token to Outlook token (saved to outlook_tokens.txt)
-Invoke-RefreshToSubstrateToken         Convert refresh token to Substrate token (saved to substrate_tokens.txt)
-Invoke-RefreshToYammerToken            Convert refresh token to Yammer token (saved to yammer_tokens.txt)
-Invoke-RefreshToIntuneEnrollmentToken  Convert refresh token to Intune Enrollment token (saved to intune_tokens.txt)
-Invoke-RefreshToOneDriveToken          Convert refresh token to OneDrive token (saved to onedrive_tokens.txt)
-Invoke-RefreshToSharePointToken        Convert refresh token to SharePoint token (saved to sharepoint_tokens.txt)
-Invoke-CertToAccessToken               Convert Azure Application certificate to JWT access token (saved to cert_tokens.txt)
-Invoke-ESTSCookieToAccessToken         Convert ESTS cookie to MS Graph access token (saved to estscookie_tokens.txt)
-Invoke-AppSecretToAccessToken          Convert Azure Application secretText credentials to access token (saved to appsecret_tokens.txt)
-
-Post-Auth Enumeration
-================================================================================
-Get-CurrentUser                         Get current user profile
-Get-CurrentUserActivity                 Get recent activity and actions of current user
-Get-OrgInfo                             Get information relating to the target organisation
-Get-Domains                             Get domain objects
-Get-User                                Get all users (default) or target user (--id)
-Get-UserProperties                      Get current user properties (default) or target user (--id)
-Get-UserGroupMembership                 Get group memberships for current user (default) or target user (--id)
-Get-UserTransitiveGroupMembership       Get transitive group memberships for current user (default) or target user (--id)
-Get-Group                               Get all groups (default) or target group (-id)
-Get-GroupMember                         Get all members of target group
-Get-AppRoleAssignments                  Get application role assignments for current user (default) or target user (--id)
-Get-ConditionalAccessPolicy             Get conditional access policy properties
-Get-PersonalContacts                    Get contacts of the current user
-Get-CrossTenantAccessPolicy             Get cross tenant access policy properties
-Get-PartnerCrossTenantAccessPolicy      Get partner cross tenant access policy
-Get-UserChatMessages                    Get ALL messages from all chats for target user (Chat.Read.All)
-Get-AdministrativeUnitMember            Get members of administrative unit
-Get-OneDriveFiles                       Get all accessible OneDrive files for current user (default) or target user (--id)
-Get-UserPermissionGrants                Get permissions grants of current user (default) or target user (--id)
-Get-oauth2PermissionGrants              Get oauth2 permission grants for current user (default) or target user (--id)
-Get-Messages                            Get all messages in signed-in user's mailbox (default) or target user (--id)
-Get-TemporaryAccessPassword             Get TAP details for current user (default) or target user (--id)
-Get-Password                            Get passwords registered to current user (default) or target user (--id)
-List-AuthMethods                        List authentication methods for current user (default) or target user (--id)
-List-DirectoryRoles                     List all directory roles activated in the tenant
-List-Notebooks                          List current user notebooks (default) or target user (--id)
-List-ConditionalAccessPolicies          List conditional access policy objects
-List-ConditionalAuthenticationContexts  List conditional access authentication context
-List-ConditionalNamedLocations          List conditional access named locations
-List-SharePointRoot                     List root SharePoint site properties
-List-SharePointSites                    List any available SharePoint sites
-List-SharePointURLs                     List SharePoint site web URLs visible to current user
-List-ExternalConnections                List external connections
-List-Applications                       List all Azure Applications
-List-ServicePrincipals                  List all service principals
-List-Tenants                            List tenants
-List-JoinedTeams                        List joined teams for current user (default) or target user (--id)
-List-Chats                              List chats for current user (default) or target user (--id)
-List-ChatMessages                       List messages in target chat (--id)
-List-Devices                            List devices
-List-AdministrativeUnits                List administrative units
-List-OneDrives                          List current user OneDrive (default) or target user (--id)
-List-RecentOneDriveFiles                List current user recent OneDrive files
-List-SharedOneDriveFiles                List OneDrive files shared with the current user
-List-OneDriveURLs                       List OneDrive web URLs visible to current user
-
-Post-Auth Exploitation
-================================================================================
-Invoke-CustomQuery         Custom GET query to target Graph API endpoint
-Invoke-Search              Search for string within entity type (driveItem, message, chatMessage, site, event)
-Find-PrivilegedRoleUsers   Find users with privileged roles assigned
-Find-UpdatableGroups       Find groups which can be updated by the current user
-Find-SecurityGroups        Find security groups and group members
-Find-DynamicGroups         Find groups with dynamic membership rules
-Find-Object                Find object via ID and display object properties
-Update-UserPassword        Update the passwordProfile of the target user (NewUserS3cret@Pass!)
-Add-ApplicationPassword    Add client secret to target application
-Add-ApplicationPermission  Add permission to target application (application/delegated)
-Add-UserTAP                Add new Temporary Access Password (TAP) to target user
-Add-GroupMember            Add member to target group
-Create-Application         Create new enterprise application with default settings
-Create-NewUser             Create new Entra ID user
-Invite-GuestUser           Invite guest user to Entra ID
-Assign-PrivilegedRole      Assign chosen privileged role to user/group/object
-Open-OWAMailboxInBrowser   Open an OWA Office 365 mailbox in BurpSuite's embedded Chromium browser using either a Substrate.Office.com or Outlook.Office.com access token
-Dump-OWAMailbox            Dump OWA Office 365 mailbox
-Spoof-OWAEmailMessage      Send email from current user's Outlook mailbox or spoof another user (--id) (Mail.Send)
-
-Post-Auth Intune Enumeration
-================================================================================
-Get-ManagedDevices                     Get managed devices
-Get-UserDevices                        Get user devices
-Get-CAPs                               Get conditional access policies
-Get-DeviceCategories                   Get device categories
-Get-DeviceComplianceSummary            Get device compliance summary
-Get-DeviceConfigurations               Get device configurations
-Get-DeviceConfigurationPolicies        Get device configuration policies and assignment details (av, asr, diskenc, etc.)
-Get-DeviceConfigurationPolicySettings  Get device configuration policy settings
-Get-DeviceEnrollmentConfigurations     Get device enrollment configurations
-Get-DeviceGroupPolicyConfigurations    Get device group policy configurations and assignment details
-Get-DeviceGroupPolicyDefinition        Get device group policy definition
-Get-RoleDefinitions                    Get role definitions
-Get-RoleAssignments                    Get role assignments
-
-Post-Auth Intune Exploitation
-================================================================================
-Dump-DeviceManagementScripts                   Dump device management PowerShell scripts
-Get-ScriptContent                              Get device management script content
-Deploy-MaliciousScript                         Deploy new malicious device management PowerShell script (all devices)
-Display-AVPolicyRules                          Display antivirus policy rules
-Display-ASRPolicyRules                         Display Attack Surface Reduction (ASR) policy rules
-Display-DiskEncryptionPolicyRules              Display disk encryption policy rules
-Display-FirewallPolicyRules                    Display firewall policy rules
-Display-EDRPolicyRules                         Display EDR policy rules
-Display-LAPSAccountProtectionPolicyRules       Display LAPS account protection policy rules
-Display-UserGroupAccountProtectionPolicyRules  Display user group account protection policy rules
-Get-DeviceCompliancePolicies                   Get device compliance policies
-Add-ExclusionGroupToPolicy                     Bypass av, asr, etc. rules by adding an exclusion group containing compromised user or device
-Reboot-Device                                  Reboot managed device
-Retire-Device                                  Retire managed device
-Lock-Device                                    Lock managed device
-Shutdown-Device                                Shutdown managed device
-
-Cleanup
-================================================================================
-Delete-User         Delete a user
-Delete-Group        Delete a group
-Remove-GroupMember  Remove user from a group
-Delete-Application  Delete an application
-Delete-Device       Delete managed device
-Wipe-Device         Wipe managed device
 ```
 
 ## Usage
@@ -252,172 +93,154 @@ examples:
   graphpython.py --command reboot-device --id <deviceid> --token eyj0...
 ```
 
-## Command Wiki
+## Commands
 
-- The `--token` flag is REQUIRED for all post-auth and cleanup commands
-- Flags in square brackets/italics below are OPTIONAL
-  - Flags without are REQUIRED
+Please refer to the [Wiki](https://github.com/mlcsec/Graphpython/wiki) for the full user guide and details of available functionality. An overview of the commands is outlined below.
 
 ### Outsider
 
-| Command                                  | Description                                    |
-|------------------------------------------|------------------------------------------------|
-| **Invoke-ReconAsOutsider** --domain \<domain.com\>              | Perform outsider recon of the target domain |
-| **Invoke-UserEnumerationAsOutsider** --username \<email/emails.txt\>      | Checks whether the uer exists within Azure AD |
+* **Invoke-ReconAsOutsider** - Perform outsider recon of the target domain
+* **Invoke-UserEnumerationAsOutsider** - Checks whether the user exists within Azure AD
 
 ### Authentication
 
-| Command                                  | Description                                    |
-|------------------------------------------|------------------------------------------------|
-| **Get-GraphTokens**                      | Obtain graph token via device code phish (saved to _graph_tokens.txt_) |
-| **Get-TenantID** --domain \<domain\>      | Get tenant ID for target domain |
-| **Get-TokenScope** --token \<token\>      | Get scope of supplied token |
-| **Decode-AccessToken** --token \<token\>  | Get all token payload attributes |
-| **Invoke-RefreshToMSGraphToken** --token \<refresh\> --tenant \<id\> | Convert refresh token to Microsoft Graph token (saved to _new_graph_tokens.txt_) |
-| **Invoke-RefreshToAzureManagementToken** --token \<refresh\> --tenant \<id\> | Convert refresh token to Azure Management token (saved to _az_tokens.txt_) |
-| **Invoke-RefreshToVaultToken** --token \<refresh\> --tenant \<id\> | Convert refresh token to Azure Vault token (saved to _vault_tokens.txt_) |
-| **Invoke-RefreshToMSTeamsToken** --token \<refresh\> --tenant \<id\> | Convert refresh token to MS Teams token (saved to _teams_tokens.txt_) |
-| **Invoke-RefreshToOfficeAppsToken** --token \<refresh\> --tenant \<id\> | Convert refresh token to Office Apps token (saved to _officeapps_tokens.txt_) |
-| **Invoke-RefreshToOfficeManagementToken** --token \<refresh\> --tenant \<id\> | Convert refresh token to Office Management token (saved to _officemanagement_tokens.txt_) |
-| **Invoke-RefreshToOutlookToken** --token \<refresh\> --tenant \<id\> | Convert refresh token to Outlook token (saved to _outlook_tokens.txt_) |
-| **Invoke-RefreshToSubstrateToken** --token \<refresh\> --tenant \<id\> | Convert refresh token to Substrate token (saved to _substrate_tokens.txt_) |
-| **Invoke-RefreshToYammerToken** --token \<refresh\> --tenant \<id\> | Convert refresh token to Yammer token (saved to _yammer_tokens.txt_) |
-| **Invoke-RefreshToIntuneEnrollmentToken** --token \<refresh\> --tenant \<id\> | Convert refresh token to Intune Enrollment token (saved to _intune_tokens.txt_) |
-| **Invoke-RefreshToOneDriveToken** --token \<refresh\> --tenant \<id\> | Convert refresh token to OneDrive token (saved to _onedrive_tokens.txt_) |
-| **Invoke-RefreshToSharePointToken** --token \<refresh\> --tenant \<id\> [PROMPTS FOR INPUT] | Convert refresh token to SharePoint token (saved to _sharepoint_tokens.txt_) |
-| **Invoke-CertToAccessToken** --cert \<path to pfx\> --id \<app id\> --tenant \<id\> | Convert Azure Application certificate to JWT access token (saved to _cert_tokens.txt_) |
-| **Invoke-ESTSCookieToAccessToken** --estsauthcookie \<cookievalue\> --tenant \<id\> [PROMPTS FOR INPUT] | Convert ESTS cookie (ESTSAuthPersistent) to MS Graph access token (saved to _estscookie_tokens.txt_)|
-| **Invoke-AppSecretToAccessToken** --tenant \<id\> --id \<appid\> --secret \<secretText\>| Convert Azure Application secretText credentials to access token (saved to appsecret_tokens.txt)  |
+* **Get-GraphTokens** - Obtain graph token via device code phish
+* **Get-TenantID** - Get tenant ID for target domain
+* **Get-TokenScope** - Get scope of supplied token
+* **Decode-AccessToken** - Get all token payload attributes
+* **Invoke-RefreshToMSGraphToken** - Convert refresh token to Microsoft Graph token
+* **Invoke-RefreshToAzureManagementToken** - Convert refresh token to Azure Management token
+* **Invoke-RefreshToVaultToken** - Convert refresh token to Azure Vault token
+* **Invoke-RefreshToMSTeamsToken** - Convert refresh token to MS Teams token
+* **Invoke-RefreshToOfficeAppsToken** - Convert refresh token to Office Apps token
+* **Invoke-RefreshToOfficeManagementToken** - Convert refresh token to Office Management token
+* **Invoke-RefreshToOutlookToken** - Convert refresh token to Outlook token
+* **Invoke-RefreshToSubstrateToken** - Convert refresh token to Substrate token
+* **Invoke-RefreshToYammerToken** - Convert refresh token to Yammer token
+* **Invoke-RefreshToIntuneEnrollmentToken** - Convert refresh token to Intune Enrollment token
+* **Invoke-RefreshToOneDriveToken** - Convert refresh token to OneDrive token
+* **Invoke-RefreshToSharePointToken** - Convert refresh token to SharePoint token
+* **Invoke-CertToAccessToken** - Convert Azure Application certificate to JWT access token
+* **Invoke-ESTSCookieToAccessToken** - Convert ESTS cookie to MS Graph access token
+* **Invoke-AppSecretToAccessToken** - Convert Azure Application secretText credentials to access token
 
 ### Post-Auth Enumeration
 
-| Command                                  | Description                                    |
-|------------------------------------------|------------------------------------------------|
-| **Get-CurrentUser**                          | Get current user profile                                         |
-| **Get-CurrentUserActivity**                  | Get recent activity and actions of current user                         |
-| **Get-OrgInfo**                              | Get information relating to the target organization                                               |
-| **Get-Domains**                              | Get domain objects                                               |
-| **Get-User** _[--id <userid/upn>]_                 | Get all users (default) or target user (--id)  |
-| **Get-UserProperties** _[--id <userid/upn>]_                       | Get current user properties (default) or target user (--id) !WARNING! loud/slow due to 403 errors when grouping properties        |
-| **Get-UserGroupMembership** _[--id <userid/upn>]_                 | Get group memberships for current user (default) or target user (--id)  |
-| **Get-UserTransitiveGroupMembership** _[--id <userid/upn>]_       | Get transitive group memberships for current user (default) or target user (--id)                |
-| **Get-Group** _[--id \<groupid\>]_                               | Get all groups (default) or target group (--id)                              |
-| **Get-GroupMember** --id \<groupid\>                         | Get all members of target group                              |
-| **Get-AppRoleAssignments** _[--id <userid/upn>]_                   | Get application role assignments for current user (default) or target user (--id)                                           |
-| **Get-ConditionalAccessPolicy** --id \<cap id\>             | Get conditional access policy properties                            |
-| **Get-PersonalContacts**                     | Get contacts of the current user                                               |
-| **Get-CrossTenantAccessPolicy**              | Get cross tenant access policy properties                                               |
-| **Get-PartnerCrossTenantAccessPolicy**       | Get partner cross tenant access policy                                              |
-| **Get-UserChatMessages** --id \<userid/upn\>                    | Get all messages from all chats for target user     |
-| **Get-AdministrativeUnitMember** --id \<adminunitid\>             | Get members of administrative unit                      |
-| **Get-OneDriveFiles** _[--id \<userid/upn\>]_                      | Get all accessible OneDrive files for current user (default) or target user (--id)                                             |
-| **Get-UserPermissionGrants** _[--id \<userid/upn\>]_                | Get permissions grants of current user (default) or target user (--id)                          |
-| **Get-oauth2PermissionGrants** _[--id \<userid/upn\>]_              | Get oauth2 permission grants for current user (default) or target user (--id)                                               |
-| **Get-Messages** _[--id \<userid/upn\>]_                            | Get all messages in signed-in user's mailbox (default) or target user (--id)                                               |
-| **Get-TemporaryAccessPassword** _[--id \<userid/upn\>]_             | Get TAP details for current user (default) or target user (--id)                   |
-| **Get-Password** _[--id \<userid/upn\>]_                            | Get passwords registered to current user (default) or target user (--id)                    |
-| **List-AuthMethods** _[--id \<userid/upn\>]_                        | List authentication methods for current user (default) or target user (--id)                                           |
-| **List-DirectoryRoles**                      | List all directory roles activated in the tenant                                            |
-| **List-Notebooks** _[--id \<userid/upn\>]_                          | List current user notebooks (default) or target user (--id)                                               |
-| **List-ConditionalAccessPolicies**           | List conditional access policy objects                                              |
-| **List-ConditionalAuthenticationContexts**   | List conditional access authentication context                                             |
-| **List-ConditionalNamedLocations**           | List conditional access named locations                                               |
-| **List-SharePointRoot**                      | List root SharePoint site properties                                              |
-| **List-SharePointSites**                     | List any available SharePoint sites                                           |
-| **List-SharePointURLs**                      | List SharePoint site web URLs visible to current user                                           |
-| **List-ExternalConnections**                 | List external connections                                               |
-| **List-Applications**                        | List all Azure Applications                                              |
-| **List-ServicePrincipals**                   | List all service principals                                               |
-| **List-Tenants**                             | List tenants                                               |
-| **List-JoinedTeams** _[--id \<userid/upn\>]_                        | List joined teams for current user (default) or target user (--id) |
-| **List-Chats** _[--id \<userid/upn\>]_                              | List chats for current user (default) or target user (--id)  |
-| **List-Devices**                             | List devices                                                |
-| **List-AdministrativeUnits**                 | List administrative units                                               |
-| **List-OneDrives** _[--id \<userid/upn\>]_                          | List current user OneDrive (default) or target user (--id)                            |
-| **List-RecentOneDriveFiles**                 | List current users recent OneDrive files                                               |
-| **List-SharedOneDriveFiles**                 | List OneDrive files shared with the current user                                               |
-| **List-OneDriveURLs**| List OneDrive web URLs visible to current user |
+* **Get-CurrentUser** - Get current user profile
+* **Get-CurrentUserActivity** - Get recent activity and actions of current user
+* **Get-OrgInfo** - Get information relating to the target organization
+* **Get-Domains** - Get domain objects
+* **Get-User** - Get all users (default) or target user (--id)
+* **Get-UserProperties** - Get current user properties (default) or target user (--id)
+* **Get-UserGroupMembership** - Get group memberships for current user (default) or target user (--id)
+* **Get-UserTransitiveGroupMembership** - Get transitive group memberships for current user (default) or target user (--id)
+* **Get-Group** - Get all groups (default) or target group (-id)
+* **Get-GroupMember** - Get all members of target group
+* **Get-AppRoleAssignments** - Get application role assignments for current user (default) or target user (--id)
+* **Get-ConditionalAccessPolicy** - Get conditional access policy properties
+* **Get-PersonalContacts** - Get contacts of the current user
+* **Get-CrossTenantAccessPolicy** - Get cross tenant access policy properties
+* **Get-PartnerCrossTenantAccessPolicy** - Get partner cross tenant access policy
+* **Get-UserChatMessages** - Get ALL messages from all chats for target user (Chat.Read.All)
+* **Get-AdministrativeUnitMember** - Get members of administrative unit
+* **Get-OneDriveFiles** - Get all accessible OneDrive files for current user (default) or target user (--id)
+* **Get-UserPermissionGrants** - Get permissions grants of current user (default) or target user (--id)
+* **Get-oauth2PermissionGrants** - Get oauth2 permission grants for current user (default) or target user (--id)
+* **Get-Messages** - Get all messages in signed-in user's mailbox (default) or target user (--id)
+* **Get-TemporaryAccessPassword** - Get TAP details for current user (default) or target user (--id)
+* **Get-Password** - Get passwords registered to current user (default) or target user (--id)
+* **List-AuthMethods** - List authentication methods for current user (default) or target user (--id)
+* **List-DirectoryRoles** - List all directory roles activated in the tenant
+* **List-Notebooks** - List current user notebooks (default) or target user (--id)
+* **List-ConditionalAccessPolicies** - List conditional access policy objects
+* **List-ConditionalAuthenticationContexts** - List conditional access authentication context
+* **List-ConditionalNamedLocations** - List conditional access named locations
+* **List-SharePointRoot** - List root SharePoint site properties
+* **List-SharePointSites** - List any available SharePoint sites
+* **List-SharePointURLs** - List SharePoint site web URLs visible to current user
+* **List-ExternalConnections** - List external connections
+* **List-Applications** - List all Azure Applications
+* **List-ServicePrincipals** - List all service principals
+* **List-Tenants** - List tenants
+* **List-JoinedTeams** - List joined teams for current user (default) or target user (--id)
+* **List-Chats** - List chats for current user (default) or target user (--id)
+* **List-ChatMessages** - List messages in target chat (--id)
+* **List-Devices** - List devices
+* **List-AdministrativeUnits** - List administrative units
+* **List-OneDrives** - List current user OneDrive (default) or target user (--id)
+* **List-RecentOneDriveFiles** - List current user recent OneDrive files
+* **List-SharedOneDriveFiles** - List OneDrive files shared with the current user
+* **List-OneDriveURLs** - List OneDrive web URLs visible to current user
 
 ### Post-Auth Exploitation
 
-| Command                                  | Description                                    |
-|------------------------------------------|------------------------------------------------|
-| **Invoke-CustomQuery** --query \<graph endpoint URL\>                      | Custom GET query to target Graph API endpoint e.g. `https://graph.microsoft.com/v1.0/me`                                           |
-| **Invoke-Search** --search \<string\> --entity \<entity\>                           | Search for string within entity type (driveItem, message, chatMessage, site, event)          |
-| **Find-PrivilegedRoleUsers**             | Find users with privileged roles assigned     |
-| **Find-UpdatableGroups**                 | Find groups which can be updated by the current user |
-| **Find-DynamicGroups**                   | Find groups with dynamic membership rules |
-| **Find-SecurityGroups**                  | Find security groups and group members        |
-| **Find-Object** --id \<object id\>        | Find object via ID and display object properties |
-| **Update-UserPassword** --id \<userid/upn\> | Update the passwordProfile of the target user (NewUserS3cret@Pass!) |
-| **Add-ApplicationPassword** --id \<appid\> | Add client secret to target application       |
-| **Add-UserTAP** --id \<userid/upn\>        | Add new Temporary Access Password (TAP) to target user |
-| **Add-GroupMember** --id \<groupid,objectidtoadd\> | Add member to target group                    |
-| **Create-Application** [PROMPTS FOR INPUT]                  | Create new enterprise application with default settings |
-| **Create-NewUser** [PROMPTS FOR INPUT]                       | Create new Entra ID user                      |
-| **Invite-GuestUser** --tenant \<tenantid\> [PROMPTS FOR INPUT]                   | Invite guest user to Entra ID                 |
-| **Assign-PrivilegedRole** [PROMPTS FOR INPUT] | Assign chosen privileged role to user/group/object |
-| **Open-OWAMailboxInBrowser** --token \<substrate/outlooktoken\>             | Open an OWA Office 365 mailbox in BurpSuite's embedded Chromium browser using either a Substrate.Office.com or Outlook.Office.com access token |
-| **Dump-OWAMailbox** --mail-folder \<allitems/inbox/archive/drafts/sentitems/deleteditems/recoverableitemsdeletions\> _[--id \<userid\>]_     | Dump OWA Office 365 mailbox (default: current suer)                   |
-| **Spoof-OWAEmailMessage** _[--id \<useridtospoof\>]_ | Send email from current user's Outlook mailbox or spoof another user (--id) |
-
+* **Invoke-CustomQuery** - Custom GET query to target Graph API endpoint
+* **Invoke-Search** - Search for string within entity type (driveItem, message, chatMessage, site, event)
+* **Find-PrivilegedRoleUsers** - Find users with privileged roles assigned
+* **Find-UpdatableGroups** - Find groups which can be updated by the current user
+* **Find-SecurityGroups** - Find security groups and group members
+* **Find-DynamicGroups** - Find groups with dynamic membership rules
+* **Find-Object** - Find object via ID and display object properties
+* **Update-UserPassword** - Update the passwordProfile of the target user (NewUserS3cret@Pass!)
+* **Add-ApplicationPassword** - Add client secret to target application
+* **Add-ApplicationPermission** - Add permission to target application (application/delegated)
+* **Add-UserTAP** - Add new Temporary Access Password (TAP) to target user
+* **Add-GroupMember** - Add member to target group
+* **Create-Application** - Create new enterprise application with default settings
+* **Create-NewUser** - Create new Entra ID user
+* **Invite-GuestUser** - Invite guest user to Entra ID
+* **Assign-PrivilegedRole** - Assign chosen privileged role to user/group/object
+* **Open-OWAMailboxInBrowser** - Open an OWA Office 365 mailbox in BurpSuite's embedded Chromium browser using either a Substrate.Office.com or Outlook.Office.com access token
+* **Dump-OWAMailbox** - Dump OWA Office 365 mailbox
+* **Spoof-OWAEmailMessage** - Send email from current user's Outlook mailbox or spoof another user (--id) (Mail.Send)
 
 ### Post-Auth Intune Enumeration
 
-| Command                                  | Description                                    |
-|------------------------------------------|------------------------------------------------|
-| **Get-ManagedDevices**                   | Get managed devices                            |
-| **Get-UserDevices** --id \<userprincipalname\>                     | Get user devices                               |
-| **Get-CAPs**                             | Get conditional access policies                |
-| **Get-DeviceCategories**                 | Get device categories                          |
-| **Get-DeviceComplianceSummary**          | Get device compliance summary                  |
-| **Get-DeviceConfigurations**             | Get device configurations                      |
-| **Get-DeviceConfigurationPolicies**      | Get device configuration policies and assignment details (av, asr, diskenc, etc.) |
-| **Get-DeviceConfigurationPolicySettings** --id \<configpolicyid\> | Get device configuration policy settings       |
-| **Get-DeviceEnrollmentConfigurations**   | Get device enrollment configurations           |
-| **Get-DeviceGroupPolicyConfigurations**  | Get device group policy configurations and assignment details |
-| **Get-DeviceGroupPolicyDefinition** --id \<grouppolicyid\>      | Get device group policy definition             |
-| **Get-RoleDefinitions**                  | Get role definitions                           |
-| **Get-RoleAssignments**                  | Get role assignments                           |
+* **Get-ManagedDevices** - Get managed devices
+* **Get-UserDevices** - Get user devices
+* **Get-CAPs** - Get conditional access policies
+* **Get-DeviceCategories** - Get device categories
+* **Get-DeviceComplianceSummary** - Get device compliance summary
+* **Get-DeviceConfigurations** - Get device configurations
+* **Get-DeviceConfigurationPolicies** - Get device configuration policies and assignment details (av, asr, diskenc, etc.)
+* **Get-DeviceConfigurationPolicySettings** - Get device configuration policy settings
+* **Get-DeviceEnrollmentConfigurations** - Get device enrollment configurations
+* **Get-DeviceGroupPolicyConfigurations** - Get device group policy configurations and assignment details
+* **Get-DeviceGroupPolicyDefinition** - Get device group policy definition
+* **Get-RoleDefinitions** - Get role definitions
+* **Get-RoleAssignments** - Get role assignments
 
 ### Post-Auth Intune Exploitation
 
-> Use Get-DeviceConfigurationPolicies to identify the policyids with active assignments for the Display-* commands below
-
-| Command                                           | Description                                    |
-|---------------------------------------------------|------------------------------------------------|
-| **Dump-DeviceManagementScripts**                  | Dump device management PowerShell scripts      |
-| **Get-ScriptContent** --id \<scriptid\>                            | Get device management script content           |
-| **Deploy-MaliciousScript** --script \<script.ps1\> [PROMPTS FOR INPUT]                       | Deploy new malicious device management PowerShell script to all devices |
-| **Display-AVPolicyRules** --id \<configpolicyid\>                        | Display antivirus policy rules                 |
-| **Display-ASRPolicyRules** --id \<configpolicyid\>                       | Display Attack Surface Reduction (ASR) policy rules |
-| **Display-DiskEncryptionPolicyRules** --id \<configpolicyid\>            | Display disk encryption policy rules        |
-| **Display-FirewallPolicyRules** --id \<configpolicyid\>                  | Display firewall policy rules               |
-| **Display-EDRPolicyRules** --id \<configpolicyid\>                       | Display EDR policy rules                     |
-| **Display-LAPSAccountProtectionPolicyRules** --id \<configpolicyid\>      | Display LAPS account protection policy rules    |
-| **Display-UserGroupAccountProtectionPolicyRules** --id \<configpolicyid\> | Display user group account protection policy rules |
-| **Get-DeviceCompliancePolicies**                  | Get device compliance policies             |
-| **Add-ExclusionGroupToPolicy** --id \<configpolicyid\> [PROMPTS FOR INPUT] | Bypass av, asr, etc. rules by adding an exclusion group containing compromised user or device  |
-| **Reboot-Device** --id \<deviceid\>                                | Reboot managed device                          |
-| **Retire-Device** --id \<deviceid\>                                | Retire managed device                          |
-| **Lock-Device** --id \<deviceid\>                                  | Lock managed device                            |
-| **Shutdown-Device** --id \<deviceid\>                              | Shutdown managed device                        |
-
+* **Dump-DeviceManagementScripts** - Dump device management PowerShell scripts
+* **Get-ScriptContent** - Get device management script content
+* **Deploy-MaliciousScript** - Deploy new malicious device management PowerShell script (all devices)
+* **Display-AVPolicyRules** - Display antivirus policy rules
+* **Display-ASRPolicyRules** - Display Attack Surface Reduction (ASR) policy rules
+* **Display-DiskEncryptionPolicyRules** - Display disk encryption policy rules
+* **Display-FirewallPolicyRules** - Display firewall policy rules
+* **Display-EDRPolicyRules** - Display EDR policy rules
+* **Display-LAPSAccountProtectionPolicyRules** - Display LAPS account protection policy rules
+* **Display-UserGroupAccountProtectionPolicyRules** - Display user group account protection policy rules
+* **Get-DeviceCompliancePolicies** - Get device compliance policies
+* **Add-ExclusionGroupToPolicy** - Bypass av, asr, etc. rules by adding an exclusion group containing compromised user or device
+* **Reboot-Device** - Reboot managed device
+* **Retire-Device** - Retire managed device
+* **Lock-Device** - Lock managed device
+* **Shutdown-Device** - Shutdown managed device
 
 ### Cleanup
 
-| Command                                  | Description                                    |
-|------------------------------------------|------------------------------------------------|
-| **Delete-User** --id \<userid\>      | Delete a user                                  |
-| **Delete-Group** --id \<groupid>                         | Delete a group                                 |
-| **Remove-GroupMember** --id \<objectid\>                   | Remove user from a group                       |
-| **Delete-Application** --id \<appid\>                   | Delete an application                          |
-| **Delete-Device** --id \<deviceid\>                       | Delete managed device                          |
-| **Wipe-Device** --id \<deviceid\>                         | Wipe managed device                            |
+* **Delete-User** - Delete a user
+* **Delete-Group** - Delete a group
+* **Remove-GroupMember** - Remove user from a group
+* **Delete-Application** - Delete an application
+* **Delete-Device** - Delete managed device
+* **Wipe-Device** - Wipe managed device
 
 <br>
 
-# Demo
+# Demos
 
 ## Invoke-ReconAsOutsider
 
