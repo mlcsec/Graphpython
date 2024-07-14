@@ -4163,7 +4163,6 @@ def main():
                 for key, value in policy.items():
                     print(f"{key} : {value}")
                 
-                # Print template information
                 if 'templateReference' in policy and 'templateDisplayName' in policy['templateReference']:
                     print(f"template: {policy['templateReference']['templateDisplayName']}")
                 
@@ -5357,8 +5356,6 @@ def main():
             assignment_payload = {
                 "deviceManagementScriptAssignments": assignments
             }
-
-            # https://learn.microsoft.com/en-us/graph/api/resources/intune-devices-devicemanagementscriptassignment?view=graph-rest-beta
 
             response = requests.post(url_assign, headers=headers, json=assignment_payload)
             if response.status_code == 200:
