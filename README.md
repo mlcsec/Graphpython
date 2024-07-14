@@ -349,6 +349,8 @@ Verified creation and assignment options in Microsoft Intune admin center:
 
 ![](./.github/deploymaliciousscript-intuneportal.png)
 
+> NOTE: Deploy-PrinterSettings.ps1 is used for the actual script name instead of whatever is supplied to --script. Recommended updating this in graphpython.py to blend in to target env.
+
 ## Add-ExclusionGroupToPolicy
 #### Example:
 ```
