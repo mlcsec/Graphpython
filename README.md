@@ -360,24 +360,14 @@ assignmentTarget : {'@odata.type': '#microsoft.graph.allDevicesAssignmentTarget'
 
 
 ## Deploy-MaliciousScript
-#### Example:
-```
-# graphpython.py --command deploy-maliciousscript --token .\intune --script malicious.ps1
-```
-#### Output:
-```
-[*] Deploy-MaliciousScript
-================================================================================
 
-Enter Script Display Name: Config script
-Enter Script Description: Device config update
+Creating the new script and assignment options:
 
-[+] Script created successfully
-Script ID: b024deb4-e48b-42e0-b9ac-625e2bb41042
+![](./.github/deploymaliciousscript.png)
 
-[+] Script assigned to all devices
-================================================================================
-```
+Verified creation and assignment options in Microsoft Intune admin center:
+
+![](./.github/deploymaliciousscript-intuneportal.png)
 
 ## Add-ExclusionGroupToPolicy
 #### Example:
@@ -450,7 +440,7 @@ Confirm that the object has been removed from the group:
 
 - Update:
   - [ ] `Spoof-OWAEmailMessage` - add --email option containing formatted message as only accepts one line at the mo...
-  - [ ] `Deploy-MaliciousScript` - add input options to choose runAsAccount, enforceSignatureCheck, etc. and more assignment options
+  - [x] `Deploy-MaliciousScript` - add input options to choose runAsAccount, enforceSignatureCheck, etc. and more assignment options
 - New:
   - [ ] `Grant-AdminConsent` - grant admin consent for requested/applied admin app permissions 
   - [ ] `Backdoor-Script` - first user downloads target script content then adds their malicious code, supply updated script as args, encodes then [patch](https://learn.microsoft.com/en-us/graph/api/intune-shared-devicemanagementscript-update?view=graph-rest-beta)
