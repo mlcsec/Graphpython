@@ -5240,6 +5240,22 @@ def main():
         try:
             display_name = input("\nEnter Script Display Name: ").strip()
             description = input("Enter Script Description: ").strip()
+            runasaccount = input("Run As Account (user/system): ").strip().lower()
+            sigcheck = input("Enforce Signature Check? (true/false): ").strip().lower()
+            runas32bit = input("Run As 64-bit? (true/false): ").strip().lower()
+
+            if runasaccount not in ['user', 'system']:
+                print("Invalid input for Run As Account. Defaulting to 'user.")
+                runasaccount = 'user'
+
+            if sigcheck not in ['true', 'false']:
+                print("Invalid input for Enforce Signature Check. Defaulting to 'false'.")
+                sigcheck = 'false'
+
+            if runas32bit not in ['true', 'false']:
+                print("Invalid input for Run As 64-bit. Defaulting to 'false'.")
+                runas32bit = 'false'
+
         except KeyboardInterrupt:
             sys.exit()
 
@@ -5260,9 +5276,10 @@ def main():
                 "@odata.type": "microsoft.graph.runSchedule"
             },
             "scriptContent": encoded_script_content,
-            "runAsAccount": "system",
-            "enforceSignatureCheck": False,
-            "fileName": "Deploy-PrinterSettings.ps1" # legitimate intune management extension script name
+            "runAsAccount": runasaccount,
+            "enforceSignatureCheck": sigcheck == 'true',
+            "fileName": "Deploy-PrinterSettings.ps1", # use legit Intune script name
+            "runAs32Bit": runas32bit == 'true'
         }
 
         response = requests.post(url_create, headers=headers, json=script_payload)
@@ -5273,21 +5290,57 @@ def main():
 
             url_assign = f"https://graph.microsoft.com/beta/deviceManagement/deviceManagementScripts/{script_id}/assign"
             
-            # assigns to all devices currently
-            # - more options here: https://learn.microsoft.com/en-us/graph/api/resources/intune-devices-devicemanagementscriptassignment?view=graph-rest-beta
-            assignment_payload = {
-                "deviceManagementScriptAssignments": [
-                    {
+            try:
+                assignments = []
+
+                assign_all_devices = input("\nAssign to all devices? (yes/no): ").strip().lower()
+                if assign_all_devices == 'yes':
+                    assignments.append({
                         "target": {
                             "@odata.type": "#microsoft.graph.allDevicesAssignmentTarget"
                         }
-                    }
-                ]
+                    })
+
+                assign_all_users = input("Assign to all users? (yes/no): ").strip().lower()
+                if assign_all_users == 'yes':
+                    assignments.append({
+                        "target": {
+                            "@odata.type": "#microsoft.graph.allLicensedUsersAssignmentTarget"
+                        }
+                    })
+
+                assign_specific_group = input("Assign to specific group? (yes/no): ").strip().lower()
+                if assign_specific_group == 'yes':
+                    group_id = input("Enter Group ID: ").strip()
+                    assignments.append({
+                        "target": {
+                            "@odata.type": "#microsoft.graph.groupAssignmentTarget",
+                            "groupId": group_id
+                        }
+                    })
+
+                add_group_exclusion = input("Add group exclusion? (yes/no): ").strip().lower()
+                if add_group_exclusion == 'yes':
+                    exclusion_group_id = input("Enter Group ID to Exclude: ").strip()
+                    assignments.append({
+                        "target": {
+                            "@odata.type": "#microsoft.graph.exclusionGroupAssignmentTarget",
+                            "groupId": exclusion_group_id
+                        }
+                    })
+
+            except KeyboardInterrupt:
+                sys.exit()
+
+            assignment_payload = {
+                "deviceManagementScriptAssignments": assignments
             }
+
+            # https://learn.microsoft.com/en-us/graph/api/resources/intune-devices-devicemanagementscriptassignment?view=graph-rest-beta
 
             response = requests.post(url_assign, headers=headers, json=assignment_payload)
             if response.status_code == 200:
-                print_green("\n[+] Script assigned to all devices")
+                print_green("\n[+] Script assigned successfully")
             else:
                 print_red(f"[-] Failed to assign script: {response.status_code}")
                 print(response.text)
