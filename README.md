@@ -131,28 +131,28 @@ Please refer to the [Wiki](https://github.com/mlcsec/Graphpython/wiki) for the f
 * **Get-CurrentUserActivity** - Get recent activity and actions of current user
 * **Get-OrgInfo** - Get information relating to the target organization
 * **Get-Domains** - Get domain objects
-* **Get-User** - Get all users (default) or target user (--id)
-* **Get-UserProperties** - Get current user properties (default) or target user (--id)
-* **Get-UserGroupMembership** - Get group memberships for current user (default) or target user (--id)
-* **Get-UserTransitiveGroupMembership** - Get transitive group memberships for current user (default) or target user (--id)
-* **Get-Group** - Get all groups (default) or target group (-id)
+* **Get-User** - Get all users (default) or target user
+* **Get-UserProperties** - Get current user properties (default) or target user
+* **Get-UserGroupMembership** - Get group memberships for current user (default) or target user
+* **Get-UserTransitiveGroupMembership** - Get transitive group memberships for current user (default) or target user
+* **Get-Group** - Get all groups (default) or target group
 * **Get-GroupMember** - Get all members of target group
-* **Get-AppRoleAssignments** - Get application role assignments for current user (default) or target user (--id)
+* **Get-AppRoleAssignments** - Get application role assignments for current user (default) or target user
 * **Get-ConditionalAccessPolicy** - Get conditional access policy properties
 * **Get-PersonalContacts** - Get contacts of the current user
 * **Get-CrossTenantAccessPolicy** - Get cross tenant access policy properties
 * **Get-PartnerCrossTenantAccessPolicy** - Get partner cross tenant access policy
 * **Get-UserChatMessages** - Get ALL messages from all chats for target user (Chat.Read.All)
 * **Get-AdministrativeUnitMember** - Get members of administrative unit
-* **Get-OneDriveFiles** - Get all accessible OneDrive files for current user (default) or target user (--id)
-* **Get-UserPermissionGrants** - Get permissions grants of current user (default) or target user (--id)
-* **Get-oauth2PermissionGrants** - Get oauth2 permission grants for current user (default) or target user (--id)
-* **Get-Messages** - Get all messages in signed-in user's mailbox (default) or target user (--id)
-* **Get-TemporaryAccessPassword** - Get TAP details for current user (default) or target user (--id)
-* **Get-Password** - Get passwords registered to current user (default) or target user (--id)
-* **List-AuthMethods** - List authentication methods for current user (default) or target user (--id)
+* **Get-OneDriveFiles** - Get all accessible OneDrive files for current user (default) or target user 
+* **Get-UserPermissionGrants** - Get permissions grants of current user (default) or target user
+* **Get-oauth2PermissionGrants** - Get oauth2 permission grants for current user (default) or target user 
+* **Get-Messages** - Get all messages in signed-in user's mailbox (default) or target user
+* **Get-TemporaryAccessPassword** - Get TAP details for current user (default) or target user 
+* **Get-Password** - Get passwords registered to current user (default) or target user
+* **List-AuthMethods** - List authentication methods for current user (default) or target user
 * **List-DirectoryRoles** - List all directory roles activated in the tenant
-* **List-Notebooks** - List current user notebooks (default) or target user (--id)
+* **List-Notebooks** - List current user notebooks (default) or target user
 * **List-ConditionalAccessPolicies** - List conditional access policy objects
 * **List-ConditionalAuthenticationContexts** - List conditional access authentication context
 * **List-ConditionalNamedLocations** - List conditional access named locations
@@ -163,12 +163,12 @@ Please refer to the [Wiki](https://github.com/mlcsec/Graphpython/wiki) for the f
 * **List-Applications** - List all Azure Applications
 * **List-ServicePrincipals** - List all service principals
 * **List-Tenants** - List tenants
-* **List-JoinedTeams** - List joined teams for current user (default) or target user (--id)
-* **List-Chats** - List chats for current user (default) or target user (--id)
-* **List-ChatMessages** - List messages in target chat (--id)
+* **List-JoinedTeams** - List joined teams for current user (default) or target user
+* **List-Chats** - List chats for current user (default) or target user 
+* **List-ChatMessages** - List messages in target chat
 * **List-Devices** - List devices
 * **List-AdministrativeUnits** - List administrative units
-* **List-OneDrives** - List current user OneDrive (default) or target user (--id)
+* **List-OneDrives** - List current user OneDrive (default) or target user 
 * **List-RecentOneDriveFiles** - List current user recent OneDrive files
 * **List-SharedOneDriveFiles** - List OneDrive files shared with the current user
 * **List-OneDriveURLs** - List OneDrive web URLs visible to current user
@@ -193,7 +193,7 @@ Please refer to the [Wiki](https://github.com/mlcsec/Graphpython/wiki) for the f
 * **Assign-PrivilegedRole** - Assign chosen privileged role to user/group/object
 * **Open-OWAMailboxInBrowser** - Open an OWA Office 365 mailbox in BurpSuite's embedded Chromium browser using either a Substrate.Office.com or Outlook.Office.com access token
 * **Dump-OWAMailbox** - Dump OWA Office 365 mailbox
-* **Spoof-OWAEmailMessage** - Send email from current user's Outlook mailbox or spoof another user (--id) (Mail.Send)
+* **Spoof-OWAEmailMessage** - Send email from current user's Outlook mailbox or spoof another user (Mail.Send)
 
 ### Post-Auth Intune Enumeration
 
