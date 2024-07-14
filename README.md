@@ -439,8 +439,9 @@ Confirm that the object has been removed from the group:
 ## Todo
 
 - Update:
-  - [ ] `Spoof-OWAEmailMessage` - add --email option containing formatted message as only accepts one line at the mo...
+  - [x] `Spoof-OWAEmailMessage` - add --email option containing formatted message as only accepts one line at the mo...
   - [x] `Deploy-MaliciousScript` - add input options to choose runAsAccount, enforceSignatureCheck, etc. and more assignment options
+  - [x] `Get-DeviceConfigurationPolicies` - tidy up the templateReference and assignmentTarget output
 - New:
   - [ ] `Grant-AdminConsent` - grant admin consent for requested/applied admin app permissions 
   - [ ] `Backdoor-Script` - first user downloads target script content then adds their malicious code, supply updated script as args, encodes then [patch](https://learn.microsoft.com/en-us/graph/api/intune-shared-devicemanagementscript-update?view=graph-rest-beta)
