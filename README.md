@@ -4,7 +4,7 @@
   <img src="./.github/python.png" />
 </p>
 
-Graphpython is a modular Python tool for cross-platform Microsoft Graph API enumeration and exploitation. It builds upon the capabilities of AAD-Internals (Killchain.ps1), GraphRunner, and TokenTactics(V2) to provide a comprehensive solution for interacting with the Microsoft Graph API for red team and cloud assumed breach operations. 
+Graphpython is a modular Python tool for cross-platform Microsoft Graph API enumeration and exploitation. It builds upon the capabilities of AADInternals (Killchain.ps1), GraphRunner, and TokenTactics(V2) to provide a comprehensive solution for interacting with the Microsoft Graph API for red team and cloud assumed breach operations. 
 
 GraphPython covers external reconnaissance, authentication/token manipulation, enumeration, and post-exploitation of various Microsoft services, including Entra ID (Azure AD), Office 365 (Outlook, SharePoint, OneDrive, Teams), and Intune (Endpoint Management).
 
@@ -22,7 +22,9 @@ GraphPython covers external reconnaissance, authentication/token manipulation, e
       - [Invoke-ESTSCookieToAccessToken](#invoke-estscookietoaccesstoken)
   - [Post-Auth Enumeration](#post-auth-enumeration-1)    
       - [Get-User](#get-user)
-      - [List-SharePointRoot](#list-sharepointroot)
+      - [Get-UserGroupMembership](#get-usergroupmembership)
+      - [Get-Application](#get-application)
+      - [List-RecentOneDriveFiles](#list-recentonedrivefiles)
   - [Post-Auth Exploitation](#post-auth-exploitation-1)    
       - [Invite-GuestUser](#invite-guestuser)
       - [Assign-PrivilegedRole](#assign-privilegedrole)
@@ -182,6 +184,7 @@ Please refer to the [Wiki](https://github.com/mlcsec/Graphpython/wiki) for the f
 * **Find-SecurityGroups** - Find security groups and group members
 * **Find-DynamicGroups** - Find groups with dynamic membership rules
 * **Update-UserPassword** - Update the passwordProfile of the target user (NewUserS3cret@Pass!)
+* **Update-UserProperties** - Update a specific user property of the target user
 * **Add-ApplicationPassword** - Add client secret to target application
 * **Add-ApplicationCertificate** - Add client certificate to target application
 * **Add-ApplicationPermission** - Add permission to target application (application/delegated)
@@ -295,11 +298,36 @@ Obtain MS Graph tokens via device code authentication (can also be used for devi
 
 ![](./.github/getgraphtokens.png)
 
+### Invoke-RefreshToAzureManagementToken
+
+A valid refresh token can be used to generate access tokens for a [variety of services](https://github.com/mlcsec/Graphpython/wiki#authentication), Azure Management for example shown below. The `--use-cae` switch can be included to use **Continuous Access Evaluation (CAE)** to obtain an access token that's valid for 24 hours:
+
+![](./.github/refreshtoazuremanagement.png)
+
+The returned access token can then be used to authenticate to Azure via the Az PowerShell module:
+```
+PS > Connect-AzAccount -AccessToken eyJ0eXAi... -AccountId user@domain.onmicrosoft.com -Tenant 42838115-fbda-497e-b273-30944ff2786e
+
+Subscription name    Tenant
+-----------------    ------
+Azure subscription   42838115-fbda-497e-b273-30944ff2786e
+```
+
+### Invoke-CertToAccesstoken
+
+If you stumble across an enterprise application certificate (.pfx) you can use it to request a valid MS Graph access token. 
+
+> The enterprise application must have the corresponding .crt, .pem, or .cer in the application's certificates & secrets configuration otherwise you'll receive 401 client errors as the .pfx used to sign the client assertion won't be registered with the application
+
+![](./.github/certtoaccesstoken.png)
+
+The [Get-Application]() command can be used to identified the Graph permissions assigned to the compromised application.
+
 ### Invoke-ESTSCookieToAccessToken
 
-Obtain an MS Graph token for a selected client (MSTeams, MSEdge, AzurePowershell) from a captured ESTSAUTH or ESTSAUTHPERSISTENT cookie.
+Obtain an MS Graph token for a selected client (MSTeams, MSEdge, AzurePowershell) from a captured ESTSAUTH or ESTSAUTHPERSISTENT cookie:
 
-> ESTSAUTH and ESTSAUTHPERSISTENT cookies are often acquired via successful Evilginx phishes
+> ESTSAUTH and ESTSAUTHPERSISTENT cookies are often captured via successful Evilginx phishes
 
 ![](./.github/estsauthcookie.png)
 
@@ -309,15 +337,32 @@ Obtain an MS Graph token for a selected client (MSTeams, MSEdge, AzurePowershell
 
 ### Get-User
 
-Get specific user details (--select) for target user. User object can be supplied as user ID or User Principal Name:
+Get all or specific user(s) details. User object can be supplied as user ID or User Principal Name:
 
 ![](./.github/getuser.png)
 
-### List-SharePointRoot
+### Get-UserPrivileges
 
-List SharePoint root setting:
+Identifies assigned directory roles, Administrative Units, and Group membership information for the current user of target user:
 
-![](./.github/listsharepointroot.png)
+![](./.github/getuserprivileges.png)
+
+
+### Get-Application
+
+Get details relating to the target application. The `requiredResourceAccess` attribute outlines the API permissions assigned to the application:
+
+![](./.github/getapplication.png)
+
+The resourceAppId `00000003-0000-0000-c000-000000000000` is the Microsoft Graph API app identifier with the resourceAccess 'id' values referring to the following Microsoft Graph API permissons assigned to the application:
+
+![](./.github/getapplication-perms.png)
+
+### List-RecentOneDriveFiles
+
+List recent OneDrive files modified by the current user:
+
+![](./.github/listrecentonedrivefiles.png)
 
 <br>
 
@@ -329,6 +374,12 @@ Invite a malicious guest user to the target environment:
 
 ![](./.github/inviteguestuser.png)
 
+### Find-PrivilegedRoleUsers
+
+Loops through 27 of the most privileged directory roles in Azure and checks for any assignments:
+
+
+
 ### Assign-PrivilegedRole
 
 Assign a privileged role via template ID to a user or group and define permission scope:
@@ -337,11 +388,13 @@ Assign a privileged role via template ID to a user or group and define permissio
 
 ### Spoof-OWAEmailMessage
 
-> Mail.Send permission REQUIRED
+Send emails using a compromised user's Outlook mail box. The --id parameter can be used to send emails as other uses within the organistion.
+
+> Mail.Send permission REQUIRED for --id spoofing
 
 Options:
-1. Compromise an application service principal with Mail.Send permission assigned then use `Spoof-OWAEmailMessage`
-2. Obtain Global Admin, Application Admin, Cloud Admin permissions or assign role to an existing owned user with `Assign-PrivilegedRole` -> then add password or certifcate and Mail.Send permission to an enterprise app -> auth as app service principal and use `Spoof-OWAEmailMessage`
+1. Compromise and auth as an application service principal with the `Mail.Send` permission assigned then use `Spoof-OWAEmailMessage`
+2. Obtain Global Admin/Application Admin/Cloud Admin permissions or assign role to an existing owned user with `Assign-PrivilegedRole` -> then add a password/certifcate and `Mail.Send` permission to an enterprise app -> auth as the app service principal and then use `Spoof-OWAEmailMessage`
 
 ![](./.github/spoofowaemailcommand.png)
 
@@ -364,9 +417,37 @@ Can see the email in the target users Outlook:
 
 ![](./.github/spoofowaemail.png)
 
+
+### Find-DynamicGroups
+
+Identify groups with dyanmic group membership rules that can be abused:
+
+![](./.github/finddynamicgroups.png)
+
+In this instance you could create a new user (`Create-NewUser`) with 'admin' in their UPN to be assigned to the Dynamic Admins group. Or you could update the user's Department property via `Update-UserProperties`.
+
+### Find-UpdatableGroups
+
+Identify groups that can be updated with the current user's permissions:
+
+![](./.github/findupdatablegroups.png)
+
+
 <br>
 
 ## Post-Auth Intune Enumeration
+
+### Get-ManagedDevices
+
+List Intune managed devices then select and display device properties such as name, os version, and username:
+
+![](./.github/getmanageddevices.png)
+
+### Get-UserDevices
+
+Similarly you can identify all Intune managed devices and details belonging to a specific user by supplying their Entra User ID or their User Principal Name using the `--id` flag:
+
+![](./.github/getuserdevices.png)
 
 ### Get-DeviceConfigurationPolicies
 
@@ -434,7 +515,7 @@ Enter Group ID To Exclude: 46a6f18e-e243-492d-ae24-f5f301dd49bb
 Verify the changes have been applied and Excluded Group ID has been added:
 
 ```
-graphpython.py --command get-deviceconfigurationpolicies --token .\intune
+# graphpython.py --command get-deviceconfigurationpolicies --token .\intune
 ```
 
 ![](./.github/excludedgroupav.png)
