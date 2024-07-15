@@ -385,7 +385,7 @@ Invite a malicious guest user to the target environment:
 
 Loops through 27 of the most privileged directory roles in Entra and displays any assignments to help identify high-value targets:
 
-<!--![](./.github/findprivilegedroleusers.png)-->
+![](./.github/findprivilegedroleusers.png)
 
 ### Assign-PrivilegedRole
 
