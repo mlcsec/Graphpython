@@ -14,10 +14,10 @@ GraphPython covers external reconnaissance, authentication/token manipulation, e
 - [Usage](#Usage)
 - [Commands](#Commands)
 - [Demo](#demos)
-  - [Outsider](#outsider)
+  - [Outsider](#outsider-1)
       - [Invoke-ReconAsOutsider](#invoke-reconasoutsider)
       - [Invoke-UserEnumerationAsOutsider](#invoke-userenumerationasoutsider)
-  - [Authentication](#authentication)
+  - [Authentication](#authentication-1)
       - [Get-GraphTokens](#get-graphtokens)
       - [Invoke-ESTSCookieToAccessToken](#invoke-estscookietoaccesstoken)
   - [Post-Auth Enumeration](#post-auth-enumeration)    
@@ -94,12 +94,12 @@ options:
 
 Please refer to the [Wiki](https://github.com/mlcsec/Graphpython/wiki) for the full user guide and details of available functionality.
 
-### Outsider
+### Outsider 
 
 * **Invoke-ReconAsOutsider** - Perform outsider recon of the target domain
 * **Invoke-UserEnumerationAsOutsider** - Checks whether the user exists within Azure AD
 
-### Authentication
+### Authentication 
 
 * **Get-GraphTokens** - Obtain graph token via device code phish
 * **Get-TenantID** - Get tenant ID for target domain
@@ -122,7 +122,7 @@ Please refer to the [Wiki](https://github.com/mlcsec/Graphpython/wiki) for the f
 * **Invoke-AppSecretToAccessToken** - Convert Azure Application secretText credentials to access token
 * **New-SignedJWT** - Construct JWT and sign using Key Vault PEM certificate (Azure Key Vault access token required) then generate Azure Management token
 
-### Post-Auth Enumeration
+### Post-Auth Enumeration 
 
 * **Get-CurrentUser** - Get current user profile
 * **Get-CurrentUserActivity** - Get recent activity and actions of current user
@@ -173,7 +173,7 @@ Please refer to the [Wiki](https://github.com/mlcsec/Graphpython/wiki) for the f
 * **List-SharedOneDriveFiles** - List OneDrive files shared with the current user
 * **List-OneDriveURLs** - List OneDrive web URLs visible to current user
 
-### Post-Auth Exploitation
+### Post-Auth Exploitation 
 
 * **Invoke-CustomQuery** - Custom GET query to target Graph API endpoint
 * **Invoke-Search** - Search for string within entity type (driveItem, message, chatMessage, site, event)
@@ -195,7 +195,7 @@ Please refer to the [Wiki](https://github.com/mlcsec/Graphpython/wiki) for the f
 * **Dump-OWAMailbox** - Dump OWA Office 365 mailbox
 * **Spoof-OWAEmailMessage** - Send email from current user's Outlook mailbox or spoof another user (Mail.Send)
 
-### Post-Auth Intune Enumeration
+### Post-Auth Intune Enumeration 
 
 * **Get-ManagedDevices** - Get managed devices
 * **Get-UserDevices** - Get user devices
