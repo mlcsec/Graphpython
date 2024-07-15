@@ -75,7 +75,7 @@ def list_commands():
         ["Get-GroupMember", "Get all members of target group"],
         ["Get-AppRoleAssignments", "Get application role assignments for current user (default) or target user (--id)"],
         ["Get-ConditionalAccessPolicy", "Get conditional access policy properties"],
-        ["Get-Application", "Get Enterprise Application details for app (NOT object) ID (--id)"]
+        ["Get-Application", "Get Enterprise Application details for app (NOT object) ID (--id)"],
         ["Get-PersonalContacts", "Get contacts of the current user"],
         ["Get-CrossTenantAccessPolicy", "Get cross tenant access policy properties"],
         ["Get-PartnerCrossTenantAccessPolicy", "Get partner cross tenant access policy"],
