@@ -140,7 +140,9 @@ Please refer to the [Wiki](https://github.com/mlcsec/Graphpython/wiki) for the f
 * **Get-GroupMember** - Get all members of target group
 * **Get-AppRoleAssignments** - Get application role assignments for current user (default) or target user
 * **Get-ConditionalAccessPolicy** - Get conditional access policy properties
-* **Get-Application** - Get Enterprise Application details for app (NOT object) ID (--id)
+* **Get-Application** - Get Enterprise Application details for app (NOT object) ID
+* **Get-ServicePrincipal** - Get Service Principal details
+* **Get-ServicePrincipalAppRoleAssignments** - Get Service Principal app role assignments 
 * **Get-PersonalContacts** - Get contacts of the current user
 * **Get-CrossTenantAccessPolicy** - Get cross tenant access policy properties
 * **Get-PartnerCrossTenantAccessPolicy** - Get partner cross tenant access policy
@@ -183,7 +185,6 @@ Please refer to the [Wiki](https://github.com/mlcsec/Graphpython/wiki) for the f
 * **Find-UpdatableGroups** - Find groups which can be updated by the current user
 * **Find-SecurityGroups** - Find security groups and group members
 * **Find-DynamicGroups** - Find groups with dynamic membership rules
-* **Find-Object** - Find object via ID and display object properties
 * **Update-UserPassword** - Update the passwordProfile of the target user (NewUserS3cret@Pass!)
 * **Add-ApplicationPassword** - Add client secret to target application
 * **Add-ApplicationCertificate** - Add client certificate to target application
@@ -241,6 +242,12 @@ Please refer to the [Wiki](https://github.com/mlcsec/Graphpython/wiki) for the f
 * **Delete-Application** - Delete an application
 * **Delete-Device** - Delete managed device
 * **Wipe-Device** - Wipe managed device
+
+### Locators
+
+* **Locate-ObjectID** - Find object ID and display object properties
+* **Locate-PermissionID** - Find Graph permission ID details (application/delegated, description, admin consent required, ...)
+
 
 <br>
 
@@ -415,6 +422,7 @@ Confirm that the object has been removed from the group:
 - [https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/permissions-reference](https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/permissions-reference)
 - [https://graphpermissions.merill.net/](https://graphpermissions.merill.net/)
   
+<br>
 
 ## Todo
 
