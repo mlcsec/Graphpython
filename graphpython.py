@@ -182,9 +182,9 @@ def list_commands():
         ["Wipe-Device", "Wipe managed device"],
     ]
 
-    helper_commands = [
-        ["Find-ObjectID", "Find object ID and display object properties"],
-        ["Find-PermissionID", "Identify Graph permission details (application/delegated, description, admin consent required, ...) for ID"]
+    locator_commands = [
+        ["Locate-ObjectID", "Locate object ID and display object properties"],
+        ["Locate-PermissionID", "Locate Graph permission details (application/delegated, description, admin consent required, ...) for ID"]
     ]
 
     print("\nOutsider")
@@ -216,9 +216,9 @@ def list_commands():
     print(tabulate(cleanup_commands, tablefmt="plain"))
     print("\n")
 
-    print("\nHelpers")
+    print("\nLocators")
     print("=" * 80)
-    print(tabulate(helper_commands, tablefmt="plain"))
+    print(tabulate(locator_commands, tablefmt="plain"))
     print("\n")
 
 def forge_user_agent(device=None, browser=None):
@@ -647,7 +647,7 @@ def main():
     "list-sharepointsites","list-sharepointurls", "list-externalconnections", "list-applications", "list-serviceprincipals", "list-tenants", "list-joinedteams", 
     "list-chats", "list-chatmessages", "list-devices", "list-administrativeunits", "list-onedrives", "list-recentonedrivefiles", "list-onedriveurls",
     "list-sharedonedrivefiles", "invoke-customquery", "invoke-search", "find-privilegedroleusers", "find-updatablegroups", "find-dynamicgroups","find-securitygroups", 
-    "find-objectid", "update-userpassword", "add-applicationpassword", "add-usertap", "add-groupmember", "create-application", 
+    "locate-objectid", "update-userpassword", "add-applicationpassword", "add-usertap", "add-groupmember", "create-application", 
     "create-newuser", "invite-guestuser", "assign-privilegedrole", "open-owamailboxinbrowser", "dump-owamailbox", "spoof-owaemailmessage", 
     "delete-user", "delete-group", "remove-groupmember", "delete-application", "delete-device", "wipe-device", "retire-device",
     "get-manageddevices", "get-userdevices", "get-caps", "get-devicecategories", "get-devicecompliancepolicies", 
@@ -657,7 +657,7 @@ def main():
     "get-roledefinitions", "get-roleassignments", "display-avpolicyrules", "display-asrpolicyrules", "display-diskencryptionpolicyrules", 
     "display-firewallrulepolicyrules", "display-lapsaccountprotectionpolicyrules", "display-usergroupaccountprotectionpolicyrules", 
     "display-edrpolicyrules","add-exclusiongrouptopolicy", "deploy-maliciousscript", "reboot-device", "shutdown-device", "lock-device", 
-    "add-applicationpermission", "new-signedjwt", "add-applicationcertificate", "get-application", "find-permissionid", "get-serviceprincipal"
+    "add-applicationpermission", "new-signedjwt", "add-applicationcertificate", "get-application", "locate-permissionid", "get-serviceprincipal"
 ]
 
 
@@ -730,7 +730,7 @@ def main():
             "list-applications", "list-serviceprincipals", "list-tenants", "list-joinedteams", "list-chats", 
             "list-chatmessages", "list-devices", "list-administrativeunits", "list-onedrives", "list-recentonedrivefiles", "list-onedriveurls",
             "list-sharedonedrivefiles", "invoke-customquery", "invoke-search", "find-privilegedroleusers", 
-            "find-updatablegroups", "find-dynamicgroups","find-securitygroups", "find-objectid", "update-userpassword", "add-applicationpassword", 
+            "find-updatablegroups", "find-dynamicgroups","find-securitygroups", "locate-objectid", "update-userpassword", "add-applicationpassword", 
             "add-usertap", "add-groupmember", "create-application", "create-newuser", "invite-guestuser", 
             "assign-privilegedrole", "open-owamailboxinbrowser", "dump-owamailbox", "spoof-owaemailmessage", 
             "delete-user", "delete-group", "remove-groupmember", "delete-application", "delete-device", "wipe-device", "retire-device",
@@ -2571,7 +2571,7 @@ def main():
 
     # get-serviceprincipalapproleassignments
     elif args.command and args.command.lower() == "get-serviceprincipalapproleassignments":
-        print_yellow("\n[*] Get-PersonalContacts")
+        print_yellow("\n[*] Get-ServicePrincipalAppRoleAssignments")
         print("=" * 80)
         api_url = f"https://graph.microsoft.com/v1.0/servicePrincipals/{args.id}/appRoleAssignments"
         if args.select:
@@ -5715,17 +5715,17 @@ openssl pkcs12 -export -out certificate.pfx -inkey private.key -in certificate.c
         print("=" * 80)
 
 
-    ##########
-    # Helper #
-    ##########
+    #############
+    # Resolvers #
+    #############
     
-    # find-objectid
-    elif args.command and args.command.lower() == "find-objectid":
+    # locate-objectid
+    elif args.command and args.command.lower() == "locate-objectid":
         if not args.id:
-            print_red("[-] Error: --id required for Find-ObjectID command")
+            print_red("[-] Error: --id required for Locate-ObjectID command")
             return
 
-        print_yellow("\n[*] Find-ObjectID")
+        print_yellow("\n[*] Locate-ObjectID")
         print("=" * 80)
         graph_api_url = "https://graph.microsoft.com/v1.0"
         object_url = f"{graph_api_url}/directoryObjects/{args.id}"
@@ -5808,13 +5808,13 @@ openssl pkcs12 -export -out certificate.pfx -inkey private.key -in certificate.c
 
         print("=" * 80)
 
-    # find-permissionid
-    elif args.command and args.command.lower() == "find-permissionid":
+    # locate-permissionid
+    elif args.command and args.command.lower() == "locate-permissionid":
         if not args.id:
-            print_red("[-] Error: --id argument is required for Find-PermissionID command")
+            print_red("[-] Error: --id argument is required for Locate-PermissionID command")
             return
 
-        print_yellow("\n[*] Find-PermissionID")
+        print_yellow("\n[*] Locate-PermissionID")
         print("=" * 80)
         def parse_html(content):
             soup = BeautifulSoup(content, 'html.parser')
