@@ -161,7 +161,7 @@ def list_commands():
         ["Display-AVPolicyRules", "Display antivirus policy rules"],
         ["Display-ASRPolicyRules", "Display Attack Surface Reduction (ASR) policy rules"],
         ["Display-DiskEncryptionPolicyRules", "Display disk encryption policy rules"],
-        ["Display-FirewallPolicyRules", "Display firewall policy rules"],
+        ["Display-FirewallRulePolicyRules", "Display firewall RULE policy rules"],
         ["Display-EDRPolicyRules", "Display EDR policy rules"],
         ["Display-LAPSAccountProtectionPolicyRules", "Display LAPS account protection policy rules"],
         ["Display-UserGroupAccountProtectionPolicyRules", "Display user group account protection policy rules"],
@@ -3692,7 +3692,10 @@ openssl pkcs12 -export -out certificate.pfx -inkey private.key -in certificate.c
     # - https://learn.microsoft.com/en-us/graph/permissions-reference
     # - list-applications 'requiredResourceAccess' contains all the permission ids
     # can also check: https://graph.microsoft.com/v1.0/servicePrincipals/9ee251b0-b25e-4562-b62e-611c75387f2b/appRoleAssignments
-    # - for the configured permissions
+    # - for the configured permission
+    # CHECK
+    #  - one of above functions^^ kinda does this
+    #  - need to get the present perms and add to add-applicationpermissions json body like with add-applicationcertificate which checks for current certs so it doesn't override them
     
     # add-applicationpermission
     # - create an new application (add-application) then assign this
@@ -4170,7 +4173,7 @@ openssl pkcs12 -export -out certificate.pfx -inkey private.key -in certificate.c
             "saveToSentItems": savetf
         }
 
-        # Add attachment option:
+        # Add attachment option - check what other files are supported...
         # "attachments": [
         #    {
         #        "@odata.type": "#microsoft.graph.fileAttachment",
@@ -4977,10 +4980,10 @@ openssl pkcs12 -export -out certificate.pfx -inkey private.key -in certificate.c
     # display-firewallrulepolicyrules - actual firewall rules
     elif args.command and args.command.lower() == "display-firewallrulepolicyrules":
         if not args.id:
-            print_red("[-] Error: --id argument is required for Display-FirewallPolicyRules command")
+            print_red("[-] Error: --id argument is required for Display-FirewallRulePolicyRules command")
             return
 
-        print_yellow("\n[*] Display-FirewallPolicyRules")
+        print_yellow("\n[*] Display-FirewallRulePolicyRules")
         print("=" * 80)
         api_url = f"https://graph.microsoft.com/beta/deviceManagement/configurationPolicies('{args.id}')/settings"
 
