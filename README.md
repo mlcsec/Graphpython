@@ -13,23 +13,32 @@ GraphPython covers external reconnaissance, authentication/token manipulation, e
 - [Install](#Install)
 - [Usage](#Usage)
 - [Commands](#Commands)
-- [Demos](#Demos)
-    - [Invoke-ReconAsOutsider](#Invoke-ReconAsOutsider)
-    - [Get-GraphTokens](#Get-GraphTokens)
-    - [Invoke-ESTSCookieToAccessToken](#Invoke-ESTSCookieToAccessToken)
-    - [Get-User](#Get-User)
-    - [List-SharePointRoot](#List-SharePointRoot)
-    - [Invite-GuestUser](#Invite-GuestUser)
-    - [Assign-PrivilegedRole](#Assign-PrivilegedRole)
-    - [Spoof-OWAEmailMessage](#Spoof-OWAEmailMessage)
-    - [Get-DeviceConfigurationPolicies](#Get-DeviceConfigurationPolicies)
-    - [Display-AVPolicyRules](#Display-AVPolicyRules)
-    - [Get-ScriptContent](#Get-ScriptContent)
-    - [Deploy-MaliciousScript](#Deploy-MaliciousScript)
-    - [Add-ExclusionGroupToPolicy](#Add-ExclusionGroupToPolicy)
-    - [Remove-GroupMember](#Remove-GroupMember)
-    - [Locate-ObjectID](#Locate-ObjectID)
-    - [Locate-PermissionID](#Locate-PermissionID)
+- [Demo](#demos)
+  - [Outsider](#outsider)
+      - [Invoke-ReconAsOutsider](#invoke-reconasoutsider)
+      - [Invoke-UserEnumerationAsOutsider](#invoke-userenumerationasoutsider)
+  - [Authentication](#authentication)
+      - [Get-GraphTokens](#get-graphtokens)
+      - [Invoke-ESTSCookieToAccessToken](#invoke-estscookietoaccesstoken)
+  - [Post-Auth Enumeration](#post-auth-enumeration)    
+      - [Get-User](#get-user)
+      - [List-SharePointRoot](#list-sharepointroot)
+      - [Invite-GuestUser](#invite-guestuser)
+      - [Assign-PrivilegedRole](#assign-privilegedrole)
+      - [Spoof-OWAEmailMessage](#spoof-owaemailmessage)
+  - [Post-Auth Exploitation](#post-auth-exploitation)
+      - [Get-DeviceConfigurationPolicies](#get-deviceconfigurationpolicies)
+  - [Post-Auth Intune Enumeration](#post-auth-intune-enumeration)
+      - [Display-AVPolicyRules](#display-avpolicyrules)
+      - [Get-ScriptContent](#get-scriptcontent)
+      - [Deploy-MaliciousScript](#deploy-maliciousscript)
+      - [Add-ExclusionGroupToPolicy](#add-exclusiongrouptopolicy)
+  - [Cleanup](#cleanup)
+      - [Remove-GroupMember](#remove-groupmember)
+  - [Locators](#locators)
+      - [Locate-ObjectID](#locate-objectid)
+      - [Locate-PermissionID](#locate-permissionid)
+
 
 
 ## Install
@@ -43,41 +52,42 @@ pip3 install -r requirements.txt
 ## Usage
 
 ```
-usage: graphpython.py [-h] [--command COMMAND] [--list-commands] [--token TOKEN] [--estsauthcookie ESTSAUTHCOOKIE] [--use-cae] [--cert CERT] [--domain DOMAIN] [--tenant TENANT]
-                      [--username USERNAME] [--secret SECRET] [--id ID] [--select SELECT] [--query QUERY] [--search SEARCH] [--entity {driveItem,message,chatMessage,site,event}]
-                      [--device {mac,windows,androidmobile,iphone}] [--browser {android,IE,chrome,firefox,edge,safari}] [--only-return-cookies]
-                      [--mail-folder {allitems,inbox,archive,drafts,sentitems,deleteditems,recoverableitemsdeletions}] [--top TOP] [--script SCRIPT] [--email EMAIL]
+usage: graphpython.py [-h] [--command COMMAND] [--list-commands] [--token TOKEN] [--estsauthcookie ESTSAUTHCOOKIE] [--use-cae] [--cert CERT] [--domain DOMAIN] [--tenant TENANT] [--username USERNAME]
+                      [--secret SECRET] [--id ID] [--select SELECT] [--query QUERY] [--search SEARCH] [--entity {driveItem,message,chatMessage,site,event}] [--device {mac,windows,androidmobile,iphone}]
+                      [--browser {android,IE,chrome,firefox,edge,safari}] [--only-return-cookies] [--mail-folder {allitems,inbox,archive,drafts,sentitems,deleteditems,recoverableitemsdeletions}] [--top TOP]
+                      [--script SCRIPT] [--email EMAIL]
+
+options:
+  -h, --help            show this help message and exit
+  --command COMMAND     Command to execute
+  --list-commands       List available commands
+  --token TOKEN         Microsoft Graph access token or refresh token for FOCI abuse
+  --estsauthcookie ESTSAUTHCOOKIE
+                        'ESTSAuth' or 'ESTSAuthPersistent' cookie value
+  --use-cae             Flag to use Continuous Access Evaluation (CAE) - add 'cp1' as client claim to get an access token valid for 24 hours
+  --cert CERT           X509Certificate path (.pfx)
+  --domain DOMAIN       Target domain
+  --tenant TENANT       Target tenant ID
+  --username USERNAME   Username or file containing username (invoke-userenumerationasoutsider)
+  --secret SECRET       Enterprise application secretText (invoke-appsecrettoaccesstoken)
+  --id ID               ID of target object
+  --select SELECT       Fields to select from output
+  --query QUERY         Raw API query (GET only)
+  --search SEARCH       Search string
+  --entity {driveItem,message,chatMessage,site,event}
+                        Search entity type: driveItem(OneDrive), message(Mail), chatMessage(Teams), site(SharePoint), event(Calenders)
+  --device {mac,windows,androidmobile,iphone}
+                        Device type for User-Agent forging
+  --browser {android,IE,chrome,firefox,edge,safari}
+                        Browser type for User-Agent forging
+  --only-return-cookies
+                        Only return cookies from the request (open-owamailboxinbrowser)
+  --mail-folder {allitems,inbox,archive,drafts,sentitems,deleteditems,recoverableitemsdeletions}
+                        Mail folder to dump (dump-owamailbox)
+  --top TOP             Number (int) of messages to retrieve (dump-owamailbox)
+  --script SCRIPT       File containing the script content (deploy-maliciousscript)
+  --email EMAIL         File containing OWA email message body content (spoof-owaemailmessage)
 ```
-
-### Options
-
-- `-h`, `--help`: Show this help message and exit
-- `--command COMMAND`: Command to execute
-- `--list-commands`: List available commands
-- `--token TOKEN`: Microsoft Graph access token or refresh token for FOCI abuse
-- `--estsauthcookie ESTSAUTHCOOKIE`: 'ESTSAuth' or 'ESTSAuthPersistent' cookie value
-- `--use-cae`: Flag to use Continuous Access Evaluation (CAE) - add 'cp1' as client claim to get an access token valid for 24 hours
-- `--cert CERT`: X509Certificate path (.pfx)
-- `--domain DOMAIN`: Target domain
-- `--tenant TENANT`: Target tenant ID
-- `--username USERNAME`: Username or file containing username (invoke-userenumerationasoutsider)
-- `--secret SECRET`: Enterprise application secretText (invoke-appsecrettoaccesstoken)
-- `--id ID`: ID of target object
-- `--select SELECT`: Fields to select from output
-- `--query QUERY`: Raw API query (GET only)
-- `--search SEARCH`: Search string
-- `--entity {driveItem,message,chatMessage,site,event}`: Search entity type: driveItem (OneDrive), message (Mail), chatMessage (Teams), site (SharePoint), event (Calendars)
-- `--device {mac,windows,androidmobile,iphone}`: Device type for User-Agent forging
-- `--browser {android,IE,chrome,firefox,edge,safari}`: Browser type for User-Agent forging
-- `--only-return-cookies`: Only return cookies from the request (open-owamailboxinbrowser)
-- `--mail-folder {allitems,inbox,archive,drafts,sentitems,deleteditems,recoverableitemsdeletions}`: Mail folder to dump (dump-owamailbox)
-- `--top TOP`: Number (int) of messages to retrieve (dump-owamailbox)
-- `--script SCRIPT`: File containing the script content (deploy-maliciousscript)
-- `--email EMAIL`: File containing OWA email message body content (spoof-owaemailmessage)
-
-
-
-
 
 ## Commands
 
@@ -236,11 +246,13 @@ Please refer to the [Wiki](https://github.com/mlcsec/Graphpython/wiki) for the f
 
 <br>
 
-# Demos
+# Demo
 
-## Invoke-ReconAsOutsider
+## Outsider
 
-Perform unauthenticated external recon of the target domain as is performed with [AADInternals Invoke-ReconAsOutsider](https://github.com/Gerenios/AADInternals/blob/master/KillChain.ps1#L8)
+### Invoke-ReconAsOutsider
+
+Perform unauthenticated external recon of the target domain like AADInternal's [Invoke-ReconAsOutsider](https://github.com/Gerenios/AADInternals/blob/master/KillChain.ps1#L8)
 
 #### Example:
 ```
@@ -266,38 +278,64 @@ company.onmicrosoft.com                    True  True  True   False   True   Fal
 ================================================================================
 ```
 
-## Get-GraphTokens
+### Invoke-UserEnumerationAsOutsider
+
+Perform username enumeration for the target domain like AADInternal's [Invoke-UserEnumerationAsOutsider](https://github.com/Gerenios/AADInternals/blob/master/KillChain.ps1#L283):
+
+![](./.github/invokeuserenum.png)
+
+
+## Authentication
+
+### Get-GraphTokens
+
+Obtain MS Graph tokens via device code authentication (can also be used for device code phishing):
 
 ![](./.github/getgraphtokens.png)
 
-## Invoke-ESTSCookieToAccessToken
+### Invoke-ESTSCookieToAccessToken
+
+Obtain an MS Graph token for a selected client (MSTeams, MSEdge, AzurePowershell) from a captured ESTSAUTH or ESTSAUTHPERSISTENT cookie.
+
+> ESTSAUTH and ESTSAUTHPERSISTENT cookies are often acquired via successful Evilginx phishes
 
 ![](./.github/estsauthcookie.png)
 
-## Get-User
+## Post-Auth Enumeration
+
+### Get-User
+
+Get specific user details (--select) for target user. User object can be supplied as user ID or User Principal Name:
 
 ![](./.github/getuser.png)
 
-## List-SharePointRoot
+### List-SharePointRoot
+
+List SharePoint root setting:
 
 ![](./.github/listsharepointroot.png)
 
-## Invite-GuestUser
+## Post-Auth Exploitation
+
+### Invite-GuestUser
+
+Invite a malicious guest user to the target environment:
 
 ![](./.github/inviteguestuser.png)
 
+### Assign-PrivilegedRole
 
-## Assign-PrivilegedRole
+Assign a privileged role via template ID to a user or group and define permission scope:
 
 ![](./.github/assignprivilegedrole.png)
 
-## Spoof-OWAEmailMessage
+### Spoof-OWAEmailMessage
 
 > Mail.Send permission REQUIRED
 
 Options:
-1. Compromise an application with Mail.Send permission assigned then use `Spoof-OWAEmailMessage`
-2. Comprise user with Global Admin, Application Admin, Cloud Admin role or assign role to an existing owned user with `Assign-PrivilegedRole` -> then add password and Mail.Send permission to app -> auth as app service principal and use `Spoof-OWAEmailMessage`
+1. Compromise an application service principal with Mail.Send permission assigned then use `Spoof-OWAEmailMessage`
+2. Obtain Global Admin, Application Admin, Cloud Admin permissions or assign role to an existing owned user with `Assign-PrivilegedRole` -> then add password or certifcate and Mail.Send permission to an enterprise app -> auth as app service principal and use `Spoof-OWAEmailMessage`
 
 ![](./.github/spoofowaemailcommand.png)
 
@@ -320,23 +358,29 @@ Can see the email in the target users Outlook:
 
 ![](./.github/spoofowaemail.png)
 
+## Post-Auth Intune Enumeration
 
-## Get-DeviceConfigurationPolicies
+### Get-DeviceConfigurationPolicies
+
+Identify all created device configuration policies across the Intune environment. This includes Antivirus (Defender), Disk encryption (Bitlocker), Firewall (policies and rules), EDR, and Attack Surface Reduction (ASR):
 
 ![](./.github/getdeviceconfigurationpolicies.png)
 
+## Post-Auth Intune Exploitation
 
-## Display-AVPolicyRules
+### Display-AVPolicyRules
+
+Display the rules for a Microsoft Defender Antivirus policy deployed via Intune:
 
 ![](./.github/displayavpolicyrules.png)
 
+### Get-ScriptContent
 
-## Get-ScriptContent
+Get all device management PowerShell script details and content:
 
 ![](./.github/getscriptcontent.png)
 
-
-## Deploy-MaliciousScript
+### Deploy-MaliciousScript
 
 Creating the new script and assignment options:
 
@@ -348,9 +392,9 @@ Verified creation and assignment options in Microsoft Intune admin center:
 
 > NOTE: Deploy-PrinterSettings.ps1 is used for the actual script name instead of whatever is supplied to --script. Recommended updating this in graphpython.py to blend in to target env.
 
-## Add-ExclusionGroupToPolicy
+### Add-ExclusionGroupToPolicy
 
-> Instead of updating or removing an AV, ASR, etc. policy you can simply add an exclusion group which will keep any groups members (users/devices) exempt from the policy rules in place.
+Instead of updating or removing an AV, ASR, etc. policy you can simply add an exclusion group which will keep any groups members (users/devices) exempt from the policy rules in place.
 
 #### Example:
 ```
@@ -385,8 +429,9 @@ graphpython.py --command get-deviceconfigurationpolicies --token .\intune
 
 ![](./.github/excludedgroupav.png)
 
+## Cleanup
 
-## Remove-GroupMember
+### Remove-GroupMember
 
 Check the members of the target group:
 
@@ -400,19 +445,20 @@ Confirm that the object has been removed from the group:
 
 ![](./.github/getgroupmemberafter.png)
 
+## Locators
 
-## Locate-ObjectID
+### Locate-ObjectID
 
 Any unknown object IDs can be easily located:
 
 ![](./.github/locateobjectid.png)
 
-
-## Locate-PermissionID
+### Locate-PermissionID
 
 Graph permission IDs applied to objects can be easily located with detailed explaination of the assigned permissions:
 
 ![](./.github/getpermissionid.png)
+
 
 <br>
 
