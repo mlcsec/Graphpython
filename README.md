@@ -19,17 +19,24 @@ GraphPython covers external reconnaissance, authentication/token manipulation, e
       - [Invoke-UserEnumerationAsOutsider](#invoke-userenumerationasoutsider)
   - [Authentication](#authentication-1)
       - [Get-GraphTokens](#get-graphtokens)
+      - [Invoke-RefreshToAzureManagementToken](#invoke-refreshtoazuremanagementtoken)
+      - [Invoke-CertToAccessToken](#invoke-certtoaccesstoken)
       - [Invoke-ESTSCookieToAccessToken](#invoke-estscookietoaccesstoken)
   - [Post-Auth Enumeration](#post-auth-enumeration-1)    
       - [Get-User](#get-user)
-      - [Get-UserGroupMembership](#get-usergroupmembership)
+      - [Get-UserPrivileges](#get-userprivileges)
       - [Get-Application](#get-application)
       - [List-RecentOneDriveFiles](#list-recentonedrivefiles)
   - [Post-Auth Exploitation](#post-auth-exploitation-1)    
       - [Invite-GuestUser](#invite-guestuser)
+      - [Find-PrivilegedRoleUsers](#find-privilegedroleusers)
       - [Assign-PrivilegedRole](#assign-privilegedrole)
       - [Spoof-OWAEmailMessage](#spoof-owaemailmessage)
+      - [Find-DynamicGroups](#find-dynamicgroups)
+      - [Find-UpdatableGroups](#find-updatablegroups)
   - [Post-Auth Intune Enumeration](#post-auth-intune-enumeration-1)
+      - [Get-ManagedDevices](#get-manageddevices)
+      - [Get-UserDevices](#get-userdevices) 
       - [Get-DeviceConfigurationPolicies](#get-deviceconfigurationpolicies)
   - [Post-Auth Intune Exploitation](#post-auth-intune-exploitation-1)
       - [Display-AVPolicyRules](#display-avpolicyrules)
@@ -321,7 +328,7 @@ If you stumble across an enterprise application certificate (.pfx) you can use i
 
 ![](./.github/certtoaccesstoken.png)
 
-The [Get-Application]() command can be used to identified the Graph permissions assigned to the compromised application.
+The [Get-Application](https://github.com/mlcsec/Graphpython?tab=readme-ov-file#get-application) command can be used to identified the Graph permissions assigned to the compromised application.
 
 ### Invoke-ESTSCookieToAccessToken
 
@@ -360,7 +367,7 @@ The resourceAppId `00000003-0000-0000-c000-000000000000` is the Microsoft Graph 
 
 ### List-RecentOneDriveFiles
 
-List recent OneDrive files modified by the current user:
+List recent OneDrive files belonging to current user:
 
 ![](./.github/listrecentonedrivefiles.png)
 
@@ -376,9 +383,9 @@ Invite a malicious guest user to the target environment:
 
 ### Find-PrivilegedRoleUsers
 
-Loops through 27 of the most privileged directory roles in Azure and checks for any assignments:
+Loops through 27 of the most privileged directory roles in Entra and displays any assignments to help identify high-value targets:
 
-
+![](./.github/findprivilegedroleusers.png)
 
 ### Assign-PrivilegedRole
 
