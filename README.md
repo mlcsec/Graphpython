@@ -243,10 +243,10 @@ Please refer to the [Wiki](https://github.com/mlcsec/Graphpython/wiki) for the f
 * **Delete-Device** - Delete managed device
 * **Wipe-Device** - Wipe managed device
 
-### Helpers
+### Locators
 
-* **Find-ObjectID** - Find object ID and display object properties
-* **Find-PermissionID** - Find Graph permission ID details (application/delegated, description, admin consent required, ...)
+* **Locate-ObjectID** - Find object ID and display object properties
+* **Locate-PermissionID** - Find Graph permission ID details (application/delegated, description, admin consent required, ...)
 
 
 <br>
