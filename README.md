@@ -424,10 +424,10 @@ Confirm that the object has been removed from the group:
   - [ ] `Backdoor-Script` - first user downloads target script content then adds their malicious code, supply updated script as args, encodes then [patch](https://learn.microsoft.com/en-us/graph/api/intune-shared-devicemanagementscript-update?view=graph-rest-beta)
   - [ ] `Deploy-MaliciousWin32App` - use IntuneWinAppUtil.exe to package the EXE/MSI and deploy to devices
     - check also [here](https://learn.microsoft.com/en-us/graph/api/resources/intune-app-conceptual?view=graph-rest-1.0) for managing iOS, Android, LOB apps etc. via graph
-  - [ ] `Add-ApplicationCertificate` - similar to add-applicationpassword but gen and assign openssl cert to ent app
+  - [x] `Add-ApplicationCertificate` - similar to add-applicationpassword but gen and assign openssl cert to ent app
   - [ ] `Update/Deploy-Policy` - update existing rules for av, asr, etc. policy or deploy a new one with specific groups/devices
   - [ ] `Update-ManagedDevice` - update/patch existing managed device config, [check this](https://learn.microsoft.com/en-us/graph/api/intune-devices-manageddevice-update?view=graph-rest-beta)
-  - [ ] `New-SignedJWT` - need to test this from sharpgraphview
+  - [x] `New-SignedJWT` - need to test this from sharpgraphview
 - Options:
   - [ ] add functionality for chaining commands e.g. --command get-user, get-currentuser, get-groups
   - [ ] --proxy 
