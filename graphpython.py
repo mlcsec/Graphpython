@@ -22,6 +22,7 @@ from cryptography.hazmat.backends import default_backend
 from urllib.parse import urlencode, urlparse, parse_qs
 import uuid
 import xml.etree.ElementTree as ET
+from bs4 import BeautifulSoup
 
 def print_yellow(message):
     print(f"\033[93m{message}\033[0m")
@@ -73,9 +74,11 @@ def list_commands():
         ["Get-UserTransitiveGroupMembership", "Get transitive group memberships for current user (default) or target user (--id)"],
         ["Get-Group", "Get all groups (default) or target group (-id)"],
         ["Get-GroupMember", "Get all members of target group"],
-        ["Get-AppRoleAssignments", "Get application role assignments for current user (default) or target user (--id)"],
+        ["Get-UserAppRoleAssignments", "Get user app role assignments for current user (default) or target user (--id)"],
         ["Get-ConditionalAccessPolicy", "Get conditional access policy properties"],
         ["Get-Application", "Get Enterprise Application details for app (NOT object) ID (--id)"],
+        ["Get-ServicePrincipal", "Get Service Principal details (--id)"],
+        ["Get-ServicePrincipalAppRoleAssignments", "Get Service Principal app role assignments (--id)"],
         ["Get-PersonalContacts", "Get contacts of the current user"],
         ["Get-CrossTenantAccessPolicy", "Get cross tenant access policy properties"],
         ["Get-PartnerCrossTenantAccessPolicy", "Get partner cross tenant access policy"],
@@ -118,7 +121,6 @@ def list_commands():
         ["Find-UpdatableGroups", "Find groups which can be updated by the current user"],
         ["Find-SecurityGroups", "Find security groups and group members"],
         ["Find-DynamicGroups", "Find groups with dynamic membership rules"],
-        ["Find-Object", "Find object via ID and display object properties"],
         ["Update-UserPassword", "Update the passwordProfile of the target user (NewUserS3cret@Pass!)"],
         ["Add-ApplicationPassword", "Add client secret to target application"],
         ["Add-ApplicationCertificate", "Add client certificate to target application"],
@@ -180,6 +182,11 @@ def list_commands():
         ["Wipe-Device", "Wipe managed device"],
     ]
 
+    helper_commands = [
+        ["Find-ObjectID", "Find object ID and display object properties"],
+        ["Find-PermissionID", "Identify Graph permission details (application/delegated, description, admin consent required, ...) for ID"]
+    ]
+
     print("\nOutsider")
     print("=" * 80)
     print(tabulate(outsider_commands, tablefmt="plain"))
@@ -207,6 +214,11 @@ def list_commands():
     print("\nCleanup")
     print("=" * 80)
     print(tabulate(cleanup_commands, tablefmt="plain"))
+    print("\n")
+
+    print("\nHelpers")
+    print("=" * 80)
+    print(tabulate(helper_commands, tablefmt="plain"))
     print("\n")
 
 def forge_user_agent(device=None, browser=None):
@@ -627,7 +639,7 @@ def main():
     "invoke-refreshtooutlooktoken", "invoke-refreshtosubstratetoken", "invoke-refreshtoyammertoken", "invoke-refreshtointuneenrollment",
     "invoke-refreshtoonedrivetoken", "invoke-refreshtosharepointtoken", "invoke-certtoaccesstoken", "invoke-estscookietoaccesstoken", "invoke-appsecrettoaccesstoken",
     "new-signedjwt", "get-currentuser", "get-currentuseractivity", "get-orginfo", "get-domains", "get-user", "get-userproperties", 
-    "get-usergroupmembership", "get-usertransitivegroupmembership", "get-group", "get-groupmember", "get-approleassignments", 
+    "get-usergroupmembership", "get-usertransitivegroupmembership", "get-group", "get-groupmember", "get-userapproleassignments", "get-serviceprincipalapproleassignments",
     "get-conditionalaccesspolicy", "get-personalcontacts", "get-crosstenantaccesspolicy", "get-partnercrosstenantaccesspolicy", 
     "get-userchatmessages", "get-administrativeunitmember", "get-onedrivefiles", "get-userpermissiongrants", "get-oauth2permissiongrants", 
     "get-messages", "get-temporaryaccesspassword", "get-password", "list-authmethods", "list-directoryroles", "list-notebooks", 
@@ -635,7 +647,7 @@ def main():
     "list-sharepointsites","list-sharepointurls", "list-externalconnections", "list-applications", "list-serviceprincipals", "list-tenants", "list-joinedteams", 
     "list-chats", "list-chatmessages", "list-devices", "list-administrativeunits", "list-onedrives", "list-recentonedrivefiles", "list-onedriveurls",
     "list-sharedonedrivefiles", "invoke-customquery", "invoke-search", "find-privilegedroleusers", "find-updatablegroups", "find-dynamicgroups","find-securitygroups", 
-    "find-object", "update-userpassword", "add-applicationpassword", "add-usertap", "add-groupmember", "create-application", 
+    "find-objectid", "update-userpassword", "add-applicationpassword", "add-usertap", "add-groupmember", "create-application", 
     "create-newuser", "invite-guestuser", "assign-privilegedrole", "open-owamailboxinbrowser", "dump-owamailbox", "spoof-owaemailmessage", 
     "delete-user", "delete-group", "remove-groupmember", "delete-application", "delete-device", "wipe-device", "retire-device",
     "get-manageddevices", "get-userdevices", "get-caps", "get-devicecategories", "get-devicecompliancepolicies", 
@@ -645,7 +657,7 @@ def main():
     "get-roledefinitions", "get-roleassignments", "display-avpolicyrules", "display-asrpolicyrules", "display-diskencryptionpolicyrules", 
     "display-firewallrulepolicyrules", "display-lapsaccountprotectionpolicyrules", "display-usergroupaccountprotectionpolicyrules", 
     "display-edrpolicyrules","add-exclusiongrouptopolicy", "deploy-maliciousscript", "reboot-device", "shutdown-device", "lock-device", 
-    "add-applicationpermission", "new-signedjwt", "add-applicationcertificate", "get-application"
+    "add-applicationpermission", "new-signedjwt", "add-applicationcertificate", "get-application", "find-permissionid", "get-serviceprincipal"
 ]
 
 
@@ -708,7 +720,7 @@ def main():
             "invoke-refreshtointuneenrollmenttoken", "invoke-refreshtoonedrivetoken", "invoke-refreshtosharepointtoken",
             "get-tokenscope", "decode-accesstoken", "get-manageddevices", "get-userdevices", "get-user", 
             "get-userproperties", "get-usergroupmembership", "get-usertransitivegroupmembership", "get-group", 
-            "get-groupmember", "get-approleassignments", "get-conditionalaccesspolicy", "get-personalcontacts", 
+            "get-groupmember", "get-userapproleassignments", "get-conditionalaccesspolicy", "get-personalcontacts", 
             "get-crosstenantaccesspolicy", "get-partnercrosstenantaccesspolicy", "get-userchatmessages", 
             "get-administrativeunitmember", "get-onedrivefiles", "get-userpermissiongrants", "get-oauth2permissiongrants", 
             "get-messages", "get-temporaryaccesspassword", "get-password", "get-currentuser", 
@@ -718,7 +730,7 @@ def main():
             "list-applications", "list-serviceprincipals", "list-tenants", "list-joinedteams", "list-chats", 
             "list-chatmessages", "list-devices", "list-administrativeunits", "list-onedrives", "list-recentonedrivefiles", "list-onedriveurls",
             "list-sharedonedrivefiles", "invoke-customquery", "invoke-search", "find-privilegedroleusers", 
-            "find-updatablegroups", "find-dynamicgroups","find-securitygroups", "find-object", "update-userpassword", "add-applicationpassword", 
+            "find-updatablegroups", "find-dynamicgroups","find-securitygroups", "find-objectid", "update-userpassword", "add-applicationpassword", 
             "add-usertap", "add-groupmember", "create-application", "create-newuser", "invite-guestuser", 
             "assign-privilegedrole", "open-owamailboxinbrowser", "dump-owamailbox", "spoof-owaemailmessage", 
             "delete-user", "delete-group", "remove-groupmember", "delete-application", "delete-device", "wipe-device", "retire-device",
@@ -730,7 +742,7 @@ def main():
             "display-asrpolicyrules", "display-diskencryptionpolicyrules", "display-firewallrulepolicyrules",
             "display-edrpolicyrules", "display-lapsaccountprotectionpolicyrules", "display-usergroupaccountprotectionpolicyrules", 
             "add-exclusiongrouptopolicy","deploy-maliciousscript", "reboot-device", "add-applicationpermission", "new-signedjwt",
-            "add-applicationcertificate", "get-application"]:
+            "add-applicationcertificate", "get-application", "get-serviceprincipal", "get-serviceprincipalapproleassignments"]:
         if not args.token:
             print_red(f"[-] Error: --token is required for command")
             return
@@ -2451,8 +2463,8 @@ def main():
             print_red(response.text)
         print("=" * 80)
 
-    # get-approleassignments
-    elif args.command and args.command.lower() == "get-approleassignments":
+    # get-userapproleassignments
+    elif args.command and args.command.lower() == "get-userapproleassignments":
         print_yellow("\n[*] Get-AppRoleAssignments")
         print("=" * 80)
         api_url = "https://graph.microsoft.com/v1.0/me/appRoleAssignments"
@@ -2525,6 +2537,48 @@ def main():
                 print_red(f"[-] Failed to retrieve Azure Application details: {response.status_code}")
                 print_red(response.text)
             print("=" * 80)
+
+    # get-serviceprincipal
+    elif args.command and args.command.lower() == "get-serviceprincipal":
+            if not args.id:
+                print_red("[-] Error: --id <id> argument is required for Get-ServicePrincipal command")
+                return
+            
+            print_yellow("\n[*] Get-ServicePrincipal")
+            print("=" * 80)
+            api_url = f"https://graph.microsoft.com/v1.0/servicePrincipals/{args.id}"
+            if args.select:
+                api_url += "?$select=" + args.select
+
+            user_agent = get_user_agent(args)
+            headers = {
+                'Authorization': f'Bearer {access_token}',
+                'User-Agent': user_agent
+            }
+
+            response = requests.get(api_url, headers=headers)
+            if response.status_code == 200:
+                response_json = response.json()
+
+                for key, value in response_json.items():
+                    if key != "@odata.context":
+                        print(f"{key}: {value}")
+
+            else:
+                print_red(f"[-] Failed to retrieve Service Principal details: {response.status_code}")
+                print_red(response.text)
+            print("=" * 80)
+
+    # get-serviceprincipalapproleassignments
+    elif args.command and args.command.lower() == "get-serviceprincipalapproleassignments":
+        print_yellow("\n[*] Get-PersonalContacts")
+        print("=" * 80)
+        api_url = f"https://graph.microsoft.com/v1.0/servicePrincipals/{args.id}/appRoleAssignments"
+        if args.select:
+            api_url += "?$select=" + args.select
+
+        graph_api_get(access_token, api_url, args)
+        print("=" * 80)
 
     # get-personalcontacts
     elif args.command and args.command.lower() == "get-personalcontacts":
@@ -3426,95 +3480,6 @@ def main():
                 print()
         else:
             print_red("[-] No security groups found")
-        print("=" * 80)
-
-    # find-object
-    elif args.command and args.command.lower() == "find-object":
-        if not args.id:
-            print_red("[-] Error: --id required for Find-Object command")
-            return
-
-        print_yellow("\n[*] Find-Object")
-        print("=" * 80)
-        graph_api_url = "https://graph.microsoft.com/v1.0"
-        object_url = f"{graph_api_url}/directoryObjects/{args.id}"
-
-        user_agent = get_user_agent(args)
-        headers = {
-            'Authorization': f'Bearer {access_token}',
-            'User-Agent': user_agent
-        }
-
-        try:
-            response = requests.get(object_url, headers=headers)
-            response.raise_for_status()
-            object_data = response.json()
-            object_type = object_data.get('@odata.type', '').split('.')[-1]
-
-            print_green(f"Object Type: {object_type}")
-            print(f"ID: {object_data.get('id', 'N/A')}")
-            print(f"Display Name: {object_data.get('displayName', 'N/A')}")
-
-            if object_type == 'user':
-                print(f"User Principal Name: {object_data.get('userPrincipalName', 'N/A')}")
-                print(f"Mail: {object_data.get('mail', 'N/A')}")
-                print(f"Job Title: {object_data.get('jobTitle', 'N/A')}")
-                print(f"Department: {object_data.get('department', 'N/A')}")
-                print(f"Office Location: {object_data.get('officeLocation', 'N/A')}")
-                print(f"Mobile Phone: {object_data.get('mobilePhone', 'N/A')}")
-                print(f"Business Phones: {', '.join(object_data.get('businessPhones', []))}")
-                print(f"Account Enabled: {object_data.get('accountEnabled', 'N/A')}")
-                print(f"Created DateTime: {object_data.get('createdDateTime', 'N/A')}")
-                print(f"Last Sign-In DateTime: {object_data.get('signInActivity', {}).get('lastSignInDateTime', 'N/A')}")
-            elif object_type == 'group':
-                print(f"Mail: {object_data.get('mail', 'N/A')}")
-                print(f"Security Enabled: {object_data.get('securityEnabled', 'N/A')}")
-                print(f"Mail Enabled: {object_data.get('mailEnabled', 'N/A')}")
-                print(f"Group Types: {', '.join(object_data.get('groupTypes', []))}")
-                print(f"Visibility: {object_data.get('visibility', 'N/A')}")
-                print(f"Created DateTime: {object_data.get('createdDateTime', 'N/A')}")
-                print(f"Description: {object_data.get('description', 'N/A')}")
-                print(f"Membership Rule: {object_data.get('membershipRule', 'N/A')}")
-                print(f"Is Assignable To Role: {object_data.get('isAssignableToRole', 'N/A')}")
-            elif object_type == 'servicePrincipal':
-                print(f"App ID: {object_data.get('appId', 'N/A')}")
-                print(f"Service Principal Type: {object_data.get('servicePrincipalType', 'N/A')}")
-                print(f"App Display Name: {object_data.get('appDisplayName', 'N/A')}")
-                print(f"Homepage: {object_data.get('homepage', 'N/A')}")
-                print(f"Login URL: {object_data.get('loginUrl', 'N/A')}")
-                print(f"Publisher Name: {object_data.get('publisherName', 'N/A')}")
-                print(f"App Roles Count: {len(object_data.get('appRoles', []))}")
-                print(f"OAuth2 Permissions Count: {len(object_data.get('oauth2Permissions', []))}")
-                print(f"Tags: {', '.join(object_data.get('tags', []))}")
-                print(f"Account Enabled: {object_data.get('accountEnabled', 'N/A')}")
-            elif object_type == 'application':
-                print(f"App ID: {object_data.get('appId', 'N/A')}")
-                print(f"Sign In Audience: {object_data.get('signInAudience', 'N/A')}")
-                print(f"Publisher Domain: {object_data.get('publisherDomain', 'N/A')}")
-                print(f"Verified Publisher: {object_data.get('verifiedPublisher', {}).get('displayName', 'N/A')}")
-                print(f"App Roles Count: {len(object_data.get('appRoles', []))}")
-                print(f"Required Resource Access Count: {len(object_data.get('requiredResourceAccess', []))}")
-                print(f"Web Redirect URIs: {', '.join(object_data.get('web', {}).get('redirectUris', []))}")
-                print(f"Created DateTime: {object_data.get('createdDateTime', 'N/A')}")
-            elif object_type == 'device':
-                print(f"Device ID: {object_data.get('deviceId', 'N/A')}")
-                print(f"Operating System: {object_data.get('operatingSystem', 'N/A')}")
-                print(f"Operating System Version: {object_data.get('operatingSystemVersion', 'N/A')}")
-                print(f"Trust Type: {object_data.get('trustType', 'N/A')}")
-                print(f"Approximate Last Sign In DateTime: {object_data.get('approximateLastSignInDateTime', 'N/A')}")
-                print(f"Compliance State: {object_data.get('complianceState', 'N/A')}")
-                print(f"Is Managed: {object_data.get('isManaged', 'N/A')}")
-                print(f"Is Compliant: {object_data.get('isCompliant', 'N/A')}")
-                print(f"Registered Owner: {object_data.get('registeredOwners', [{}])[0].get('userPrincipalName', 'N/A')}")
-
-        except requests.exceptions.HTTPError as e:
-            if e.response.status_code == 404:
-                print_red(f"[-] Object with ID {args.id} not found")
-            else:
-                print_red(f"[-] An error occurred while retrieving object details: {str(e)}")
-        except requests.exceptions.RequestException as e:
-            print_red(f"[-] An error occurred while making the request: {str(e)}")
-
         print("=" * 80)
 
     # update-userpassword
@@ -5747,6 +5712,173 @@ openssl pkcs12 -export -out certificate.pfx -inkey private.key -in certificate.c
         else:
             print_red(f"[-] Failed to initiate device wipe: {response.status_code}")
             print_red(response.text)
+        print("=" * 80)
+
+
+    ##########
+    # Helper #
+    ##########
+    
+    # find-objectid
+    elif args.command and args.command.lower() == "find-objectid":
+        if not args.id:
+            print_red("[-] Error: --id required for Find-ObjectID command")
+            return
+
+        print_yellow("\n[*] Find-ObjectID")
+        print("=" * 80)
+        graph_api_url = "https://graph.microsoft.com/v1.0"
+        object_url = f"{graph_api_url}/directoryObjects/{args.id}"
+
+        user_agent = get_user_agent(args)
+        headers = {
+            'Authorization': f'Bearer {access_token}',
+            'User-Agent': user_agent
+        }
+
+        try:
+            response = requests.get(object_url, headers=headers)
+            response.raise_for_status()
+            object_data = response.json()
+            object_type = object_data.get('@odata.type', '').split('.')[-1]
+
+            print_green(f"Object Type: {object_type}")
+            print(f"ID: {object_data.get('id', 'N/A')}")
+            print(f"Display Name: {object_data.get('displayName', 'N/A')}")
+
+            if object_type == 'user':
+                print(f"User Principal Name: {object_data.get('userPrincipalName', 'N/A')}")
+                print(f"Mail: {object_data.get('mail', 'N/A')}")
+                print(f"Job Title: {object_data.get('jobTitle', 'N/A')}")
+                print(f"Department: {object_data.get('department', 'N/A')}")
+                print(f"Office Location: {object_data.get('officeLocation', 'N/A')}")
+                print(f"Mobile Phone: {object_data.get('mobilePhone', 'N/A')}")
+                print(f"Business Phones: {', '.join(object_data.get('businessPhones', []))}")
+                print(f"Account Enabled: {object_data.get('accountEnabled', 'N/A')}")
+                print(f"Created DateTime: {object_data.get('createdDateTime', 'N/A')}")
+                print(f"Last Sign-In DateTime: {object_data.get('signInActivity', {}).get('lastSignInDateTime', 'N/A')}")
+            elif object_type == 'group':
+                print(f"Mail: {object_data.get('mail', 'N/A')}")
+                print(f"Security Enabled: {object_data.get('securityEnabled', 'N/A')}")
+                print(f"Mail Enabled: {object_data.get('mailEnabled', 'N/A')}")
+                print(f"Group Types: {', '.join(object_data.get('groupTypes', []))}")
+                print(f"Visibility: {object_data.get('visibility', 'N/A')}")
+                print(f"Created DateTime: {object_data.get('createdDateTime', 'N/A')}")
+                print(f"Description: {object_data.get('description', 'N/A')}")
+                print(f"Membership Rule: {object_data.get('membershipRule', 'N/A')}")
+                print(f"Is Assignable To Role: {object_data.get('isAssignableToRole', 'N/A')}")
+            elif object_type == 'servicePrincipal':
+                print(f"App ID: {object_data.get('appId', 'N/A')}")
+                print(f"Service Principal Type: {object_data.get('servicePrincipalType', 'N/A')}")
+                print(f"App Display Name: {object_data.get('appDisplayName', 'N/A')}")
+                print(f"Homepage: {object_data.get('homepage', 'N/A')}")
+                print(f"Login URL: {object_data.get('loginUrl', 'N/A')}")
+                print(f"Publisher Name: {object_data.get('publisherName', 'N/A')}")
+                print(f"App Roles Count: {len(object_data.get('appRoles', []))}")
+                print(f"OAuth2 Permissions Count: {len(object_data.get('oauth2Permissions', []))}")
+                print(f"Tags: {', '.join(object_data.get('tags', []))}")
+                print(f"Account Enabled: {object_data.get('accountEnabled', 'N/A')}")
+            elif object_type == 'application':
+                print(f"App ID: {object_data.get('appId', 'N/A')}")
+                print(f"Sign In Audience: {object_data.get('signInAudience', 'N/A')}")
+                print(f"Publisher Domain: {object_data.get('publisherDomain', 'N/A')}")
+                print(f"Verified Publisher: {object_data.get('verifiedPublisher', {}).get('displayName', 'N/A')}")
+                print(f"App Roles Count: {len(object_data.get('appRoles', []))}")
+                print(f"Required Resource Access Count: {len(object_data.get('requiredResourceAccess', []))}")
+                print(f"Web Redirect URIs: {', '.join(object_data.get('web', {}).get('redirectUris', []))}")
+                print(f"Created DateTime: {object_data.get('createdDateTime', 'N/A')}")
+            elif object_type == 'device':
+                print(f"Device ID: {object_data.get('deviceId', 'N/A')}")
+                print(f"Operating System: {object_data.get('operatingSystem', 'N/A')}")
+                print(f"Operating System Version: {object_data.get('operatingSystemVersion', 'N/A')}")
+                print(f"Trust Type: {object_data.get('trustType', 'N/A')}")
+                print(f"Approximate Last Sign In DateTime: {object_data.get('approximateLastSignInDateTime', 'N/A')}")
+                print(f"Compliance State: {object_data.get('complianceState', 'N/A')}")
+                print(f"Is Managed: {object_data.get('isManaged', 'N/A')}")
+                print(f"Is Compliant: {object_data.get('isCompliant', 'N/A')}")
+                print(f"Registered Owner: {object_data.get('registeredOwners', [{}])[0].get('userPrincipalName', 'N/A')}")
+
+        except requests.exceptions.HTTPError as e:
+            if e.response.status_code == 404:
+                print_red(f"[-] Object with ID {args.id} not found")
+            else:
+                print_red(f"[-] An error occurred while retrieving object details: {str(e)}")
+        except requests.exceptions.RequestException as e:
+            print_red(f"[-] An error occurred while making the request: {str(e)}")
+
+        print("=" * 80)
+
+    # find-permissionid
+    elif args.command and args.command.lower() == "find-permissionid":
+        if not args.id:
+            print_red("[-] Error: --id argument is required for Find-PermissionID command")
+            return
+
+        print_yellow("\n[*] Find-PermissionID")
+        print("=" * 80)
+        def parse_html(content):
+            soup = BeautifulSoup(content, 'html.parser')
+            permissions = {}
+            
+            for h3 in soup.find_all('h3'):
+                title = h3.text
+                table = h3.find_next('table')
+                headers = [th.text for th in table.find('thead').find_all('th')]
+                rows = table.find('tbody').find_all('tr')
+                
+                permission_data = {}
+                for row in rows:
+                    cells = row.find_all('td')
+                    category = cells[0].text
+                    application = cells[1].text
+                    delegated = cells[2].text
+                    permission_data[category] = {
+                        headers[1]: application,
+                        headers[2]: delegated
+                    }
+                permissions[title] = permission_data
+            
+            return permissions
+
+        def highlight(text, should_highlight):
+            if should_highlight:
+                return f"\033[92m{text}\033[0m" 
+            return text
+
+        def print_permission(permission, data, app_ids, delegated_ids):
+            print_green(f"{permission}")
+            for category, values in data.items():
+                print(f"  {category}:")
+                app_highlight = data['Identifier']['Application'] in app_ids
+                delegated_highlight = data['Identifier']['Delegated'] in delegated_ids
+                print(f"    Application: {highlight(values['Application'], app_highlight)}")
+                print(f"    Delegated: {highlight(values['Delegated'], delegated_highlight)}")
+            print()
+
+        identifiers = args.id.split(',')
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        file_path = os.path.join(script_dir, '.github', 'graphpermissions.txt')
+
+        try:
+            with open(file_path, 'r') as file:
+                content = file.read()
+        except FileNotFoundError:
+            print(f"The file {file_path} does not exist.")
+        except Exception as e:
+            print(f"An error occurred: {e}")
+
+        permissions = parse_html(content)
+        app_ids = []
+        delegated_ids = []
+        for permission, data in permissions.items():
+            if data['Identifier']['Application'] in identifiers:
+                app_ids.append(data['Identifier']['Application'])
+            if data['Identifier']['Delegated'] in identifiers:
+                delegated_ids.append(data['Identifier']['Delegated'])
+        
+        for permission, data in permissions.items():
+            if data['Identifier']['Application'] in app_ids or data['Identifier']['Delegated'] in delegated_ids:
+                print_permission(permission, data, app_ids, delegated_ids)
         print("=" * 80)
 
 if __name__ == "__main__":
