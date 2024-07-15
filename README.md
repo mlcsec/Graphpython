@@ -300,9 +300,9 @@ Obtain MS Graph tokens via device code authentication (can also be used for devi
 
 ### Invoke-RefreshToAzureManagementToken
 
-A valid refresh token can be used to generate access tokens for a [variety of services](https://github.com/mlcsec/Graphpython/wiki#authentication), Azure Management for example shown below. The --use-cae switch can be included to use Continuous Access Evaluation (CAE) to obtain an access token that's valid for 24 hours:
+A valid refresh token can be used to generate access tokens for a [variety of services](https://github.com/mlcsec/Graphpython/wiki#authentication), Azure Management for example shown below. The `--use-cae` switch can be included to use **Continuous Access Evaluation (CAE)** to obtain an access token that's valid for 24 hours:
 
-![](./.github/refreshtoazuremanagementtoken.png)
+![](./.github/refreshtoazuremanagement.png)
 
 The returned access token can then be used to authenticate to Azure via the Az PowerShell module:
 ```
@@ -422,7 +422,7 @@ Can see the email in the target users Outlook:
 
 Identify groups with dyanmic group membership rules that can be abused:
 
-![](./.github/finddyanamicgroups.png)
+![](./.github/finddynamicgroups.png)
 
 In this instance you could create a new user (`Create-NewUser`) with 'admin' in their UPN to be assigned to the Dynamic Admins group. Or you could update the user's Department property via `Update-UserProperties`.
 
@@ -445,7 +445,7 @@ List Intune managed devices then select and display device properties such as na
 
 ### Get-UserDevices
 
-Similarly you can identify all Intune managed devices and details belonging to a specific user by supplying their Entra User ID or their User Principal Name:
+Similarly you can identify all Intune managed devices and details belonging to a specific user by supplying their Entra User ID or their User Principal Name using the `--id` flag:
 
 ![](./.github/getuserdevices.png)
 
