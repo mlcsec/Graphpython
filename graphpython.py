@@ -70,7 +70,7 @@ def list_commands():
         ["Get-Domains", "Get domain objects"],
         ["Get-User", "Get all users (default) or target user (--id)"],
         ["Get-UserProperties", "Get current user properties (default) or target user (--id)"],
-        ["Get-UserGroupMembership", "Get group memberships for current user (default) or target user (--id)"],
+        ["Get-UserPrivileges", "Get group/AU memberships and directory roles assgined for current user (default) or target user (--id)"],
         ["Get-UserTransitiveGroupMembership", "Get transitive group memberships for current user (default) or target user (--id)"],
         ["Get-Group", "Get all groups (default) or target group (-id)"],
         ["Get-GroupMember", "Get all members of target group"],
@@ -122,6 +122,7 @@ def list_commands():
         ["Find-SecurityGroups", "Find security groups and group members"],
         ["Find-DynamicGroups", "Find groups with dynamic membership rules"],
         ["Update-UserPassword", "Update the passwordProfile of the target user (NewUserS3cret@Pass!)"],
+        ["Update-UserProperties", "Update the user properties of the target user"],
         ["Add-ApplicationPassword", "Add client secret to target application"],
         ["Add-ApplicationCertificate", "Add client certificate to target application"],
         ["Add-ApplicationPermission", "Add permission to target application (application/delegated)"],
@@ -214,7 +215,6 @@ def list_commands():
     print("\nCleanup")
     print("=" * 80)
     print(tabulate(cleanup_commands, tablefmt="plain"))
-    print("\n")
 
     print("\nLocators")
     print("=" * 80)
@@ -316,11 +316,6 @@ def read_file_content(file_path):
     except UnicodeDecodeError:
         with open(file_path, 'r', encoding='utf-16') as file:
             return file.read()
-
-def read_and_encode_cert(cert_path):
-    with open(cert_path, 'rb') as cert_file:
-        cert_data = cert_file.read()
-    return base64.b64encode(cert_data).decode('utf-8')
 
 def format_list_style(data):
     if not data.get('value'):
@@ -639,7 +634,7 @@ def main():
     "invoke-refreshtooutlooktoken", "invoke-refreshtosubstratetoken", "invoke-refreshtoyammertoken", "invoke-refreshtointuneenrollment",
     "invoke-refreshtoonedrivetoken", "invoke-refreshtosharepointtoken", "invoke-certtoaccesstoken", "invoke-estscookietoaccesstoken", "invoke-appsecrettoaccesstoken",
     "new-signedjwt", "get-currentuser", "get-currentuseractivity", "get-orginfo", "get-domains", "get-user", "get-userproperties", 
-    "get-usergroupmembership", "get-usertransitivegroupmembership", "get-group", "get-groupmember", "get-userapproleassignments", "get-serviceprincipalapproleassignments",
+    "get-userprivileges", "get-usertransitivegroupmembership", "get-group", "get-groupmember", "get-userapproleassignments", "get-serviceprincipalapproleassignments",
     "get-conditionalaccesspolicy", "get-personalcontacts", "get-crosstenantaccesspolicy", "get-partnercrosstenantaccesspolicy", 
     "get-userchatmessages", "get-administrativeunitmember", "get-onedrivefiles", "get-userpermissiongrants", "get-oauth2permissiongrants", 
     "get-messages", "get-temporaryaccesspassword", "get-password", "list-authmethods", "list-directoryroles", "list-notebooks", 
@@ -652,7 +647,7 @@ def main():
     "delete-user", "delete-group", "remove-groupmember", "delete-application", "delete-device", "wipe-device", "retire-device",
     "get-manageddevices", "get-userdevices", "get-caps", "get-devicecategories", "get-devicecompliancepolicies", 
     "get-devicecompliancesummary", "get-deviceconfigurations", "get-deviceconfigurationpolicies", "get-deviceconfigurationpolicysettings", 
-    "get-deviceenrollmentconfigurations", "get-devicegrouppolicyconfigurations",
+    "get-deviceenrollmentconfigurations", "get-devicegrouppolicyconfigurations","update-userproperties",
     "get-devicegrouppolicydefinition", "dump-devicemanagementscripts", "get-scriptcontent", 
     "get-roledefinitions", "get-roleassignments", "display-avpolicyrules", "display-asrpolicyrules", "display-diskencryptionpolicyrules", 
     "display-firewallrulepolicyrules", "display-lapsaccountprotectionpolicyrules", "display-usergroupaccountprotectionpolicyrules", 
@@ -719,7 +714,7 @@ def main():
             "invoke-refreshtooutlooktoken","invoke-refreshtosubstratetoken", "invoke-refreshtoyammertoken", 
             "invoke-refreshtointuneenrollmenttoken", "invoke-refreshtoonedrivetoken", "invoke-refreshtosharepointtoken",
             "get-tokenscope", "decode-accesstoken", "get-manageddevices", "get-userdevices", "get-user", 
-            "get-userproperties", "get-usergroupmembership", "get-usertransitivegroupmembership", "get-group", 
+            "get-userproperties", "get-userprivileges", "get-usertransitivegroupmembership", "get-group", 
             "get-groupmember", "get-userapproleassignments", "get-conditionalaccesspolicy", "get-personalcontacts", 
             "get-crosstenantaccesspolicy", "get-partnercrosstenantaccesspolicy", "get-userchatmessages", 
             "get-administrativeunitmember", "get-onedrivefiles", "get-userpermissiongrants", "get-oauth2permissiongrants", 
@@ -737,7 +732,7 @@ def main():
             "get-caps", "get-devicecategories", "display-devicecompliancepolicies", "get-devicecompliancesummary", 
             "get-deviceconfigurations", "get-deviceconfigurationpolicies", "get-deviceconfigurationpolicysettings", 
             "get-deviceenrollmentconfigurations", "get-devicegrouppolicyconfigurations", 
-            "get-devicegrouppolicydefinition", "dump-devicemanagementscripts", 
+            "get-devicegrouppolicydefinition", "dump-devicemanagementscripts", "update-userproperties",
             "get-scriptcontent", "get-roledefinitions", "get-roleassignments", "display-avpolicyrules",
             "display-asrpolicyrules", "display-diskencryptionpolicyrules", "display-firewallrulepolicyrules",
             "display-edrpolicyrules", "display-lapsaccountprotectionpolicyrules", "display-usergroupaccountprotectionpolicyrules", 
@@ -2361,9 +2356,9 @@ def main():
                 print_red(response.text)
         print("=" * 80)
 
-    # get-usergroupmembership
-    elif args.command and args.command.lower() == "get-usergroupmembership":
-        print_yellow("\n[*] Get-UserGroupMembership")
+    # get-userprivileges
+    elif args.command and args.command.lower() == "get-userprivileges":
+        print_yellow("\n[*] Get-UserPrivileges")
         print("=" * 80)
         api_url = "https://graph.microsoft.com/v1.0/me/memberOf"
         if args.id:
@@ -2465,7 +2460,7 @@ def main():
 
     # get-userapproleassignments
     elif args.command and args.command.lower() == "get-userapproleassignments":
-        print_yellow("\n[*] Get-AppRoleAssignments")
+        print_yellow("\n[*] Get-UserAppRoleAssignments")
         print("=" * 80)
         api_url = "https://graph.microsoft.com/v1.0/me/appRoleAssignments"
         if args.id:
@@ -3053,42 +3048,48 @@ def main():
         print_yellow("\n[*] List-RecentOneDriveFiles")
         print("=" * 80)
         api_url = "https://graph.microsoft.com/v1.0/me/drive/recent"
-        if args.select:
-            api_url += "?$select=" + args.select
-
         user_agent = get_user_agent(args)
         headers = {
             "Authorization": f"Bearer {access_token}",
             "User-Agent": user_agent
         }
-
         try:
-            response = requests.get(api_url, headers=headers)
-            response.raise_for_status()
-            response_body = response.json()
-
-            filtered_data = {key: value for key, value in response_body.items() if not key.startswith("@odata")}
-
-            if filtered_data:
-                if not filtered_data.get('value'):
-                    print_red("[-] No data found")
-                    return
-
-                file_count = 1
-                for d in filtered_data.get('value', []):
-                    print_green(f"File {file_count}")
-                    print_green("="*80)
-                    for key, value in d.items():
-                        print(f"{key} : {value}")
-                    print("\n")
-                    file_count += 1
-                
-            url = response_body.get("@odata.nextLink")
-            if url:
-                response = requests.get(url, headers=headers)
+            while api_url:
+                response = requests.get(api_url, headers=headers)
                 response.raise_for_status()
                 response_body = response.json()
-
+                filtered_data = response_body.get('value', [])
+                if filtered_data:
+                    file_count = 1
+                    for d in filtered_data:
+                        print_green(f"File {file_count}")
+                        if args.select:
+                            selected_fields = args.select.split(',')
+                            for field in selected_fields:
+                                value = d
+                                for part in field.split('.'):
+                                    if isinstance(value, dict) and part in value:
+                                        value = value[part]
+                                    else:
+                                        value = None
+                                        break
+                                if value is not None:
+                                    print(f"{field} : {value}")
+                        else:
+                            for key, value in d.items():
+                                if isinstance(value, (str, int, float, bool)):
+                                    print(f"{key} : {value}")
+                                elif isinstance(value, dict):
+                                    print(f"{key} : {json.dumps(value, indent=2)}")
+                                else:
+                                    print(f"{key} : {str(value)}")
+                        print("\n")
+                        file_count += 1
+                else:
+                    print_red("[-] No data found")
+                    return
+                
+                api_url = response_body.get("@odata.nextLink")
         except requests.RequestException as e:
             print_red(f"[-] Error making request: {str(e)}")
         print("=" * 80)
@@ -3121,7 +3122,7 @@ def main():
         data = {
             "requests": [
                 {
-                    "entityTypes": ["driveItem"],
+                    "entityTypes": ["driveItem"], # get OneDrive and SharePoint - no only OneDrive option
                     "query": {
                         "queryString": "*"
                     },
@@ -3289,13 +3290,21 @@ def main():
         graph_api_endpoint = "https://graph.microsoft.com/v1.0/groups"
         estimate_access_endpoint = "https://graph.microsoft.com/beta/roleManagement/directory/estimateAccess"
         
+        default_fields = ['id','displayName', 'description', 'isAssignableToRole', 'onPremisesSyncEnabled', 'mail', 'createdDateTime', 'visibility']
+        
+        if args.select:
+            select_fields = args.select.split(',')
+            graph_api_endpoint += f"?$select=id,{args.select}"
+        else:
+            select_fields = default_fields
+            graph_api_endpoint += f"?$select=id,{','.join(select_fields)}"
+        
         user_agent = get_user_agent(args)
         headers = {
             'Authorization': f'Bearer {access_token}',
             'Content-Type': 'application/json',
             'User-Agent': user_agent
         }
-
         results = []
         while graph_api_endpoint:
             try:
@@ -3303,11 +3312,14 @@ def main():
                 response.raise_for_status()
                 response_data = response.json()
                 for group in response_data['value']:
-                    group_id = f"/{group['id']}"
+                    if 'id' not in group:
+                        print_yellow(f"[!] Group without 'id' found, skipping")
+                        continue
+                    group_id = group['id']
                     request_body = {
                         "resourceActionAuthorizationChecks": [
                             {
-                                "directoryScopeId": group_id,
+                                "directoryScopeId": f"/{group_id}",
                                 "resourceAction": "microsoft.directory/groups/members/update"
                             }
                         ]
@@ -3318,7 +3330,7 @@ def main():
                             estimate_response.raise_for_status()
                             estimate_data = estimate_response.json()
                             if estimate_data['value'][0]['accessDecision'] == "allowed":
-                                group_out = {k: group.get(k) for k in ['displayName', 'id', 'description', 'isAssignableToRole', 'onPremisesSyncEnabled', 'mail', 'createdDateTime', 'visibility']}
+                                group_out = {k: group.get(k) for k in select_fields if k in group}
                                 results.append(group_out)
                             break  
                         except requests.exceptions.HTTPError as e:
@@ -3326,19 +3338,20 @@ def main():
                                 print_yellow("[*] Requests throttled... sleeping for 5 seconds")
                                 time.sleep(5)
                             else:
-                                print_red(f"[-] Error estimating access for: {group_id}: {str(e)}")
+                                print_red(f"[-] Error estimating access for group: {str(e)}")
                                 break
                         except requests.exceptions.RequestException as e:
-                            print_red(f"[-] Error estimating access for: {group_id}: {str(e)}")
+                            print_red(f"[-] Error estimating access for group: {str(e)}")
                             break
                 graph_api_endpoint = response_data.get('@odata.nextLink')
             except requests.exceptions.RequestException as e:
-                print_red(f"[-] Error fetching Group IDs: {str(e)}")
+                print_red(f"[-] Error fetching Groups: {str(e)}")
                 break
         if results:
+            max_key_length = max(len(key) for result in results for key in result.keys())
             for result in results:
                 for key, value in result.items():
-                    print(f"{key:<25} : {value}")
+                    print(f"{key:<{max_key_length}} : {value}")
                 print("")
         else:
             print_red("[-] No updatable groups found")
@@ -3515,6 +3528,48 @@ def main():
             print_red(response.text)
         print("=" * 80)
 
+    # update-userproperties
+    elif args.command and args.command.lower() == "update-userproperties":
+        if not args.id:
+            print_red("[-] Error: --id required for Update-UserProperties command")
+            return
+
+        print_yellow("\n[*] Update-UserProperties")
+        print("=" * 80)
+        api_url = f"https://graph.microsoft.com/v1.0/users/{args.id}"
+
+        user_agent = get_user_agent(args)
+        headers = {
+            'Authorization': f'Bearer {access_token}',
+            'Content-Type': 'application/json',
+            'User-Agent': user_agent
+        }
+
+        print("\033[34m~> Property Definitions: https://learn.microsoft.com/en-us/graph/api/user-update\033[0m")
+
+        try:
+            userproperty = input("\nEnter Property: ").strip()
+            if userproperty not in properties:
+                print_red(f"\n[-] Error: '{userproperty}' is not a valid property.")
+                print("=" * 80)
+                sys.exit()
+            newvalue = input(f"Enter New '{userproperty}' Value: ").strip()
+        except KeyboardInterrupt:
+            sys.exit()
+
+        json_body = {
+            userproperty : newvalue
+        }
+
+        response = requests.patch(api_url, headers=headers, data=json.dumps(json_body))
+        if response.ok:
+            print_green("\n[+] User properties updated successfully")
+        
+        else:
+            print_red(f"\n[-] Failed to update user properties: {response.status_code}")
+            print_red(response.text)
+        print("=" * 80)
+
     # add-applicationcertificate  
     elif args.command and args.command.lower() == "add-applicationcertificate":
         openssl = """
@@ -3528,6 +3583,18 @@ openssl pkcs12 -export -out certificate.pfx -inkey private.key -in certificate.c
             print_red("[-] Error: --id and --cert required for Add-ApplicationCertificate command")
             print_red(openssl)
             return
+
+        def read_and_encode_cert(cert_path):
+            try:
+                if not os.path.isfile(cert_path):
+                    print_red(f"[-] The certificate file '{cert_path}' does not exist.")
+                with open(cert_path, 'rb') as cert_file:
+                    encoded_cert = cert_file.read()
+                return encoded_cert
+            except Exception as e:
+                sys.exit(1)
+
+        encoded_cert = read_and_encode_cert(args.cert)
 
         print_yellow("\n[*] Add-ApplicationCertificate")
         print("=" * 80)
@@ -3561,7 +3628,6 @@ openssl pkcs12 -export -out certificate.pfx -inkey private.key -in certificate.c
         except KeyboardInterrupt:
             sys.exit()
 
-        encoded_cert = read_and_encode_cert(args.cert)
         new_key_credential = {
             "type": "AsymmetricX509Cert",
             "usage": "Verify",
