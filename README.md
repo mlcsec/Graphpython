@@ -28,6 +28,8 @@ GraphPython covers external reconnaissance, authentication/token manipulation, e
     - [Deploy-MaliciousScript](#Deploy-MaliciousScript)
     - [Add-ExclusionGroupToPolicy](#Add-ExclusionGroupToPolicy)
     - [Remove-GroupMember](#Remove-GroupMember)
+    - [Locate-ObjectID](#Locate-ObjectID)
+    - [Locate-PermissionID](#Locate-PermissionID)
 
 
 ## Install
@@ -45,58 +47,41 @@ usage: graphpython.py [-h] [--command COMMAND] [--list-commands] [--token TOKEN]
                       [--username USERNAME] [--secret SECRET] [--id ID] [--select SELECT] [--query QUERY] [--search SEARCH] [--entity {driveItem,message,chatMessage,site,event}]
                       [--device {mac,windows,androidmobile,iphone}] [--browser {android,IE,chrome,firefox,edge,safari}] [--only-return-cookies]
                       [--mail-folder {allitems,inbox,archive,drafts,sentitems,deleteditems,recoverableitemsdeletions}] [--top TOP] [--script SCRIPT] [--email EMAIL]
-
-options:
-  -h, --help            show this help message and exit
-  --command COMMAND     Command to execute
-  --list-commands       List available commands
-  --token TOKEN         Microsoft Graph access token or refresh token for FOCI abuse
-  --estsauthcookie ESTSAUTHCOOKIE
-                        'ESTSAuth' or 'ESTSAuthPersistent' cookie value
-  --use-cae             Flag to use Continuous Access Evaluation (CAE) - add 'cp1' as client claim to get an access token valid for 24 hours
-  --cert CERT           X509Certificate path (.pfx)
-  --domain DOMAIN       Target domain
-  --tenant TENANT       Target tenant ID
-  --username USERNAME   Username or file containing username (invoke-userenumerationasoutsider)
-  --secret SECRET       Enterprise application secretText (invoke-appsecrettoaccesstoken)
-  --id ID               ID of target object
-  --select SELECT       Fields to select from output
-  --query QUERY         Raw API query (GET only)
-  --search SEARCH       Search string
-  --entity {driveItem,message,chatMessage,site,event}
-                        Search entity type: driveItem(OneDrive), message(Mail), chatMessage(Teams), site(SharePoint), event(Calenders)
-  --device {mac,windows,androidmobile,iphone}
-                        Device type for User-Agent forging
-  --browser {android,IE,chrome,firefox,edge,safari}
-                        Browser type for User-Agent forging
-  --only-return-cookies
-                        Only return cookies from the request (open-owamailboxinbrowser)
-  --mail-folder {allitems,inbox,archive,drafts,sentitems,deleteditems,recoverableitemsdeletions}
-                        Mail folder to dump (dump-owamailbox)
-  --top TOP             Number (int) of messages to retrieve (dump-owamailbox)
-  --script SCRIPT       File containing the script content (deploy-maliciousscript)
-  --email EMAIL         File containing OWA email message body content (spoof-owaemailmessage)
-
-examples:
-  graphpython.py --command invoke-reconasoutsider --domain company.com
-  graphpython.py --command invoke-userenumerationasoutsider --username <email@company.com/emails.txt>
-  graphpython.py --command get-graphtokens
-  graphpython.py --command invoke-refreshtoazuremanagementtoken --tenant <tenant-id> --token refresh-token
-  graphpython.py --command get-users --token eyJ0... -- select displayname,id [--id <userid>]
-  graphpython.py --command list-recentonedrivefiles --token token
-  graphpython.py --command invoke-search --search "credentials" --entity driveItem --token token
-  graphpython.py --command invoke-customquery --query https://graph.microsoft.com/v1.0/sites/{siteId}/drives --token token
-  graphpython.py --command assign-privilegedrole --token token
-  graphpython.py --command spoof-owaemailmessage [--id <userid to spoof>] --token token --email email-body.txt
-  graphpython.py --command get-manageddevices --token intune-token
-  graphpython.py --command deploy-maliciousscript --script malicious.ps1 --token token
-  graphpython.py --command add-exclusiongrouptopolicy --id <policyid> --token token
-  graphpython.py --command reboot-device --id <deviceid> --token eyj0...
 ```
+
+### Options
+
+- `-h`, `--help`: Show this help message and exit
+- `--command COMMAND`: Command to execute
+- `--list-commands`: List available commands
+- `--token TOKEN`: Microsoft Graph access token or refresh token for FOCI abuse
+- `--estsauthcookie ESTSAUTHCOOKIE`: 'ESTSAuth' or 'ESTSAuthPersistent' cookie value
+- `--use-cae`: Flag to use Continuous Access Evaluation (CAE) - add 'cp1' as client claim to get an access token valid for 24 hours
+- `--cert CERT`: X509Certificate path (.pfx)
+- `--domain DOMAIN`: Target domain
+- `--tenant TENANT`: Target tenant ID
+- `--username USERNAME`: Username or file containing username (invoke-userenumerationasoutsider)
+- `--secret SECRET`: Enterprise application secretText (invoke-appsecrettoaccesstoken)
+- `--id ID`: ID of target object
+- `--select SELECT`: Fields to select from output
+- `--query QUERY`: Raw API query (GET only)
+- `--search SEARCH`: Search string
+- `--entity {driveItem,message,chatMessage,site,event}`: Search entity type: driveItem (OneDrive), message (Mail), chatMessage (Teams), site (SharePoint), event (Calendars)
+- `--device {mac,windows,androidmobile,iphone}`: Device type for User-Agent forging
+- `--browser {android,IE,chrome,firefox,edge,safari}`: Browser type for User-Agent forging
+- `--only-return-cookies`: Only return cookies from the request (open-owamailboxinbrowser)
+- `--mail-folder {allitems,inbox,archive,drafts,sentitems,deleteditems,recoverableitemsdeletions}`: Mail folder to dump (dump-owamailbox)
+- `--top TOP`: Number (int) of messages to retrieve (dump-owamailbox)
+- `--script SCRIPT`: File containing the script content (deploy-maliciousscript)
+- `--email EMAIL`: File containing OWA email message body content (spoof-owaemailmessage)
+
+
+
+
 
 ## Commands
 
-Please refer to the [Wiki](https://github.com/mlcsec/Graphpython/wiki) for the full user guide and details of available functionality. An overview of the commands is outlined below.
+Please refer to the [Wiki](https://github.com/mlcsec/Graphpython/wiki) for the full user guide and details of available functionality.
 
 ### Outsider
 
@@ -255,6 +240,8 @@ Please refer to the [Wiki](https://github.com/mlcsec/Graphpython/wiki) for the f
 
 ## Invoke-ReconAsOutsider
 
+Perform unauthenticated external recon of the target domain as is performed with [AADInternals Invoke-ReconAsOutsider](https://github.com/Gerenios/AADInternals/blob/master/KillChain.ps1#L8)
+
 #### Example:
 ```
 # graphpython.py --command invoke-reconasoutsider --domain company.com
@@ -362,6 +349,9 @@ Verified creation and assignment options in Microsoft Intune admin center:
 > NOTE: Deploy-PrinterSettings.ps1 is used for the actual script name instead of whatever is supplied to --script. Recommended updating this in graphpython.py to blend in to target env.
 
 ## Add-ExclusionGroupToPolicy
+
+> Instead of updating or removing an AV, ASR, etc. policy you can simply add an exclusion group which will keep any groups members (users/devices) exempt from the policy rules in place.
+
 #### Example:
 ```
 # graphpython.py --command display-avpolicyrules --id ced2b019-0cd7-4ef4-80ec-b0bde25bfda4 --token .\intune
@@ -409,6 +399,20 @@ Remove the group member by first supplying the groupid and object id to the --id
 Confirm that the object has been removed from the group:
 
 ![](./.github/getgroupmemberafter.png)
+
+
+## Locate-ObjectID
+
+Any unknown object IDs can be easily located:
+
+![](./.github/locateobjectid.png)
+
+
+## Locate-PermissionID
+
+Graph permission IDs applied to objects can be easily located with detailed explaination of the assigned permissions:
+
+![](./.github/getpermissionid.png)
 
 <br>
 
