@@ -124,6 +124,7 @@ Please refer to the [Wiki](https://github.com/mlcsec/Graphpython/wiki) for the f
 * **Invoke-CertToAccessToken** - Convert Azure Application certificate to JWT access token
 * **Invoke-ESTSCookieToAccessToken** - Convert ESTS cookie to MS Graph access token
 * **Invoke-AppSecretToAccessToken** - Convert Azure Application secretText credentials to access token
+* **New-SignedJWT** - Construct JWT and sign using Key Vault PEM certificate (Azure Key Vault access token required) then generate Azure Management token
 
 ### Post-Auth Enumeration
 
@@ -139,6 +140,7 @@ Please refer to the [Wiki](https://github.com/mlcsec/Graphpython/wiki) for the f
 * **Get-GroupMember** - Get all members of target group
 * **Get-AppRoleAssignments** - Get application role assignments for current user (default) or target user
 * **Get-ConditionalAccessPolicy** - Get conditional access policy properties
+* **Get-Application** - Get Enterprise Application details for app (NOT object) ID (--id)
 * **Get-PersonalContacts** - Get contacts of the current user
 * **Get-CrossTenantAccessPolicy** - Get cross tenant access policy properties
 * **Get-PartnerCrossTenantAccessPolicy** - Get partner cross tenant access policy
@@ -184,6 +186,7 @@ Please refer to the [Wiki](https://github.com/mlcsec/Graphpython/wiki) for the f
 * **Find-Object** - Find object via ID and display object properties
 * **Update-UserPassword** - Update the passwordProfile of the target user (NewUserS3cret@Pass!)
 * **Add-ApplicationPassword** - Add client secret to target application
+* **Add-ApplicationCertificate** - Add client certificate to target application
 * **Add-ApplicationPermission** - Add permission to target application (application/delegated)
 * **Add-UserTAP** - Add new Temporary Access Password (TAP) to target user
 * **Add-GroupMember** - Add member to target group
