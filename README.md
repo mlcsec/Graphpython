@@ -229,7 +229,7 @@ Please refer to the [Wiki](https://github.com/mlcsec/Graphpython/wiki) for the f
 * **Display-AVPolicyRules** - Display antivirus policy rules
 * **Display-ASRPolicyRules** - Display Attack Surface Reduction (ASR) policy rules
 * **Display-DiskEncryptionPolicyRules** - Display disk encryption policy rules
-* **Display-FirewallPolicyRules** - Display firewall policy rules
+* **Display-FirewallRulePolicyRules** - Display firewall rule policy rules (firewall rules not firewall config policy)
 * **Display-EDRPolicyRules** - Display EDR policy rules
 * **Display-LAPSAccountProtectionPolicyRules** - Display LAPS account protection policy rules
 * **Display-UserGroupAccountProtectionPolicyRules** - Display user group account protection policy rules
