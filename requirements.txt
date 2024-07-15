@@ -1,6 +1,7 @@
 requests
-PyJWT
+pyjwt
 dnspython
 tqdm
 tabulate
 cryptography
+beautifulsoup4
