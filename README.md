@@ -23,12 +23,13 @@ GraphPython covers external reconnaissance, authentication/token manipulation, e
   - [Post-Auth Enumeration](#post-auth-enumeration)    
       - [Get-User](#get-user)
       - [List-SharePointRoot](#list-sharepointroot)
+  - [Post-Auth Exploitation](#post-auth-exploitation)    
       - [Invite-GuestUser](#invite-guestuser)
       - [Assign-PrivilegedRole](#assign-privilegedrole)
       - [Spoof-OWAEmailMessage](#spoof-owaemailmessage)
-  - [Post-Auth Exploitation](#post-auth-exploitation)
-      - [Get-DeviceConfigurationPolicies](#get-deviceconfigurationpolicies)
   - [Post-Auth Intune Enumeration](#post-auth-intune-enumeration)
+      - [Get-DeviceConfigurationPolicies](#get-deviceconfigurationpolicies)
+  - [Post-Auth Intune Exploitation](#post-auth-intune-exploitation)
       - [Display-AVPolicyRules](#display-avpolicyrules)
       - [Get-ScriptContent](#get-scriptcontent)
       - [Deploy-MaliciousScript](#deploy-maliciousscript)
@@ -284,6 +285,7 @@ Perform username enumeration for the target domain like AADInternal's [Invoke-Us
 
 ![](./.github/invokeuserenum.png)
 
+<br>
 
 ## Authentication
 
@@ -301,6 +303,8 @@ Obtain an MS Graph token for a selected client (MSTeams, MSEdge, AzurePowershell
 
 ![](./.github/estsauthcookie.png)
 
+<br>
+
 ## Post-Auth Enumeration
 
 ### Get-User
@@ -314,6 +318,8 @@ Get specific user details (--select) for target user. User object can be supplie
 List SharePoint root setting:
 
 ![](./.github/listsharepointroot.png)
+
+<br>
 
 ## Post-Auth Exploitation
 
@@ -358,6 +364,8 @@ Can see the email in the target users Outlook:
 
 ![](./.github/spoofowaemail.png)
 
+<br>
+
 ## Post-Auth Intune Enumeration
 
 ### Get-DeviceConfigurationPolicies
@@ -365,6 +373,8 @@ Can see the email in the target users Outlook:
 Identify all created device configuration policies across the Intune environment. This includes Antivirus (Defender), Disk encryption (Bitlocker), Firewall (policies and rules), EDR, and Attack Surface Reduction (ASR):
 
 ![](./.github/getdeviceconfigurationpolicies.png)
+
+<br>
 
 ## Post-Auth Intune Exploitation
 
@@ -429,6 +439,8 @@ graphpython.py --command get-deviceconfigurationpolicies --token .\intune
 
 ![](./.github/excludedgroupav.png)
 
+<br>
+
 ## Cleanup
 
 ### Remove-GroupMember
@@ -444,6 +456,8 @@ Remove the group member by first supplying the groupid and object id to the --id
 Confirm that the object has been removed from the group:
 
 ![](./.github/getgroupmemberafter.png)
+
+<br>
 
 ## Locators
 
