@@ -156,7 +156,7 @@ def list_commands():
     intune_exploit = [
         ["Dump-DeviceManagementScripts", "Dump device management PowerShell scripts"],
         ["Get-ScriptContent", "Get device management script content"],
-        ["Backdoor-Script", "Add malicious code to existing device management script"],
+        ["Backdoor-Script", "Add malicious code to pre-existing device management script"],
         ["Deploy-MaliciousScript", "Deploy new malicious device management PowerShell script (all devices)"],
         # Deploy-MaliciousWin32App - Deploy malicious exe/msi to managed devices
         ["Display-AVPolicyRules", "Display antivirus policy rules"],
