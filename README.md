@@ -147,7 +147,7 @@ Please refer to the [Wiki](https://github.com/mlcsec/Graphpython/wiki) for the f
 * **Get-ConditionalAccessPolicy** - Get conditional access policy properties
 * **Get-Application** - Get Enterprise Application details for app (NOT object) ID
 * **Get-ServicePrincipal** - Get Service Principal details
-* **Get-ServicePrincipalAppRoleAssignments** - Get Service Principal app role assignments 
+* **Get-ServicePrincipalAppRoleAssignments** - Get Service Principal app role assignments (shows available admin consent permissions that are already granted)
 * **Get-PersonalContacts** - Get contacts of the current user
 * **Get-CrossTenantAccessPolicy** - Get cross tenant access policy properties
 * **Get-PartnerCrossTenantAccessPolicy** - Get partner cross tenant access policy
@@ -397,7 +397,7 @@ Assign a privileged role via template ID to a user or group and define permissio
 
 ### Spoof-OWAEmailMessage
 
-Send emails using a compromised user's Outlook mail box. The --id parameter can be used to send emails as other uses within the organistion.
+Send emails using a compromised user's Outlook mail box. The --id parameter can be used to send emails as other users within the organistion.
 
 > Mail.Send permission REQUIRED for --id spoofing
 
@@ -601,6 +601,7 @@ Graph permission IDs applied to objects can be easily located with detailed expl
   - [x] `Get-DeviceConfigurationPolicies` - tidy up the templateReference and assignmentTarget output
   - [x] `Add-ApplicationPermission` - updated logic and added ability to grant admin consent for admin permissions assigned from the same command - update `Grant-AppAdminConsent` to handle any failures so users don't have to repeat this whole command again
 - New:
+  - [x] `Find-PrivilegedApplications` - identify enterprise applications which have
   - [x] `Grant-AppAdminConsent` - grant admin consent for requested/applied admin app permissions (if `Add-ApplicationPermission` fails)
   - [x] `Backdoor-Script` - first user downloads target script content then adds their malicious code, supply updated script as args, encodes then [patch](https://learn.microsoft.com/en-us/graph/api/intune-shared-devicemanagementscript-update?view=graph-rest-beta)
   - [ ] `Deploy-MaliciousWin32App` - use IntuneWinAppUtil.exe to package the EXE/MSI and deploy to devices
