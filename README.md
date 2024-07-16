@@ -41,6 +41,7 @@ GraphPython covers external reconnaissance, authentication/token manipulation, e
   - [Post-Auth Intune Exploitation](#post-auth-intune-exploitation-1)
       - [Display-AVPolicyRules](#display-avpolicyrules)
       - [Get-ScriptContent](#get-scriptcontent)
+      - [Backdoor-Script](#backdoor-script)
       - [Deploy-MaliciousScript](#deploy-maliciousscript)
       - [Add-ExclusionGroupToPolicy](#add-exclusiongrouptopolicy)
   - [Cleanup](#cleanup-1)
@@ -62,10 +63,9 @@ pip3 install -r requirements.txt
 ## Usage
 
 ```
-usage: graphpython.py [-h] [--command COMMAND] [--list-commands] [--token TOKEN] [--estsauthcookie ESTSAUTHCOOKIE] [--use-cae] [--cert CERT] [--domain DOMAIN] [--tenant TENANT] [--username USERNAME]
-                      [--secret SECRET] [--id ID] [--select SELECT] [--query QUERY] [--search SEARCH] [--entity {driveItem,message,chatMessage,site,event}] [--device {mac,windows,androidmobile,iphone}]
-                      [--browser {android,IE,chrome,firefox,edge,safari}] [--only-return-cookies] [--mail-folder {allitems,inbox,archive,drafts,sentitems,deleteditems,recoverableitemsdeletions}] [--top TOP]
-                      [--script SCRIPT] [--email EMAIL]
+usage: graphpython.py [-h] [--command COMMAND] [--list-commands] [--token TOKEN] [--estsauthcookie ESTSAUTHCOOKIE] [--use-cae] [--cert CERT] [--domain DOMAIN] [--tenant TENANT] [--username USERNAME] [--secret SECRET] [--id ID] [--select SELECT] [--query QUERY]
+                      [--search SEARCH] [--entity {driveItem,message,chatMessage,site,event}] [--device {mac,windows,androidmobile,iphone}] [--browser {android,IE,chrome,firefox,edge,safari}] [--only-return-cookies]
+                      [--mail-folder {allitems,inbox,archive,drafts,sentitems,deleteditems,recoverableitemsdeletions}] [--top TOP] [--script SCRIPT] [--email EMAIL]
 
 options:
   -h, --help            show this help message and exit
@@ -95,7 +95,7 @@ options:
   --mail-folder {allitems,inbox,archive,drafts,sentitems,deleteditems,recoverableitemsdeletions}
                         Mail folder to dump (dump-owamailbox)
   --top TOP             Number (int) of messages to retrieve (dump-owamailbox)
-  --script SCRIPT       File containing the script content (deploy-maliciousscript)
+  --script SCRIPT       File containing the script content (deploy-maliciousscript and backdoor-script)
   --email EMAIL         File containing OWA email message body content (spoof-owaemailmessage)
 ```
 
@@ -225,6 +225,7 @@ Please refer to the [Wiki](https://github.com/mlcsec/Graphpython/wiki) for the f
 
 * **Dump-DeviceManagementScripts** - Dump device management PowerShell scripts
 * **Get-ScriptContent** - Get device management script content
+* **Backdoor-Script** - Add malicious code to pre-existing device management script
 * **Deploy-MaliciousScript** - Deploy new malicious device management PowerShell script (all devices)
 * **Display-AVPolicyRules** - Display antivirus policy rules
 * **Display-ASRPolicyRules** - Display Attack Surface Reduction (ASR) policy rules
@@ -478,6 +479,21 @@ Get all device management PowerShell script details and content:
 
 ![](./.github/getscriptcontent.png)
 
+### Backdoor-Script
+
+Identify a pre-existing device management script you want to add malicious code to and get it's content:
+
+![](./.github/getscriptcontent-new.png)
+
+Create a new script locally with the existing content and your malicious code added:
+
+![](./.github/createdirbackdoored.png)
+
+Supply the backdoored script to the --script flag which will then patch the existing script:
+
+![](./.github/backdoorscript.png)
+
+
 ### Deploy-MaliciousScript
 
 Creating the new script and assignment options:
@@ -582,10 +598,10 @@ Graph permission IDs applied to objects can be easily located with detailed expl
   - [x] `Spoof-OWAEmailMessage` - add --email option containing formatted message as only accepts one line at the mo...
   - [x] `Deploy-MaliciousScript` - add input options to choose runAsAccount, enforceSignatureCheck, etc. and more assignment options
   - [x] `Get-DeviceConfigurationPolicies` - tidy up the templateReference and assignmentTarget output
-  - [ ] `Add-ApplicationPermission` - logic check to ensure existing perms aren't overridden 
+  - [ ] `Add-ApplicationPermission` - check logic to ensure existing perms aren't overridden 
 - New:
   - [ ] `Grant-AdminConsent` - grant admin consent for requested/applied admin app permissions 
-  - [ ] `Backdoor-Script` - first user downloads target script content then adds their malicious code, supply updated script as args, encodes then [patch](https://learn.microsoft.com/en-us/graph/api/intune-shared-devicemanagementscript-update?view=graph-rest-beta)
+  - [x] `Backdoor-Script` - first user downloads target script content then adds their malicious code, supply updated script as args, encodes then [patch](https://learn.microsoft.com/en-us/graph/api/intune-shared-devicemanagementscript-update?view=graph-rest-beta)
   - [ ] `Deploy-MaliciousWin32App` - use IntuneWinAppUtil.exe to package the EXE/MSI and deploy to devices
     - check also [here](https://learn.microsoft.com/en-us/graph/api/resources/intune-app-conceptual?view=graph-rest-1.0) for managing iOS, Android, LOB apps etc. via graph
   - [x] `Add-ApplicationCertificate` - similar to add-applicationpassword but gen and assign openssl cert to ent app
