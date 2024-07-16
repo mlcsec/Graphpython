@@ -77,15 +77,16 @@ def list_commands():
         ["Get-UserAppRoleAssignments", "Get user app role assignments for current user (default) or target user (--id)"],
         ["Get-ConditionalAccessPolicy", "Get conditional access policy properties"],
         ["Get-Application", "Get Enterprise Application details for app (NOT object) ID (--id)"],
-        ["Get-ServicePrincipal", "Get Service Principal details (--id)"],
-        ["Get-ServicePrincipalAppRoleAssignments", "Get Service Principal app role assignments (--id)"],
+        ["Get-AppServicePrincipal", "Get details of the application's service principal from the app ID (--id)"], 
+        ["Get-ServicePrincipal", "Get all or specific Service Principal details (--id)"],
+        ["Get-ServicePrincipalAppRoleAssignments", "Get Service Principal app role assignments (shows available admin consent permissions that are already granted)"],
         ["Get-PersonalContacts", "Get contacts of the current user"],
         ["Get-CrossTenantAccessPolicy", "Get cross tenant access policy properties"],
         ["Get-PartnerCrossTenantAccessPolicy", "Get partner cross tenant access policy"],
         ["Get-UserChatMessages", "Get ALL messages from all chats for target user (Chat.Read.All)"],
         ["Get-AdministrativeUnitMember", "Get members of administrative unit"],
         ["Get-OneDriveFiles", "Get all accessible OneDrive files for current user (default) or target user (--id)"],
-        ["Get-UserPermissionGrants", "Get permissions grants of current user (default) or target user (--id)"],
+        ["Get-UserPermissionGrants", "Get permission grants of current user (default) or target user (--id)"],
         ["Get-oauth2PermissionGrants", "Get oauth2 permission grants for current user (default) or target user (--id)"],
         ["Get-Messages", "Get all messages in signed-in user's mailbox (default) or target user (--id)"],
         ["Get-TemporaryAccessPassword", "Get TAP details for current user (default) or target user (--id)"],
@@ -118,6 +119,7 @@ def list_commands():
         ["Invoke-CustomQuery", "Custom GET query to target Graph API endpoint"],
         ["Invoke-Search", "Search for string within entity type (driveItem, message, chatMessage, site, event)"],
         ["Find-PrivilegedRoleUsers", "Find users with privileged roles assigned"],
+        ["Find-PrivilegedApplications", "Find privileged apps (via their service principal) with granted admin consent API permissions"],
         ["Find-UpdatableGroups", "Find groups which can be updated by the current user"],
         ["Find-SecurityGroups", "Find security groups and group members"],
         ["Find-DynamicGroups", "Find groups with dynamic membership rules"],
@@ -651,9 +653,9 @@ def main():
     "get-manageddevices", "get-userdevices", "get-caps", "get-devicecategories", "get-devicecompliancepolicies", 
     "get-devicecompliancesummary", "get-deviceconfigurations", "get-deviceconfigurationpolicies", "get-deviceconfigurationpolicysettings", 
     "get-deviceenrollmentconfigurations", "get-devicegrouppolicyconfigurations","update-userproperties",
-    "get-devicegrouppolicydefinition", "dump-devicemanagementscripts", "get-scriptcontent", 
+    "get-devicegrouppolicydefinition", "dump-devicemanagementscripts", "get-scriptcontent", "find-privilegedapplications",
     "get-roledefinitions", "get-roleassignments", "display-avpolicyrules", "display-asrpolicyrules", "display-diskencryptionpolicyrules", 
-    "display-firewallrulepolicyrules", "display-lapsaccountprotectionpolicyrules", "display-usergroupaccountprotectionpolicyrules", 
+    "display-firewallrulepolicyrules", "display-lapsaccountprotectionpolicyrules", "display-usergroupaccountprotectionpolicyrules", "get-appserviceprincipal",
     "display-edrpolicyrules","add-exclusiongrouptopolicy", "deploy-maliciousscript", "reboot-device", "shutdown-device", "lock-device", "backdoor-script",
     "add-applicationpermission", "new-signedjwt", "add-applicationcertificate", "get-application", "locate-permissionid", "get-serviceprincipal", "grant-appadminconsent"
 ]
@@ -735,8 +737,8 @@ def main():
             "get-caps", "get-devicecategories", "display-devicecompliancepolicies", "get-devicecompliancesummary", 
             "get-deviceconfigurations", "get-deviceconfigurationpolicies", "get-deviceconfigurationpolicysettings", 
             "get-deviceenrollmentconfigurations", "get-devicegrouppolicyconfigurations", "grant-appadminconsent",
-            "get-devicegrouppolicydefinition", "dump-devicemanagementscripts", "update-userproperties",
-            "get-scriptcontent", "get-roledefinitions", "get-roleassignments", "display-avpolicyrules",
+            "get-devicegrouppolicydefinition", "dump-devicemanagementscripts", "update-userproperties", "find-privilegedapplications",
+            "get-scriptcontent", "get-roledefinitions", "get-roleassignments", "display-avpolicyrules","get-appserviceprincipal",
             "display-asrpolicyrules", "display-diskencryptionpolicyrules", "display-firewallrulepolicyrules", "backdoor-script",
             "display-edrpolicyrules", "display-lapsaccountprotectionpolicyrules", "display-usergroupaccountprotectionpolicyrules", 
             "add-exclusiongrouptopolicy","deploy-maliciousscript", "reboot-device", "add-applicationpermission", "new-signedjwt",
@@ -2537,36 +2539,54 @@ def main():
                 print_red(response.text)
             print("=" * 80)
 
+    # get-appserviceprincipal
+    elif args.command and args.command.lower() == "get-appserviceprincipal":
+        if not args.id:
+            print_red("[-] Error: --id <app id> argument is required for Get-AppServicePrincipal command")
+            return
+            
+        print_yellow("\n[*] Get-AppServicePrincipal")
+        print("=" * 80)
+        api_url = f"https://graph.microsoft.com/v1.0/servicePrincipals?$filter=appId+eq+'{args.id}'"
+
+        user_agent = get_user_agent(args)
+        headers = {
+            'Authorization': f'Bearer {access_token}',
+            'User-Agent': user_agent
+        }
+
+        graph_api_get(access_token, api_url, args)
+        print("=" * 80)
+    
     # get-serviceprincipal
     elif args.command and args.command.lower() == "get-serviceprincipal":
-            if not args.id:
-                print_red("[-] Error: --id <id> argument is required for Get-ServicePrincipal command")
-                return
+        if not args.id:
+            print_red("[-] Error: --id <id> argument is required for Get-ServicePrincipal command")
+            return
             
-            print_yellow("\n[*] Get-ServicePrincipal")
-            print("=" * 80)
-            api_url = f"https://graph.microsoft.com/v1.0/servicePrincipals/{args.id}"
-            if args.select:
-                api_url += "?$select=" + args.select
+        print_yellow("\n[*] Get-ServicePrincipal")
+        print("=" * 80)
+        api_url = f"https://graph.microsoft.com/v1.0/servicePrincipals/{args.id}"
+        if args.select:
+            api_url += "?$select=" + args.select
 
-            user_agent = get_user_agent(args)
-            headers = {
-                'Authorization': f'Bearer {access_token}',
-                'User-Agent': user_agent
-            }
+        user_agent = get_user_agent(args)
+        headers = {
+            'Authorization': f'Bearer {access_token}',
+            'User-Agent': user_agent
+        }
 
-            response = requests.get(api_url, headers=headers)
-            if response.status_code == 200:
-                response_json = response.json()
+        response = requests.get(api_url, headers=headers)
+        if response.status_code == 200:
+            response_json = response.json()
+            for key, value in response_json.items():
+                if key != "@odata.context":
+                    print(f"{key}: {value}")
 
-                for key, value in response_json.items():
-                    if key != "@odata.context":
-                        print(f"{key}: {value}")
-
-            else:
-                print_red(f"[-] Failed to retrieve Service Principal details: {response.status_code}")
-                print_red(response.text)
-            print("=" * 80)
+        else:
+            print_red(f"[-] Failed to retrieve Service Principal details: {response.status_code}")
+            print_red(response.text)
+        print("=" * 80)
 
     # get-serviceprincipalapproleassignments
     elif args.command and args.command.lower() == "get-serviceprincipalapproleassignments":
@@ -3285,6 +3305,106 @@ def main():
                 format_list_style(filtered_data)
             else:
                 print_red(f"[-] Role: {role['displayName']}")
+        print("=" * 80)
+
+    # find-privilegedapplications
+    elif args.command and args.command.lower() == "find-privilegedapplications":
+        print_yellow("\n[*] Find-PrivilegedApplications")
+        print("=" * 80)
+        api_url = "https://graph.microsoft.com/v1.0/applications?$select=appId"
+
+        user_agent = get_user_agent(args)
+        headers = {
+            'Authorization': 'Bearer ' + access_token,
+            'Accept': 'application/json',
+            'User-Agent': user_agent
+        }
+        
+        response = requests.get(api_url, headers=headers)
+        if response.status_code == 200:
+            applications = response.json()
+            app_ids = [app['appId'] for app in applications.get('value', [])]
+        else:
+            print_red(f"[-] Error: API request failed with status code {response.status_code}")
+            app_ids = []
+
+        service_principals = []
+        for app_id in app_ids:
+            sp_api_url = f"https://graph.microsoft.com/v1.0/servicePrincipals?$filter=appId eq '{app_id}'&$select=id,appDisplayName"
+            sp_response = requests.get(sp_api_url, headers=headers)
+            
+            if sp_response.status_code == 200:
+                sp_data = sp_response.json()
+                for sp in sp_data.get('value', []):
+                    service_principals.append({
+                        'id': sp['id'],
+                        'appDisplayName': sp['appDisplayName']
+                    })
+            else:
+                print_red(f"[-] Error: Service Principal API request failed for appId {app_id} with status code {sp_response.status_code}")
+
+        app_role_assignments = {}
+        for sp in service_principals:
+            app_role_url = f"https://graph.microsoft.com/v1.0/servicePrincipals/{sp['id']}/appRoleAssignments"
+            app_role_response = requests.get(app_role_url, headers=headers)
+            
+            if app_role_response.status_code == 200:
+                assignments = app_role_response.json()
+                app_role_assignments[sp['id']] = {
+                    'appDisplayName': sp['appDisplayName'],
+                    'assignments': assignments.get('value', [])
+                }
+            else:
+                print_red(f"[-] Error: App Role Assignments API request failed for Service Principal ID {sp['id']}: {app_role_response.status_code}")
+                print_red(app_role_response.text)
+
+        def parse_roleids(content):
+            soup = BeautifulSoup(content, 'html.parser')
+            permissions = {}
+            for h3 in soup.find_all('h3'):
+                permission_name = h3.get_text()
+                table = h3.find_next('table')
+                rows = table.find_all('tr')
+                application_id = rows[1].find_all('td')[1].get_text()
+                delegated_id = rows[1].find_all('td')[2].get_text()
+                application_consent = rows[4].find_all('td')[1].get_text() if len(rows) > 4 else "Unknown"
+                delegated_consent = rows[4].find_all('td')[2].get_text() if len(rows) > 4 else "Unknown"
+                permissions[application_id] = ('Application', permission_name, application_consent)
+                permissions[delegated_id] = ('Delegated', permission_name, delegated_consent)
+            return permissions
+
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        file_path = os.path.join(script_dir, '.github', 'graphpermissions.txt')
+        try:
+            with open(file_path, 'r') as file:
+                content = file.read()
+        except FileNotFoundError:
+            print_red(f"\n[-] The file {file_path} does not exist.")
+            sys.exit(1)
+        except Exception as e:
+            print_red(f"\n[-] An error occurred: {e}")
+            sys.exit(1)
+
+        permissions = parse_roleids(content)
+
+        # results
+        for sp_id, data in app_role_assignments.items():
+            print(f"\nApplication: {data['appDisplayName']}")
+            if data['assignments']:
+                for assignment in data['assignments']:
+                    app_role_id = assignment.get('appRoleId', 'N/A')
+                    print_green(f"[+] App Role ID: {app_role_id}")
+                    if app_role_id in permissions:
+                        role_type, role_name, consent_required = permissions[app_role_id]
+                        print_green(f"[+] Role Name: {role_name}")
+                        #print_green(f"[+] Role Type: {role_type}") # can only be application for appRoleAssignments, delegated role types use oauth2PermissionGrants
+                        #print_green(f"[+] Admin Consent Required: {consent_required}") # admin consent required for all app graph perms
+                    else:
+                        print_red(f"[-] Role information not found for App Role ID: {app_role_id}")
+                    print_green(f"[+] Resource: {assignment.get('resourceDisplayName', 'N/A')}")
+                    print("---")
+            else:
+                print_red("[-] No role assignments")
         print("=" * 80)
 
     # find-updatablegroups
