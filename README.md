@@ -194,7 +194,7 @@ Please refer to the [Wiki](https://github.com/mlcsec/Graphpython/wiki) for the f
 * **Update-UserProperties** - Update a specific user property of the target user
 * **Add-ApplicationPassword** - Add client secret to target application
 * **Add-ApplicationCertificate** - Add client certificate to target application
-* **Add-ApplicationPermission** - Add permission to target application (application/delegated)
+* **Add-ApplicationPermission** - Add permission to target application e.g. Mail.Send and attempt to grant admin consent
 * **Add-UserTAP** - Add new Temporary Access Password (TAP) to target user
 * **Add-GroupMember** - Add member to target group
 * **Create-Application** - Create new enterprise application with default settings
@@ -598,9 +598,9 @@ Graph permission IDs applied to objects can be easily located with detailed expl
   - [x] `Spoof-OWAEmailMessage` - add --email option containing formatted message as only accepts one line at the mo...
   - [x] `Deploy-MaliciousScript` - add input options to choose runAsAccount, enforceSignatureCheck, etc. and more assignment options
   - [x] `Get-DeviceConfigurationPolicies` - tidy up the templateReference and assignmentTarget output
-  - [ ] `Add-ApplicationPermission` - check logic to ensure existing perms aren't overridden 
+  - [x] `Add-ApplicationPermission` - updated logic and added ability to grant admin consent for admin permissions assigned from the same command - update `Grant-AppAdminConsent` to handle any failures so users don't have to repeat this whole command again
 - New:
-  - [ ] `Grant-AdminConsent` - grant admin consent for requested/applied admin app permissions 
+  - [ ] `Grant-AppAdminConsent` - grant admin consent for requested/applied admin app permissions (if `Add-ApplicationPermission` fails)
   - [x] `Backdoor-Script` - first user downloads target script content then adds their malicious code, supply updated script as args, encodes then [patch](https://learn.microsoft.com/en-us/graph/api/intune-shared-devicemanagementscript-update?view=graph-rest-beta)
   - [ ] `Deploy-MaliciousWin32App` - use IntuneWinAppUtil.exe to package the EXE/MSI and deploy to devices
     - check also [here](https://learn.microsoft.com/en-us/graph/api/resources/intune-app-conceptual?view=graph-rest-1.0) for managing iOS, Android, LOB apps etc. via graph

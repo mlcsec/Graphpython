@@ -125,7 +125,7 @@ def list_commands():
         ["Update-UserProperties", "Update the user properties of the target user"],
         ["Add-ApplicationPassword", "Add client secret to target application"],
         ["Add-ApplicationCertificate", "Add client certificate to target application"],
-        ["Add-ApplicationPermission", "Add permission to target application (application/delegated)"],
+        ["Add-ApplicationPermission", "Add permission to target application e.g. Mail.Send and attempt to grant admin consent"],
         ["Add-UserTAP", "Add new Temporary Access Password (TAP) to target user"],
         ["Add-GroupMember", "Add member to target group"],
         ["Create-Application", "Create new enterprise application with default settings"],
@@ -2512,7 +2512,8 @@ def main():
             
             print_yellow("\n[*] Get-Application")
             print("=" * 80)
-            api_url = f"https://graph.microsoft.com/beta/myorganization/applications(appId='{args.id}')"
+            api_url = f"https://graph.microsoft.com/beta/myorganization/applications(appId='{args.id}')" # app id
+            #api_url = f"https://graph.microsoft.com/v1.0/applications/{args.id}" # object id
             if args.select:
                 api_url += "?$select=" + args.select
 
@@ -3689,85 +3690,193 @@ openssl pkcs12 -export -out certificate.pfx -inkey private.key -in certificate.c
             print_red(response.text)
         print("=" * 80)
 
-    # dump-applicationpermissions
-    # - dump permissions for --id app
-    # - https://learn.microsoft.com/en-us/graph/permissions-reference
-    # - list-applications 'requiredResourceAccess' contains all the permission ids
-    # can also check: https://graph.microsoft.com/v1.0/servicePrincipals/9ee251b0-b25e-4562-b62e-611c75387f2b/appRoleAssignments
-    # - for the configured permission
-    # CHECK
-    #  - one of above functions^^ kinda does this
-    #  - need to get the present perms and add to add-applicationpermissions json body like with add-applicationcertificate which checks for current certs so it doesn't override them
-    
+
     # add-applicationpermission
-    # - create an new application (add-application) then assign this
-    # - trying to assing to existing one will remove all the other perms
-    # NEED todo dump-applicationpermissions
-    # - then make sure you reassign the existing ones found from that in the following req
     elif args.command and args.command.lower() == "add-applicationpermission":
         if not args.id:
             print_red("[-] Error: --id required for Add-ApplicationPermission command")
             return
-
         print_yellow("\n[*] Add-ApplicationPermission")
         print("=" * 80)
-        api_url = f"https://graph.microsoft.com/v1.0/myorganization/applications/{args.id}"
-
+        
+        # 1. CHECK existing permissions
+        api_url = f"https://graph.microsoft.com/beta/myorganization/applications(appId='{args.id}')"  # app id
+        #api_url = f"https://graph.microsoft.com/v1.0/applications/{args.id}"  # object id
+        
         user_agent = get_user_agent(args)
         headers = {
             'Authorization': f'Bearer {access_token}',
-            'Content-Type': 'application/json',
             'User-Agent': user_agent
         }
+        response = requests.get(api_url, headers=headers)
+        existingperms = []
+        if response.status_code == 200:
+            response_json = response.json()
+            existingperms = response_json.get('requiredResourceAccess', [])
+        
+        # 2. patch
+        api_url = f"https://graph.microsoft.com/beta/myorganization/applications(appId='{args.id}')"  # app id
+        #api_url = f"https://graph.microsoft.com/v1.0/myorganization/applications/{args.id}"  # object id
 
-        # ADD
-        # - table of common permissions we can abuse
+        print("\033[34m~> API Permissions: https://learn.microsoft.com/en-us/graph/permissions-reference\033[0m")
+        
+        # permission id validation
+        def parse_permissionid(content):
+            soup = BeautifulSoup(content, 'html.parser')
+            permissions = {}
+            for h3 in soup.find_all('h3'):
+                permission_name = h3.get_text()
+                table = h3.find_next('table')
+                rows = table.find_all('tr')
+                application_id = rows[1].find_all('td')[1].get_text()
+                delegated_id = rows[1].find_all('td')[2].get_text()
+                application_consent = rows[4].find_all('td')[1].get_text() if len(rows) > 4 else "Unknown"
+                delegated_consent = rows[4].find_all('td')[2].get_text() if len(rows) > 4 else "Unknown"
+                permissions[application_id] = ('Application', permission_name, application_consent)
+                permissions[delegated_id] = ('Delegated', permission_name, delegated_consent)
+            return permissions
+
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        file_path = os.path.join(script_dir, '.github', 'graphpermissions.txt')
+
+        try:
+            with open(file_path, 'r') as file:
+                content = file.read()
+        except FileNotFoundError:
+            print_red(f"\n[-] The file {file_path} does not exist.")
+            sys.exit(1)
+        except Exception as e:
+            print_red(f"\n[-] An error occurred: {e}")
+            sys.exit(1)
+
+        permissions = parse_permissionid(content)
 
         try:
             permissionid = input("\nEnter API Permission ID: ").strip()
-            permissiontype = input("Enter Permission Type (application/delegated): ").strip().lower()
+            if permissionid not in permissions:
+                print_red("\n[-] Invalid permission ID. Not in graphpermissions.txt")
+                sys.exit(1)
+            
+            permission_info = permissions[permissionid]
+            if len(permission_info) == 3:
+                permission_type, permission_name, admin_consent_required = permission_info
+            else:
+                permission_type, permission_name = permission_info
+                admin_consent_required = "Unknown"
+            
+            print(f"\nPermission ID: {permissionid} corresponds to '{permission_name}' with type '{permission_type}'")
+            
+            # grant admin consent option
+            print(f"Admin Consent Required: {admin_consent_required}")
+            if admin_consent_required.lower() == 'yes':
+                grantadminconsent = input(f"\nGrant Admin Consent For: {permission_name}? (yes/no): ").strip().lower()
+            else:
+                pass
+                grantadminconsent = 'no'
+
         except KeyboardInterrupt:
+            sys.exit(1)
+                
+        if permission_type.lower() == "application":
+            typevalue = "Role"
+        elif permission_type.lower() == "delegated":
+            typevalue = "Scope"
+        else:
+            print_red("\n[-] Unexpected error")
+            print("=" * 80)
             sys.exit()
 
-        if permissiontype == "application":
-            typevalue = "Role"
+        graphresource = next((resource for resource in existingperms if resource['resourceAppId'] == '00000003-0000-0000-c000-000000000000'), None) # does Microsoft Graph resource already exist
+        
+        if graphresource:
+            graphresource['resourceAccess'].append({
+                "id": permissionid,
+                "type": typevalue
+            })
         else:
-            typevalue = "Scope"
-
+            existingperms.append({
+                "resourceAppId": "00000003-0000-0000-c000-000000000000",
+                "resourceAccess": [
+                    {
+                        "id": permissionid, # b633e1c5-b582-4048-a93e-9f11b44c7e96 -> Mail.Send (Application perm - admin consent required)
+                        "type": typevalue
+                    }
+                ]
+            })
+        
+        # assign perm json
         data = {
-            "requiredResourceAccess": [
+            "requiredResourceAccess": existingperms
+        }
+
+        clientAppId = args.id
+
+        # admin consent json
+        admin_data = {
+            "clientAppId": clientAppId,
+            "onBehalfOfAll": True,
+            "checkOnly": False,
+            "tags": [],
+            "constrainToRra": True,
+            "dynamicPermissions": [
                 {
-                    "resourceAppId": "00000003-0000-0000-c000-000000000000",
-                    "resourceAccess": [
-                        {
-                            "id": permissionid, #"e383f46e-2787-4529-855e-0e479a3ffac0",  # Mail.Send
-                            "type": typevalue
-                        }
-                    ]
+                    "appIdentifier": "00000003-0000-0000-c000-000000000000",
+                    "appRoles": [permission_name], 
+                    "scopes": [] 
                 }
             ]
         }
 
         response = requests.patch(api_url, headers=headers, json=data)
-        print(response.text)
+        if grantadminconsent == "no":
+            if response.ok:
+                print_green("\n[+] Application permissions updated successfully")
+                print("=" * 80)
+                sys.exit()
+            else:
+                print_red(f"\n[-] Failed to update application permissions: {response.status_code}")
+                print_red(response.text)
+                print("=" * 80)
+                sys.exit()
 
-        if response.ok:
-            print_green("\n[+] Application permission updated successfully")
-            # graphpython.py --command invoke-customquery --query https://graph.microsoft.com/v1.0/myorganization/applications/<id> --token .\token 
-            print(response.text)
-        else:
-            print_red(f"\n[-] Failed to update application permission: {response.status_code}")
-            print_red(response.text)
+        headers = {
+            'Authorization': f'Bearer {access_token}',
+            'User-Agent': user_agent,
+            'Content-Type': 'application/json',
+        }
+
+        # any failures granting admin consent likely due to token scope/perms
+        if grantadminconsent == "yes":
+            if response.ok:
+                print_green("\n[+] Application permissions updated successfully")
+
+                print()
+                custom_bar = '╢{bar:50}╟'
+                for _ in tqdm(range(5), bar_format='{l_bar}'+custom_bar+'{r_bar}', leave=False, colour='yellow'):
+                    time.sleep(1)
+                
+                granturl = "https://graph.microsoft.com/beta/directory/consentToApp"
+                grantreq = requests.post(granturl, headers=headers, json=admin_data)
+                
+                if grantreq.ok:
+                    print_green(f"[+] Admin consent granted for: '{permission_name}'")
+                else:
+                    print_red(f"\n[-] Failed to grant admin consent: {grantreq.status_code}")
+                    print_red(grantreq.text)
         print("=" * 80)
 
-    # grant-adminconsent
-    # - grant admin consent to adding api app permission 
-    # POST https://graph.microsoft.com/beta/directory/consentToApp
-    # {"clientAppId":"3d84ebcc-0eef-4f59-ae2a-3fe0e1eb7f51","onBehalfOfAll":true,"checkOnly":false,"tags":[],"constrainToRra":true,"dynamicPermissions":[{"appIdentifier":"00000003-0000-0000-c000-000000000000","appRoles":["Directory.Read.All"],"scopes":[]}]}
-    
+    # grant-appadminconsent
+    # - cover for if the grant fails in above likely due to token privs
+    # - instead of repeating whole request this can be used if permissions are updated successfully but the admin consent grant fails
+    # need:
+    # - admin_data payload and granturl/req
+    # - client app id 
+    # - permission name to be granted e.g. 'Mail.Send' - prompt for input?
+
     # add-userTAP
     elif args.command and args.command.lower() == "add-usertap":
         if not args.id:
+        
             print_red("[-] Error: --id required for Add-UserTAP command")
             return
 
@@ -5941,19 +6050,18 @@ openssl pkcs12 -export -out certificate.pfx -inkey private.key -in certificate.c
         if not args.id:
             print_red("[-] Error: --id argument is required for Locate-PermissionID command")
             return
-
         print_yellow("\n[*] Locate-PermissionID")
         print("=" * 80)
         def parse_html(content):
             soup = BeautifulSoup(content, 'html.parser')
             permissions = {}
-            
+        
             for h3 in soup.find_all('h3'):
                 title = h3.text
                 table = h3.find_next('table')
                 headers = [th.text for th in table.find('thead').find_all('th')]
                 rows = table.find('tbody').find_all('tr')
-                
+            
                 permission_data = {}
                 for row in rows:
                     cells = row.find_all('td')
@@ -5965,14 +6073,12 @@ openssl pkcs12 -export -out certificate.pfx -inkey private.key -in certificate.c
                         headers[2]: delegated
                     }
                 permissions[title] = permission_data
-            
+        
             return permissions
-
         def highlight(text, should_highlight):
             if should_highlight:
-                return f"\033[92m{text}\033[0m" 
+                return f"\033[92m{text}\033[0m"
             return text
-
         def print_permission(permission, data, app_ids, delegated_ids):
             print_green(f"{permission}")
             for category, values in data.items():
@@ -5982,19 +6088,18 @@ openssl pkcs12 -export -out certificate.pfx -inkey private.key -in certificate.c
                 print(f"    Application: {highlight(values['Application'], app_highlight)}")
                 print(f"    Delegated: {highlight(values['Delegated'], delegated_highlight)}")
             print()
-
         identifiers = args.id.split(',')
         script_dir = os.path.dirname(os.path.abspath(__file__))
         file_path = os.path.join(script_dir, '.github', 'graphpermissions.txt')
-
         try:
             with open(file_path, 'r') as file:
                 content = file.read()
         except FileNotFoundError:
-            print(f"The file {file_path} does not exist.")
+            print_red(f"[-] The file {file_path} does not exist.")
+            return
         except Exception as e:
-            print(f"An error occurred: {e}")
-
+            print_red(f"[-] An error occurred: {e}")
+            return
         permissions = parse_html(content)
         app_ids = []
         delegated_ids = []
@@ -6003,10 +6108,16 @@ openssl pkcs12 -export -out certificate.pfx -inkey private.key -in certificate.c
                 app_ids.append(data['Identifier']['Application'])
             if data['Identifier']['Delegated'] in identifiers:
                 delegated_ids.append(data['Identifier']['Delegated'])
-        
+    
+        found_permissions = False
         for permission, data in permissions.items():
             if data['Identifier']['Application'] in app_ids or data['Identifier']['Delegated'] in delegated_ids:
                 print_permission(permission, data, app_ids, delegated_ids)
+                found_permissions = True
+        
+        if not found_permissions:
+            print_red("[-] Permission ID not found")
+        
         print("=" * 80)
 
 if __name__ == "__main__":
