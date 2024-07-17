@@ -32,6 +32,7 @@ GraphPython covers external reconnaissance, authentication/token manipulation, e
       - [Find-PrivilegedRoleUsers](#find-privilegedroleusers)
       - [Assign-PrivilegedRole](#assign-privilegedrole)
       - [Find-PrivilegedApplications](#find-privilegedapplications)
+      - [Add-ApplicationPermission](#add-applicationpermission)
       - [Spoof-OWAEmailMessage](#spoof-owaemailmessage)
       - [Find-DynamicGroups](#find-dynamicgroups)
       - [Find-UpdatableGroups](#find-updatablegroups)
@@ -417,17 +418,17 @@ The `Find-PrivilegedApplications` command helps to identify high-value apps that
 
 ### Add-ApplicationPermission
 
-Adds desired Graph API permission to target application ID. If the role is privileged it will prompt the user to confirm whether to attempt to grant admin consent (via `beta/directory/consentToApp`) using the current privileges:
+Adds desired Graph API permission to target application ID. If the role is privileged it will prompt the user to confirm whether to attempt to grant admin consent (via the `beta/directory/consentToApp` endpoint) using the current privileges:
 
 ![](./.github/addapplicationpermission.png)
 
 > NOTE: if the admin consent grant attempt fails with 400 error the token likely doesn't have the necessary scope/permissions assigned
 
-The permission update succeeded in this instance and the application API permission is assigned however the admin consent grant failed:
+The permission update succeeded in this instance and the application API permission is assigned however the admin consent grant obviously failed:
 
 ![](./.github/azureperms1.png)
 
-Once you obtain the necessary permissions or compromise a privileged token then the `Grant-AppAdminConsent` command can be used to grant admin consent to the role you just added here:
+Once you obtain the necessary permissions or compromise a privileged token then the `Grant-AppAdminConsent` command can be used to grant admin consent to the role that was added for the target app ID:
 
 ![](./.github/grantappadminconsent.png)
 
@@ -444,7 +445,7 @@ Or you can use the `Get-Application` command:
 requiredResourceAccess: [{'resourceAppId': '00000003-0000-0000-c000-000000000000', 'resourceAccess': [{'id': 'd07a8cc0-3d51-4b77-b3b0-32704d1f69fa', 'type': 'Role'}]}]
 ================================================================================
 ```
-The ID within `resourceAccess` corresponds to the `AccessReview.Read.All` that was assigned as confirmed with [Locate-PermissionID](https://github.com/mlcsec/Graphpython/tree/main?tab=readme-ov-file#locate-permissionid):
+The ID within `resourceAccess` corresponds to `AccessReview.Read.All` that was assigned as confirmed with [Locate-PermissionID](https://github.com/mlcsec/Graphpython/tree/main?tab=readme-ov-file#locate-permissionid):
 
 ![](./.github/locatepermissionid.png)
 
