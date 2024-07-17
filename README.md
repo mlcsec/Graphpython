@@ -146,6 +146,7 @@ Please refer to the [Wiki](https://github.com/mlcsec/Graphpython/wiki) for the f
 * **Get-AppRoleAssignments** - Get application role assignments for current user (default) or target user
 * **Get-ConditionalAccessPolicy** - Get conditional access policy properties
 * **Get-Application** - Get Enterprise Application details for app (NOT object) ID
+* **Get-AppServicePrincipal** - Get details of the application's service principal from the app ID 
 * **Get-ServicePrincipal** - Get Service Principal details
 * **Get-ServicePrincipalAppRoleAssignments** - Get Service Principal app role assignments (shows available admin consent permissions that are already granted)
 * **Get-PersonalContacts** - Get contacts of the current user
@@ -187,6 +188,7 @@ Please refer to the [Wiki](https://github.com/mlcsec/Graphpython/wiki) for the f
 * **Invoke-CustomQuery** - Custom GET query to target Graph API endpoint
 * **Invoke-Search** - Search for string within entity type (driveItem, message, chatMessage, site, event)
 * **Find-PrivilegedRoleUsers** - Find users with privileged roles assigned
+* **Find-PrivilegedApplications** - Find privileged apps (via their service principal) with granted admin consent API permissions
 * **Find-UpdatableGroups** - Find groups which can be updated by the current user
 * **Find-SecurityGroups** - Find security groups and group members
 * **Find-DynamicGroups** - Find groups with dynamic membership rules
@@ -395,11 +397,29 @@ Assign a privileged role via template ID to a user or group and define permissio
 
 ![](./.github/assignprivilegedrole.png)
 
+
+### Find-PrivilegedApplications
+
+Applications can be granted privileged Graph API permissions via 'Grant admin consent...' option for permissions marked 'Admin consent required':
+
+![](./.github/apiperms.png)
+
+The `Find-PrivilegedApplications` command helps to identify high-value apps that have already been assigned with privileged permssions:
+
+1. identifies all enterprise/registered applications within Entra (no default Msoft ones included)
+2. finds the service principal id for each application
+3. enumerates app role assignments for each application service principal
+4. cross-references assigned app role IDs and data against .github/graphpermissions.txt
+5. displays assigned role name and description
+
+![](./.github/findprivilegedapps.png)
+
+
 ### Spoof-OWAEmailMessage
 
-Send emails using a compromised user's Outlook mail box. The --id parameter can be used to send emails as other users within the organistion.
+Send emails using a compromised user's Outlook mail box. The `--id` parameter can be used to send emails as other users within the organistion.
 
-> Mail.Send permission REQUIRED for --id spoofing
+> Mail.Send permission REQUIRED for `--id` spoofing
 
 Options:
 1. Compromise and auth as an application service principal with the `Mail.Send` permission assigned then use `Spoof-OWAEmailMessage`
@@ -460,9 +480,11 @@ Similarly you can identify all Intune managed devices and details belonging to a
 
 ### Get-DeviceConfigurationPolicies
 
-Identify all created device configuration policies across the Intune environment. This includes Antivirus (Defender), Disk encryption (Bitlocker), Firewall (policies and rules), EDR, and Attack Surface Reduction (ASR):
+Identify all created device configuration policies across the Intune environment with colour highlighting for policies with active/no assignments. This includes Antivirus (Defender), Disk encryption (Bitlocker), Firewall (policies and rules), EDR, and Attack Surface Reduction (ASR):
 
 ![](./.github/getdeviceconfigurationpolicies.png)
+
+In the example above you can see an ASR policy in place which is assigned to all users and devices, however members of group ID `46a6...` are excluded. There is a Bitlocker policy but it hasn't been assigned to any devices.
 
 <br>
 
@@ -490,14 +512,14 @@ Create a new script locally with the existing content and your malicious code ad
 
 ![](./.github/createdirbackdoored.png)
 
-Supply the backdoored script to the --script flag which will then patch the existing script:
+Supply the backdoored script to the `--script` flag which will then patch the existing script:
 
 ![](./.github/backdoorscript.png)
 
 
 ### Deploy-MaliciousScript
 
-Creating the new script and assignment options:
+Create a new script with desired properties (signature check, run as account, etc.):
 
 ![](./.github/deploymaliciousscript.png)
 
@@ -505,7 +527,7 @@ Verified creation and assignment options in Microsoft Intune admin center:
 
 ![](./.github/deploymaliciousscript-intuneportal.png)
 
-> NOTE: Deploy-PrinterSettings.ps1 is used for the actual script name instead of whatever is supplied to --script. Recommended updating this in graphpython.py to blend in to target env.
+> NOTE: Deploy-PrinterSettings.ps1 is used for the actual script name instead of whatever is supplied to `--script`. Recommended updating this in graphpython.py to blend in to target env.
 
 ### Add-ExclusionGroupToPolicy
 
@@ -554,7 +576,7 @@ Check the members of the target group:
 
 ![](./.github/getgroupmember.png)
 
-Remove the group member by first supplying the groupid and object id to the --id flag:
+Remove the group member by first supplying the groupid and object id to the `--id` flag:
 
 ![](./.github/removegroupmember.png)
 
@@ -601,7 +623,7 @@ Graph permission IDs applied to objects can be easily located with detailed expl
   - [x] `Get-DeviceConfigurationPolicies` - tidy up the templateReference and assignmentTarget output
   - [x] `Add-ApplicationPermission` - updated logic and added ability to grant admin consent for admin permissions assigned from the same command - update `Grant-AppAdminConsent` to handle any failures so users don't have to repeat this whole command again
 - New:
-  - [x] `Find-PrivilegedApplications` - identify enterprise applications which have
+  - [x] `Find-PrivilegedApplications` - identify enterprise applications which have privileged graph api permissions granted
   - [x] `Grant-AppAdminConsent` - grant admin consent for requested/applied admin app permissions (if `Add-ApplicationPermission` fails)
   - [x] `Backdoor-Script` - first user downloads target script content then adds their malicious code, supply updated script as args, encodes then [patch](https://learn.microsoft.com/en-us/graph/api/intune-shared-devicemanagementscript-update?view=graph-rest-beta)
   - [ ] `Deploy-MaliciousWin32App` - use IntuneWinAppUtil.exe to package the EXE/MSI and deploy to devices
