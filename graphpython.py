@@ -3367,10 +3367,12 @@ def main():
                 rows = table.find_all('tr')
                 application_id = rows[1].find_all('td')[1].get_text()
                 delegated_id = rows[1].find_all('td')[2].get_text()
+                application_description = rows[2].find_all('td')[1].get_text()
+                delegated_description = rows[2].find_all('td')[2].get_text()
                 application_consent = rows[4].find_all('td')[1].get_text() if len(rows) > 4 else "Unknown"
                 delegated_consent = rows[4].find_all('td')[2].get_text() if len(rows) > 4 else "Unknown"
-                permissions[application_id] = ('Application', permission_name, application_consent)
-                permissions[delegated_id] = ('Delegated', permission_name, delegated_consent)
+                permissions[application_id] = ('Application', permission_name, application_description, application_consent)
+                permissions[delegated_id] = ('Delegated', permission_name, delegated_description, delegated_consent)
             return permissions
 
         script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -3395,12 +3397,13 @@ def main():
                     app_role_id = assignment.get('appRoleId', 'N/A')
                     print_green(f"[+] App Role ID: {app_role_id}")
                     if app_role_id in permissions:
-                        role_type, role_name, consent_required = permissions[app_role_id]
+                        role_type, role_name, description, consent_required = permissions[app_role_id]
                         print_green(f"[+] Role Name: {role_name}")
+                        print_green(f"[+] Description: {description}")
                         #print_green(f"[+] Role Type: {role_type}") # can only be application for appRoleAssignments, delegated role types use oauth2PermissionGrants
                         #print_green(f"[+] Admin Consent Required: {consent_required}") # admin consent required for all app graph perms
                     else:
-                        print_red(f"[-] Role information not found for App Role ID: {app_role_id}")
+                        print_red(f"[!] Role information not found for App Role ID: {app_role_id}")
                     print_green(f"[+] Resource: {assignment.get('resourceDisplayName', 'N/A')}")
                     print("---")
             else:
