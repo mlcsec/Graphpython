@@ -2028,6 +2028,16 @@ def main():
                 "scope": "openid"
             }
 
+            if args.use_cae:
+                claims = json.dumps({
+                    "access_token": {
+                        "xms_cc": {
+                            "values": ["cp1"]
+                        }
+                    }
+                }, separators=(',', ':'))
+                body["claims"] = claims
+
             token_response = session.post(token_url, headers=headers, data=body)
             token_response_json = token_response.json()
             access_token = token_response_json.get('access_token')
@@ -3403,7 +3413,7 @@ def main():
                         #print_green(f"[+] Role Type: {role_type}") # can only be application for appRoleAssignments, delegated role types use oauth2PermissionGrants
                         #print_green(f"[+] Admin Consent Required: {consent_required}") # admin consent required for all app graph perms
                     else:
-                        print_red(f"[!] Role information not found for App Role ID: {app_role_id}")
+                        print_red(f"[-] Role information not found for App Role ID: {app_role_id}")
                     print_green(f"[+] Resource: {assignment.get('resourceDisplayName', 'N/A')}")
                     print("---")
             else:
