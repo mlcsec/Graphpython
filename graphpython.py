@@ -5202,7 +5202,7 @@ openssl pkcs12 -export -out certificate.pfx -inkey private.key -in certificate.c
                                     readable_rule = settings_map.get(rule_name, rule_name)
                                     print(f"{action:<6}: {readable_rule}")
         else:
-            print_red(f"Failed to retrieve settings: {response.status_code}")
+            print_red(f"[-] Failed to retrieve settings: {response.status_code}")
             print_red(response.text)
         print("=" * 80)
         
