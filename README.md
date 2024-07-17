@@ -568,40 +568,23 @@ Verified creation and assignment options in Microsoft Intune admin center:
 
 ### Add-ExclusionGroupToPolicy
 
-Instead of updating or removing an AV, ASR, etc. policy you can simply add an exclusion group which will keep any groups members (users/devices) exempt from the policy rules in place.
+Instead of updating or removing an AV, ASR, Bitlocker etc. policy you can simply add an exclusion group which will keep any groups members (users/devices) exempt from the policy rules in place.
 
-#### Example:
-```
-# graphpython.py --command display-avpolicyrules --id ced2b019-0cd7-4ef4-80ec-b0bde25bfda4 --token .\intune
+Take the following Attack Surface Reduction (ASR) policy:
 
-[*] Display-AVPolicyRules
-================================================================================
-Excluded extensions : .ps1
-Excluded paths : C:\programdata
-Excluded processes : C:\WINDOWS\Explorer.EXE
-================================================================================
-```
-Add an exclusion group to the Microsoft Defender Antivirus exclusions policy above:
-```
-# graphpython.py --command add-exclusiongrouptopolicy --id ced2b019-0cd7-4ef4-80ec-b0bde25bfda4 --token .\intune
+![](./.github/addexclusiongroup1.png)
 
-[*] Add-ExclusionGroupToPolicy
-================================================================================
+Currently assigned to all users and devices:
 
-Enter Group ID To Exclude: 46a6f18e-e243-492d-ae24-f5f301dd49bb
+![](./.github/addexclusiongroup2.png)
 
-[+] Excluded group added to policy rules
-================================================================================
-```
-#### Output:
+Adding an exclusion group to the ASR policy above:
 
-Verify the changes have been applied and Excluded Group ID has been added:
+![](./.github/addexclusiongroup3.png)
 
-```
-# graphpython.py --command get-deviceconfigurationpolicies --token .\intune
-```
+Verify the changes have been applied and Excluded Group ID has been added to the ASR policy:
 
-![](./.github/excludedgroupav.png)
+![](./.github/addexclusiongroup4.png)
 
 <br>
 
