@@ -31,6 +31,7 @@ GraphPython covers external reconnaissance, authentication/token manipulation, e
       - [Invite-GuestUser](#invite-guestuser)
       - [Find-PrivilegedRoleUsers](#find-privilegedroleusers)
       - [Assign-PrivilegedRole](#assign-privilegedrole)
+      - [Find-PrivilegedApplications](#find-privilegedapplications)
       - [Spoof-OWAEmailMessage](#spoof-owaemailmessage)
       - [Find-DynamicGroups](#find-dynamicgroups)
       - [Find-UpdatableGroups](#find-updatablegroups)
@@ -406,13 +407,46 @@ Applications can be granted privileged Graph API permissions via 'Grant admin co
 
 The `Find-PrivilegedApplications` command helps to identify high-value apps that have already been assigned with privileged permssions:
 
-1. identifies all enterprise/registered applications within Entra (no default Msoft ones included)
-2. finds the service principal id for each application
+1. identifies all enterprise/registered applications within Entra (no default Microsoft ones included)
+2. finds the service principal ID for each application
 3. enumerates app role assignments for each application service principal
 4. cross-references assigned app role IDs and data against .github/graphpermissions.txt
 5. displays assigned role name and description
 
 ![](./.github/findprivilegedapps.png)
+
+### Add-ApplicationPermission
+
+Adds desired Graph API permission to target application ID. If the role is privileged it will prompt the user to confirm whether to attempt to grant admin consent (via `beta/directory/consentToApp`) using the current privileges:
+
+![](./.github/addapplicationpermission.png)
+
+> NOTE: if the admin consent grant attempt fails with 400 error the token likely doesn't have the necessary scope/permissions assigned
+
+The permission update succeeded in this instance and the application API permission is assigned however the admin consent grant failed:
+
+![](./.github/azureperms1.png)
+
+Once you obtain the necessary permissions or compromise a privileged token then the `Grant-AppAdminConsent` command can be used to grant admin consent to the role you just added here:
+
+![](./.github/grantappadminconsent.png)
+
+Verified in the Azure portal:
+
+![](./.github/azureperms2.png)
+
+Or you can use the `Get-Application` command:
+```
+# graphpython.py --command get-application --id 3d84ebcc-0eef-4f59-ae2a-3fe0e1eb7f51 --token .\token --select requiredResourceAccess
+
+[*] Get-Application
+================================================================================
+requiredResourceAccess: [{'resourceAppId': '00000003-0000-0000-c000-000000000000', 'resourceAccess': [{'id': 'd07a8cc0-3d51-4b77-b3b0-32704d1f69fa', 'type': 'Role'}]}]
+================================================================================
+```
+The ID within `resourceAccess` corresponds to the `AccessReview.Read.All` that was assigned as confirmed with [Locate-PermissionID](https://github.com/mlcsec/Graphpython/tree/main?tab=readme-ov-file#locate-permissionid):
+
+![](./.github/locatepermissionid.png)
 
 
 ### Spoof-OWAEmailMessage
@@ -622,6 +656,7 @@ Graph permission IDs applied to objects can be easily located with detailed expl
   - [x] `Deploy-MaliciousScript` - add input options to choose runAsAccount, enforceSignatureCheck, etc. and more assignment options
   - [x] `Get-DeviceConfigurationPolicies` - tidy up the templateReference and assignmentTarget output
   - [x] `Add-ApplicationPermission` - updated logic and added ability to grant admin consent for admin permissions assigned from the same command - update `Grant-AppAdminConsent` to handle any failures so users don't have to repeat this whole command again
+  - [ ] `Get-Application` - process the `requiredResourceAccess` attribute and resolved any Graph API app role IDs to their role name/description
 - New:
   - [x] `Find-PrivilegedApplications` - identify enterprise applications which have privileged graph api permissions granted
   - [x] `Grant-AppAdminConsent` - grant admin consent for requested/applied admin app permissions (if `Add-ApplicationPermission` fails)
