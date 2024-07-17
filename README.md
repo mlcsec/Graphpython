@@ -363,6 +363,8 @@ Identifies assigned directory roles, Administrative Units, and Group membership 
 
 ### Get-Application
 
+> NOTE: updating this to resolve the role IDs dynamically to their role name 
+
 Get details relating to the target application. The `requiredResourceAccess` attribute outlines the API permissions assigned to the application:
 
 ![](./.github/getapplication.png)
