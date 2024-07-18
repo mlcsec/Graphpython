@@ -2524,35 +2524,86 @@ def main():
 
     # get-application
     elif args.command and args.command.lower() == "get-application":
-            if not args.id:
-                print_red("[-] Error: --id <appid> argument is required for Get-Application command")
-                return
-            
-            print_yellow("\n[*] Get-Application")
-            print("=" * 80)
-            api_url = f"https://graph.microsoft.com/beta/myorganization/applications(appId='{args.id}')" # app id
-            #api_url = f"https://graph.microsoft.com/v1.0/applications/{args.id}" # object id
-            if args.select:
-                api_url += "?$select=" + args.select
+        if not args.id:
+            print_red("[-] Error: --id <appid> argument is required for Get-Application command")
+            return
 
-            user_agent = get_user_agent(args)
-            headers = {
-                'Authorization': f'Bearer {access_token}',
-                'User-Agent': user_agent
-            }
+        print_yellow("\n[*] Get-Application")
+        print("=" * 80)
+        api_url = f"https://graph.microsoft.com/beta/myorganization/applications(appId='{args.id}')" # app id
+        #api_url = f"https://graph.microsoft.com/v1.0/applications/{args.id}" # object id
+        if args.select:
+            api_url += "?$select=" + args.select
+        user_agent = get_user_agent(args)
+        headers = {
+            'Authorization': f'Bearer {access_token}',
+            'User-Agent': user_agent
+        }
+        response = requests.get(api_url, headers=headers)
 
-            response = requests.get(api_url, headers=headers)
-            if response.status_code == 200:
-                response_json = response.json()
+        if response.status_code == 200:
+            response_json = response.json()
 
-                for key, value in response_json.items():
-                    if key != "@odata.context":
-                        print(f"{key}: {value}")
+            def parse_roleids(content):
+                soup = BeautifulSoup(content, 'html.parser')
+                permissions = {}
+                for h3 in soup.find_all('h3'):
+                    permission_name = h3.get_text()
+                    table = h3.find_next('table')
+                    rows = table.find_all('tr')
+                    application_id = rows[1].find_all('td')[1].get_text()
+                    delegated_id = rows[1].find_all('td')[2].get_text()
+                    application_description = rows[2].find_all('td')[1].get_text()
+                    delegated_description = rows[2].find_all('td')[2].get_text()
+                    application_consent = rows[4].find_all('td')[1].get_text() if len(rows) > 4 else "Unknown"
+                    delegated_consent = rows[4].find_all('td')[2].get_text() if len(rows) > 4 else "Unknown"
+                    permissions[application_id] = ('Application', permission_name, application_description, application_consent)
+                    permissions[delegated_id] = ('Delegated', permission_name, delegated_description, delegated_consent)
+                return permissions
 
-            else:
-                print_red(f"[-] Failed to retrieve Azure Application details: {response.status_code}")
-                print_red(response.text)
-            print("=" * 80)
+            script_dir = os.path.dirname(os.path.abspath(__file__))
+            file_path = os.path.join(script_dir, '.github', 'graphpermissions.txt')
+            try:
+                with open(file_path, 'r') as file:
+                    content = file.read()
+            except FileNotFoundError:
+                print_red(f"\n[-] The file {file_path} does not exist.")
+                sys.exit(1)
+            except Exception as e:
+                print_red(f"\n[-] An error occurred: {e}")
+                sys.exit(1)
+
+            permissions = parse_roleids(content)
+
+            for key, value in response_json.items():
+                if key == "requiredResourceAccess":
+                    if value:
+                        print_green(f"{key}:")
+                        for resource in value:
+                            print_green(f"  Resource App ID: {resource['resourceAppId']}")
+                            for access in resource['resourceAccess']:
+                                role_id = access['id']
+                                role_type = access['type']
+                                if role_id in permissions:
+                                    perm_type, role_name, description, consent_required = permissions[role_id]
+                                    print_green(f"    Role ID: {role_id}")
+                                    print_green(f"    Role Name: {role_name}")
+                                    print_green(f"    Description: {description}")
+                                    print_green(f"    Type: {role_type}")
+                                    print_green(f"    Permission Type: {perm_type}")
+                                    print_green(f"    Admin Consent Required: {consent_required}")
+                                else:
+                                    print_red(f"    Role ID: {role_id} (Information not found)")
+                                    print_red(f"    Type: {role_type}")
+                                print("    ---")
+                    else:
+                        print_red(f"{key} : No assignments")
+                elif key != "@odata.context":
+                    print(f"{key}: {value}")
+        else:
+            print_red(f"[-] Failed to retrieve Azure Application details: {response.status_code}")
+            print_red(response.text)
+        print("=" * 80)
 
     # get-appserviceprincipal
     elif args.command and args.command.lower() == "get-appserviceprincipal":
@@ -2971,13 +3022,61 @@ def main():
         else:
             print_red(f"[-] Error: API request failed with status code {response.status_code}")
             applications = None
-                
+        
+        def parse_roleids(content):
+            soup = BeautifulSoup(content, 'html.parser')
+            permissions = {}
+            for h3 in soup.find_all('h3'):
+                permission_name = h3.get_text()
+                table = h3.find_next('table')
+                rows = table.find_all('tr')
+                application_id = rows[1].find_all('td')[1].get_text()
+                delegated_id = rows[1].find_all('td')[2].get_text()
+                application_description = rows[2].find_all('td')[1].get_text()
+                delegated_description = rows[2].find_all('td')[2].get_text()
+                application_consent = rows[4].find_all('td')[1].get_text() if len(rows) > 4 else "Unknown"
+                delegated_consent = rows[4].find_all('td')[2].get_text() if len(rows) > 4 else "Unknown"
+                permissions[application_id] = ('Application', permission_name, application_description, application_consent)
+                permissions[delegated_id] = ('Delegated', permission_name, delegated_description, delegated_consent)
+            return permissions
+        
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        file_path = os.path.join(script_dir, '.github', 'graphpermissions.txt')
+        try:
+            with open(file_path, 'r') as file:
+                content = file.read()
+        except FileNotFoundError:
+            print_red(f"\n[-] The file {file_path} does not exist.")
+            sys.exit(1)
+        except Exception as e:
+            print_red(f"\n[-] An error occurred: {e}")
+            sys.exit(1)
+        
+        permissions = parse_roleids(content)
+        
         if applications and 'value' in applications:
             for app in applications['value']:
                 for key, value in app.items():
                     if key == 'requiredResourceAccess':
                         if value:
-                            print_green(f"{key} : {value}")
+                            print_green(f"{key}:")
+                            for resource in value:
+                                print_green(f"  Resource App ID: {resource['resourceAppId']}")
+                                for access in resource['resourceAccess']:
+                                    role_id = access['id']
+                                    role_type = access['type']
+                                    if role_id in permissions:
+                                        perm_type, role_name, description, consent_required = permissions[role_id]
+                                        print_green(f"    Role ID: {role_id}")
+                                        print_green(f"    Role Name: {role_name}")
+                                        print_green(f"    Description: {description}")
+                                        print_green(f"    Type: {role_type}")
+                                        print_green(f"    Permission Type: {perm_type}")
+                                        print_green(f"    Admin Consent Required: {consent_required}")
+                                    else:
+                                        print_red(f"    Role ID: {role_id} (Information not found)")
+                                        print_red(f"    Type: {role_type}")
+                                    print("    ---")
                         else:
                             print_red(f"{key} : No assignments")
                     else:
