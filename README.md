@@ -229,6 +229,10 @@ Please refer to the [Wiki](https://github.com/mlcsec/Graphpython/wiki) for the f
 ### Post-Auth Intune Exploitation
 
 * **Dump-DeviceManagementScripts** - Dump device management PowerShell scripts
+- **Dump-WindowsApps**: Dump managed Windows OS applications (exe, msi, appx, msix, etc.)
+- **Dump-iOSApps**: Dump managed iOS/iPadOS mobile applications
+- **Dump-macOSApps**: Dump managed macOS applications
+- **Dump-AndroidApps**: Dump managed Android mobile applications
 * **Get-ScriptContent** - Get device management script content
 * **Backdoor-Script** - Add malicious code to pre-existing device management script
 * **Deploy-MaliciousScript** - Deploy new malicious device management PowerShell script (all devices)
@@ -647,6 +651,7 @@ Graph permission IDs applied to objects can be easily located with detailed expl
   - [x] `Find-PrivilegedApplications` - identify enterprise applications which have privileged graph api permissions granted
   - [x] `Grant-AppAdminConsent` - grant admin consent for requested/applied admin app permissions (if `Add-ApplicationPermission` fails)
   - [x] `Backdoor-Script` - first user downloads target script content then adds their malicious code, supply updated script as args, encodes then [patch](https://learn.microsoft.com/en-us/graph/api/intune-shared-devicemanagementscript-update?view=graph-rest-beta)
+  - [x] `Dump-XApps` - dump-windowsapps, dump-iosapps, dump-macosapps, and dump-android apps managed via Intune to enrolled users/groups/devices 
   - [ ] `Deploy-MaliciousWin32App` - use IntuneWinAppUtil.exe to package the EXE/MSI and deploy to devices
     - check also [here](https://learn.microsoft.com/en-us/graph/api/resources/intune-app-conceptual?view=graph-rest-1.0) for managing iOS, Android, LOB apps etc. via graph
   - [x] `Add-ApplicationCertificate` - similar to add-applicationpassword but gen and assign openssl cert to ent app
