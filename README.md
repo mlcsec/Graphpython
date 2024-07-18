@@ -229,10 +229,10 @@ Please refer to the [Wiki](https://github.com/mlcsec/Graphpython/wiki) for the f
 ### Post-Auth Intune Exploitation
 
 * **Dump-DeviceManagementScripts** - Dump device management PowerShell scripts
-- **Dump-WindowsApps**: Dump managed Windows OS applications (exe, msi, appx, msix, etc.)
-- **Dump-iOSApps**: Dump managed iOS/iPadOS mobile applications
-- **Dump-macOSApps**: Dump managed macOS applications
-- **Dump-AndroidApps**: Dump managed Android mobile applications
+* **Dump-WindowsApps**: Dump managed Windows OS applications (exe, msi, appx, msix, etc.)
+* **Dump-iOSApps**: Dump managed iOS/iPadOS mobile applications
+* **Dump-macOSApps**: Dump managed macOS applications
+* **Dump-AndroidApps**: Dump managed Android mobile applications
 * **Get-ScriptContent** - Get device management script content
 * **Backdoor-Script** - Add malicious code to pre-existing device management script
 * **Deploy-MaliciousScript** - Deploy new malicious device management PowerShell script (all devices)
