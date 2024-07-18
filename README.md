@@ -367,21 +367,11 @@ Identifies assigned directory roles, Administrative Units, and Group membership 
 
 ### Get-Application
 
-> NOTE: updating this to resolve the role IDs dynamically to their role name 
+> UPDATED: now resolves assigned Graph API role IDs dyanmically
 
-Get details relating to the target application. The `requiredResourceAccess` attribute outlines the API permissions assigned to the application:
+Get details relating to the target application and dynamically resolve the `requiredResourceAccess` attribute which contains Graph API role IDs assigned to the application:
 
-![](./.github/getapplication.png)
-
-The resourceAppId `00000003-0000-0000-c000-000000000000` is the Microsoft Graph API app identifier with the resourceAccess 'id' values referring to the following Microsoft Graph API permissons assigned to the application:
-
-![](./.github/getapplication-perms.png)
-
-#### UPDATED
-
-Just updated this and `List-Applications` to dynamically resolve the IDs so you don't have to manually:
-
-![](./.github/getapplications-updated.png)
+![](./.github/getapplication-updated.png)
 
 ### List-RecentOneDriveFiles
 
