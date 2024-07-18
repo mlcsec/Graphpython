@@ -377,6 +377,12 @@ The resourceAppId `00000003-0000-0000-c000-000000000000` is the Microsoft Graph 
 
 ![](./.github/getapplication-perms.png)
 
+#### UPDATED
+
+Just updated this and `List-Applications` to dynamically resolve the IDs so you don't have to manually:
+
+![](./.github/getapplications-updated.png)
+
 ### List-RecentOneDriveFiles
 
 List recent OneDrive files belonging to current user:
@@ -646,7 +652,7 @@ Graph permission IDs applied to objects can be easily located with detailed expl
   - [x] `Deploy-MaliciousScript` - add input options to choose runAsAccount, enforceSignatureCheck, etc. and more assignment options
   - [x] `Get-DeviceConfigurationPolicies` - tidy up the templateReference and assignmentTarget output
   - [x] `Add-ApplicationPermission` - updated logic and added ability to grant admin consent for admin permissions assigned from the same command - update `Grant-AppAdminConsent` to handle any failures so users don't have to repeat this whole command again
-  - [ ] `Get-Application` - process the `requiredResourceAccess` attribute and resolved any Graph API app role IDs to their role name/description
+  - [X] `Get-Application` - process the `requiredResourceAccess` attribute and resolved any Graph API app role IDs to their role name/description - `List-Applications` updated with this as well
 - New:
   - [x] `Find-PrivilegedApplications` - identify enterprise applications which have privileged graph api permissions granted
   - [x] `Grant-AppAdminConsent` - grant admin consent for requested/applied admin app permissions (if `Add-ApplicationPermission` fails)
