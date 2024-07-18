@@ -158,10 +158,15 @@ def list_commands():
 
     intune_exploit = [
         ["Dump-DeviceManagementScripts", "Dump device management PowerShell scripts"],
+        ["Dump-WindowsApps", "Dump managed Windows OS applications (exe, msi, appx, msix, etc.)"],
+        ["Dump-iOSApps", "Dump managed iOS/iPadOS mobile applications"],
+        ["Dump-macOSApps", "Dump managed macOS applications"],
+        ["Dump-AndroidApps", "Dump managed Android mobile applications"],
         ["Get-ScriptContent", "Get device management script content"],
         ["Backdoor-Script", "Add malicious code to pre-existing device management script"],
         ["Deploy-MaliciousScript", "Deploy new malicious device management PowerShell script (all devices)"],
-        # Deploy-MaliciousWin32App - Deploy malicious exe/msi to managed devices
+        # Deploy-MaliciousWin32Exe - Deploy malicious exe to managed devices
+        # Deploy-MaliciousWin32MSI - Deploy malicious MSI to managed devices
         ["Display-AVPolicyRules", "Display antivirus policy rules"],
         ["Display-ASRPolicyRules", "Display Attack Surface Reduction (ASR) policy rules"],
         ["Display-DiskEncryptionPolicyRules", "Display disk encryption policy rules"],
@@ -652,8 +657,8 @@ def main():
     "delete-user", "delete-group", "remove-groupmember", "delete-application", "delete-device", "wipe-device", "retire-device",
     "get-manageddevices", "get-userdevices", "get-caps", "get-devicecategories", "get-devicecompliancepolicies", 
     "get-devicecompliancesummary", "get-deviceconfigurations", "get-deviceconfigurationpolicies", "get-deviceconfigurationpolicysettings", 
-    "get-deviceenrollmentconfigurations", "get-devicegrouppolicyconfigurations","update-userproperties",
-    "get-devicegrouppolicydefinition", "dump-devicemanagementscripts", "get-scriptcontent", "find-privilegedapplications",
+    "get-deviceenrollmentconfigurations", "get-devicegrouppolicyconfigurations","update-userproperties", "dump-windowsapps", "dump-iosapps", "dump-androidapps",
+    "get-devicegrouppolicydefinition", "dump-devicemanagementscripts", "get-scriptcontent", "find-privilegedapplications", "dump-macosapps",
     "get-roledefinitions", "get-roleassignments", "display-avpolicyrules", "display-asrpolicyrules", "display-diskencryptionpolicyrules", 
     "display-firewallrulepolicyrules", "display-lapsaccountprotectionpolicyrules", "display-usergroupaccountprotectionpolicyrules", "get-appserviceprincipal",
     "display-edrpolicyrules","add-exclusiongrouptopolicy", "deploy-maliciousscript", "reboot-device", "shutdown-device", "lock-device", "backdoor-script",
@@ -732,11 +737,11 @@ def main():
             "list-sharedonedrivefiles", "invoke-customquery", "invoke-search", "find-privilegedroleusers", 
             "find-updatablegroups", "find-dynamicgroups","find-securitygroups", "locate-objectid", "update-userpassword", "add-applicationpassword", 
             "add-usertap", "add-groupmember", "create-application", "create-newuser", "invite-guestuser", 
-            "assign-privilegedrole", "open-owamailboxinbrowser", "dump-owamailbox", "spoof-owaemailmessage", 
+            "assign-privilegedrole", "open-owamailboxinbrowser", "dump-owamailbox", "spoof-owaemailmessage", "dump-androidapps",
             "delete-user", "delete-group", "remove-groupmember", "delete-application", "delete-device", "wipe-device", "retire-device",
-            "get-caps", "get-devicecategories", "display-devicecompliancepolicies", "get-devicecompliancesummary", 
-            "get-deviceconfigurations", "get-deviceconfigurationpolicies", "get-deviceconfigurationpolicysettings", 
-            "get-deviceenrollmentconfigurations", "get-devicegrouppolicyconfigurations", "grant-appadminconsent",
+            "get-caps", "get-devicecategories", "display-devicecompliancepolicies", "get-devicecompliancesummary", "dump-macosapps",
+            "get-deviceconfigurations", "get-deviceconfigurationpolicies", "get-deviceconfigurationpolicysettings", "dump-iosapps",
+            "get-deviceenrollmentconfigurations", "get-devicegrouppolicyconfigurations", "grant-appadminconsent", "dump-windowsapps",
             "get-devicegrouppolicydefinition", "dump-devicemanagementscripts", "update-userproperties", "find-privilegedapplications",
             "get-scriptcontent", "get-roledefinitions", "get-roleassignments", "display-avpolicyrules","get-appserviceprincipal",
             "display-asrpolicyrules", "display-diskencryptionpolicyrules", "display-firewallrulepolicyrules", "backdoor-script",
@@ -4804,6 +4809,54 @@ openssl pkcs12 -export -out certificate.pfx -inkey private.key -in certificate.c
         graph_api_get(access_token, api_url, args)
         print("=" * 80)
 
+    # dump-windowsapps
+    elif args.command and args.command.lower() == "dump-windowsapps":
+        print_yellow("\n[*] Dump-WindowsApps")
+        print("=" * 80)
+        api_url = "https://graph.microsoft.com/beta/deviceAppManagement/mobileApps?$filter=(isof(%27microsoft.graph.win32CatalogApp%27)%20or%20isof(%27microsoft.graph.windowsStoreApp%27)%20or%20isof(%27microsoft.graph.microsoftStoreForBusinessApp%27)%20or%20isof(%27microsoft.graph.officeSuiteApp%27)%20or%20(isof(%27microsoft.graph.win32LobApp%27)%20and%20not(isof(%27microsoft.graph.win32CatalogApp%27)))%20or%20isof(%27microsoft.graph.windowsMicrosoftEdgeApp%27)%20or%20isof(%27microsoft.graph.windowsPhone81AppX%27)%20or%20isof(%27microsoft.graph.windowsPhone81StoreApp%27)%20or%20isof(%27microsoft.graph.windowsPhoneXAP%27)%20or%20isof(%27microsoft.graph.windowsAppX%27)%20or%20isof(%27microsoft.graph.windowsMobileMSI%27)%20or%20isof(%27microsoft.graph.windowsUniversalAppX%27)%20or%20isof(%27microsoft.graph.webApp%27)%20or%20isof(%27microsoft.graph.windowsWebApp%27)%20or%20isof(%27microsoft.graph.winGetApp%27))%20and%20(microsoft.graph.managedApp/appAvailability%20eq%20null%20or%20microsoft.graph.managedApp/appAvailability%20eq%20%27lineOfBusiness%27%20or%20isAssigned%20eq%20true)&$orderby=displayName&"
+
+        if args.select:
+            api_url += "$select=" + args.select # some fields will 400 whole req
+
+        graph_api_get(access_token, api_url, args)
+        print("=" * 80)
+
+    # dump-iosapps
+    elif args.command and args.command.lower() == "dump-iosapps":
+        print_yellow("\n[*] Dump-iOSApps")
+        print("=" * 80)
+        api_url = "https://graph.microsoft.com/beta/deviceAppManagement/mobileApps?$filter=((isof(%27microsoft.graph.managedIOSStoreApp%27)%20and%20microsoft.graph.managedApp/appAvailability%20eq%20microsoft.graph.managedAppAvailability%27lineOfBusiness%27)%20or%20isof(%27microsoft.graph.iosLobApp%27)%20or%20isof(%27microsoft.graph.iosStoreApp%27)%20or%20isof(%27microsoft.graph.iosVppApp%27)%20or%20isof(%27microsoft.graph.managedIOSLobApp%27)%20or%20(isof(%27microsoft.graph.managedIOSStoreApp%27)%20and%20microsoft.graph.managedApp/appAvailability%20eq%20microsoft.graph.managedAppAvailability%27global%27)%20or%20isof(%27microsoft.graph.webApp%27)%20or%20isof(%27microsoft.graph.iOSiPadOSWebClip%27))%20and%20(microsoft.graph.managedApp/appAvailability%20eq%20null%20or%20microsoft.graph.managedApp/appAvailability%20eq%20%27lineOfBusiness%27%20or%20isAssigned%20eq%20true)&$orderby=displayName&"
+
+        if args.select:
+            api_url += "$select=" + args.select # some fields will 400 whole req
+
+        graph_api_get(access_token, api_url, args)
+        print("=" * 80)
+
+    # dump-macosapps
+    elif args.command and args.command.lower() == "dump-macosapps":
+        print_yellow("\n[*] Dump-macOSApps")
+        print("=" * 80)
+        api_url = "https://graph.microsoft.com/beta/deviceAppManagement/mobileApps?$filter=(isof(%27microsoft.graph.macOSDmgApp%27)%20or%20isof(%27microsoft.graph.macOSPkgApp%27)%20or%20isof(%27microsoft.graph.macOSLobApp%27)%20or%20isof(%27microsoft.graph.macOSMicrosoftEdgeApp%27)%20or%20isof(%27microsoft.graph.macOSMicrosoftDefenderApp%27)%20or%20isof(%27microsoft.graph.macOSOfficeSuiteApp%27)%20or%20isof(%27microsoft.graph.macOsVppApp%27)%20or%20isof(%27microsoft.graph.webApp%27)%20or%20isof(%27microsoft.graph.macOSWebClip%27))%20and%20(microsoft.graph.managedApp/appAvailability%20eq%20null%20or%20microsoft.graph.managedApp/appAvailability%20eq%20%27lineOfBusiness%27%20or%20isAssigned%20eq%20true)&$orderby=displayName&"
+
+        if args.select:
+            api_url += "$select=" + args.select # some fields will 400 whole req
+
+        graph_api_get(access_token, api_url, args)
+        print("=" * 80)
+
+    # dump-androidapps
+    elif args.command and args.command.lower() == "dump-androidapps":
+        print_yellow("\n[*] Dump-AndroidApps")
+        print("=" * 80)
+        api_url = "https://graph.microsoft.com/beta/deviceAppManagement/mobileApps?$filter=((isof(%27microsoft.graph.androidManagedStoreApp%27)%20and%20microsoft.graph.androidManagedStoreApp/isSystemApp%20eq%20true)%20or%20isof(%27microsoft.graph.androidLobApp%27)%20or%20isof(%27microsoft.graph.androidStoreApp%27)%20or%20(isof(%27microsoft.graph.managedAndroidStoreApp%27)%20and%20microsoft.graph.managedApp/appAvailability%20eq%20microsoft.graph.managedAppAvailability%27lineOfBusiness%27)%20or%20isof(%27microsoft.graph.managedAndroidLobApp%27)%20or%20(isof(%27microsoft.graph.managedAndroidStoreApp%27)%20and%20microsoft.graph.managedApp/appAvailability%20eq%20microsoft.graph.managedAppAvailability%27global%27)%20or%20(isof(%27microsoft.graph.androidManagedStoreApp%27)%20and%20microsoft.graph.androidManagedStoreApp/isSystemApp%20eq%20false)%20or%20isof(%27microsoft.graph.webApp%27))%20and%20(microsoft.graph.managedApp/appAvailability%20eq%20null%20or%20microsoft.graph.managedApp/appAvailability%20eq%20%27lineOfBusiness%27%20or%20isAssigned%20eq%20true)&$orderby=displayName&"
+
+        if args.select:
+            api_url += "$select=" + args.select # some fields will 400 whole req
+
+        graph_api_get(access_token, api_url, args)
+        print("=" * 80)
+
     # get-scriptcontent
     elif args.command and args.command.lower() == "get-scriptcontent":
         if not args.id:
@@ -5836,7 +5889,7 @@ openssl pkcs12 -export -out certificate.pfx -inkey private.key -in certificate.c
         }
         
         # 1. get current target script settings and encode new script content so we don't override anything
-        # ~> could add option to alter pre-existing settings...
+        # - could add option to alter pre-existing settings...
         try:
             script_content = read_file_content(args.script)
             encoded_script_content = base64.b64encode(script_content.encode('utf-8')).decode('utf-8')
@@ -5882,8 +5935,69 @@ openssl pkcs12 -export -out certificate.pfx -inkey private.key -in certificate.c
         print("=" * 80)
 
     # deploy-maliciouswin32app
-    # - todo, needs IntuneWinAppUtil.exe to package the EXE/MSI
     # - user will have to packagae app prior
+    # https://cloudinfra.net/how-to-deploy-exe-applications-using-intune/
+    # https://www.systemcenterdudes.com/deploy-microsoft-intune-win32-apps/
+    # 
+    # POST https://graph.microsoft.com/beta/deviceAppManagement/mobileApps/
+    # {"@odata.type":"#microsoft.graph.win32LobApp","applicableArchitectures":"x64,x86","allowAvailableUninstall":false,"categories":[],"description":"IntuneMessageBox","developer":"","displayName":"IntuneMessageBox","displayVersion":"","fileName":"IntuneMessageBox.intunewin","installCommandLine":"IntuneMessageBox.exe","installExperience":{"deviceRestartBehavior":"suppress","maxRunTimeInMinutes":30,"runAsAccount":"system"},"informationUrl":"","isFeatured":false,"roleScopeTagIds":[],"notes":"","minimumSupportedWindowsRelease":"1607","msiInformation":null,"owner":"","privacyInformationUrl":"","publisher":"ECorp","returnCodes":[{"returnCode":0,"type":"success"},{"returnCode":1707,"type":"success"},{"returnCode":3010,"type":"softReboot"},{"returnCode":1641,"type":"hardReboot"},{"returnCode":1618,"type":"retry"}],"rules":[{"@odata.type":"#microsoft.graph.win32LobAppFileSystemRule","ruleType":"detection","operator":"notConfigured","check32BitOn64System":false,"operationType":"exists","comparisonValue":null,"fileOrFolderName":"IntuneMessageBox.exe","path":"C:\\Program Files\\IntuneMessageBox.exe"}],"runAs32Bit":false,"setupFilePath":"IntuneMessageBox.exe","uninstallCommandLine":"IntuneMessageBox.exe"}
+    # - ime tried to install
+    # -> need to add install/uninstall instruction batch script
+    elif args.command and args.command.lower() == "deploy-maliciouswin32exe": # don't use this yet
+        url = "https://graph.microsoft.com/beta/deviceAppManagement/mobileApps/"
+
+        # add the option to be available in the company portal for download!
+        data = {
+            "@odata.type": "#microsoft.graph.win32LobApp",
+            "applicableArchitectures": "x64,x86",
+            "allowAvailableUninstall": False,
+            "categories": [],
+            "description": "IntuneMessageBox",
+            "developer": "",
+            "displayName": "IntuneMessageBox",
+            "displayVersion": "",
+            "fileName": "IntuneMessageBox.intunewin",
+            "installCommandLine": "IntuneMessageBox.exe",
+            "installExperience": {
+                "deviceRestartBehavior": "suppress",
+                "maxRunTimeInMinutes": 30,
+                "runAsAccount": "system"
+            },
+            "informationUrl": "",
+            "isFeatured": False,
+            "roleScopeTagIds": [],
+            "notes": "",
+            "minimumSupportedWindowsRelease": "1607",
+            "msiInformation": None,
+            "owner": "",
+            "privacyInformationUrl": "",
+            "publisher": "ECorp",
+            "returnCodes": [
+                {"returnCode": 0, "type": "success"},
+                {"returnCode": 1707, "type": "success"},
+                {"returnCode": 3010, "type": "softReboot"},
+                {"returnCode": 1641, "type": "hardReboot"},
+                {"returnCode": 1618, "type": "retry"}
+            ],
+            "rules": [
+                {
+                    "@odata.type": "#microsoft.graph.win32LobAppFileSystemRule",
+                    "ruleType": "detection",
+                    "operator": "notConfigured",
+                    "check32BitOn64System": False,
+                    "operationType": "exists",
+                    "comparisonValue": None,
+                    "fileOrFolderName": "IntuneMessageBox.exe",
+                    "path": "C:\\Program Files\\IntuneMessageBox.exe"
+                }
+            ],
+            "runAs32Bit": False,
+            "setupFilePath": "IntuneMessageBox.exe",
+            "uninstallCommandLine": "IntuneMessageBox.exe"
+        }
+
+    # deploy-maliciouswin32msi
+    # - after confirming win32exe 
 
     # reboot-device 
     elif args.command and args.command.lower() == "reboot-device":
