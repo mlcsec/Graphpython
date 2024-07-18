@@ -367,9 +367,7 @@ Identifies assigned directory roles, Administrative Units, and Group membership 
 
 ### Get-Application
 
-> UPDATED: now resolves assigned Graph API role IDs dyanmically
-
-Get details relating to the target application and dynamically resolve the `requiredResourceAccess` attribute which contains Graph API role IDs assigned to the application:
+Get details relating to the target application and now dynamically resolves the `requiredResourceAccess` attribute which contains Graph API role IDs assigned to the application:
 
 ![](./.github/getapplication-updated.png)
 
