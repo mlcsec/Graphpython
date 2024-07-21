@@ -6,7 +6,7 @@
 
 Graphpython is a modular Python tool for cross-platform Microsoft Graph API enumeration and exploitation. It builds upon the capabilities of AADInternals (Killchain.ps1), GraphRunner, and TokenTactics(V2) to provide a comprehensive solution for interacting with the Microsoft Graph API for red team and cloud assumed breach operations. 
 
-GraphPython covers external reconnaissance, authentication/token manipulation, enumeration, and post-exploitation of various Microsoft services, including Entra ID (Azure AD), Office 365 (Outlook, SharePoint, OneDrive, Teams), and Intune (Endpoint Management).
+Graphpython covers external reconnaissance, authentication/token manipulation, enumeration, and post-exploitation of various Microsoft services, including Entra ID (Azure AD), Office 365 (Outlook, SharePoint, OneDrive, Teams), and Intune (Endpoint Management).
 
 ## Index
 
@@ -651,7 +651,7 @@ Graph permission IDs applied to objects can be easily located with detailed expl
   - [x] `Add-ApplicationCertificate` - similar to add-applicationpassword but gen and assign openssl cert to ent app
   - [ ] `Display-FirewallPolicyRules` - get Intune firewall configuration policy rules (actually firewall rules already implemented in `Display-FirewallRulePolicyRules`)
   - [ ] `Update/Deploy-Policy` - update existing rules for av, asr, etc. policy or deploy a new one with specific groups/devices
-  - [ ] `Update-ManagedDeviceConfig` - update/patch existing managed device config, [check this](https://learn.microsoft.com/en-us/graph/api/intune-devices-manageddevice-update?view=graph-rest-beta)
+  - [x] `Update-DeviceConfig` - patch settings that aren't read only from existing managed device config, more info [here](https://learn.microsoft.com/en-us/graph/api/intune-devices-manageddevice-update?view=graph-rest-beta)
   - [x] `New-SignedJWT` - need to test this from sharpgraphview
 - Options:
   - [ ] add functionality for chaining commands e.g. --command get-user, get-currentuser, get-groups
