@@ -154,7 +154,7 @@ def list_commands():
         ["Get-DeviceGroupPolicyDefinition", "Get device group policy definition"],
         ["Get-RoleDefinitions", "Get role definitions"],
         ["Get-RoleAssignments", "Get role assignments"],
-        ["Get-DeviceCompliancePolicies", "Get device compliance policies"]
+        ["Get-DeviceCompliancePolicies", "Get all device compliance policies (AV, ASR, Bitlocker, Firewall, EDR, LAPS) and assignments"]
     ]
 
     intune_exploit = [
@@ -171,6 +171,7 @@ def list_commands():
         ["Display-AVPolicyRules", "Display antivirus policy rules"],
         ["Display-ASRPolicyRules", "Display Attack Surface Reduction (ASR) policy rules"],
         ["Display-DiskEncryptionPolicyRules", "Display disk encryption policy rules"],
+        ["Display-FirewallConfigPolicyRules", "Display firewall configuration policy rules"],
         ["Display-FirewallRulePolicyRules", "Display firewall RULE policy rules"],
         ["Display-EDRPolicyRules", "Display EDR policy rules"],
         ["Display-LAPSAccountProtectionPolicyRules", "Display LAPS account protection policy rules"],
@@ -659,7 +660,7 @@ def main():
         "get-devicecompliancesummary", "get-deviceconfigurations", "get-deviceconfigurationpolicies", "get-deviceconfigurationpolicysettings", 
         "get-deviceenrollmentconfigurations", "get-devicegrouppolicyconfigurations","update-userproperties", "dump-windowsapps", "dump-iosapps", "dump-androidapps",
         "get-devicegrouppolicydefinition", "dump-devicemanagementscripts", "get-scriptcontent", "find-privilegedapplications", "dump-macosapps",
-        "get-roledefinitions", "get-roleassignments", "display-avpolicyrules", "display-asrpolicyrules", "display-diskencryptionpolicyrules", 
+        "get-roledefinitions", "get-roleassignments", "display-avpolicyrules", "display-asrpolicyrules", "display-diskencryptionpolicyrules", "display-firewallconfigpolicyrules",
         "display-firewallrulepolicyrules", "display-lapsaccountprotectionpolicyrules", "display-usergroupaccountprotectionpolicyrules", "get-appserviceprincipal",
         "display-edrpolicyrules","add-exclusiongrouptopolicy", "deploy-maliciousscript", "reboot-device", "shutdown-device", "lock-device", "backdoor-script",
         "add-applicationpermission", "new-signedjwt", "add-applicationcertificate", "get-application", "locate-permissionid", "get-serviceprincipal", "grant-appadminconsent"
@@ -734,7 +735,7 @@ def main():
             "list-conditionalnamedlocations", "list-sharepointroot", "list-sharepointsites", "list-sharepointurls","list-externalconnections", 
             "list-applications", "list-serviceprincipals", "list-tenants", "list-joinedteams", "list-chats", 
             "list-chatmessages", "list-devices", "list-administrativeunits", "list-onedrives", "list-recentonedrivefiles", "list-onedriveurls",
-            "list-sharedonedrivefiles", "invoke-customquery", "invoke-search", "find-privilegedroleusers", 
+            "list-sharedonedrivefiles", "invoke-customquery", "invoke-search", "find-privilegedroleusers", "display-firewallconfigpolicyrules",
             "find-updatablegroups", "find-dynamicgroups","find-securitygroups", "locate-objectid", "update-userpassword", "add-applicationpassword", 
             "add-usertap", "add-groupmember", "create-application", "create-newuser", "invite-guestuser", "update-deviceconfig",
             "assign-privilegedrole", "open-owamailboxinbrowser", "dump-owamailbox", "spoof-owaemailmessage", "dump-androidapps",
@@ -5421,8 +5422,522 @@ openssl pkcs12 -export -out certificate.pfx -inkey private.key -in certificate.c
             print_red(response.text)
         print("=" * 80)
 
-    # display-firewallpolicyrules - firewall config
-    # - todo
+    # display-firewallconfigpolicyrules - firewall config policy
+    elif args.command and args.command.lower() == "display-firewallconfigpolicyrules":
+        if not args.id:
+            print_red("[-] Error: --id argument is required for display-firewallconfigpolicyrules command")
+            return
+
+        print_yellow("\n[*] Display-FirewallConfigPolicyRules")
+        print("=" * 80)
+        api_url = f"https://graph.microsoft.com/beta/deviceManagement/configurationPolicies('{args.id}')/settings"
+
+        user_agent = get_user_agent(args)
+
+        headers = {
+            'Authorization': f'Bearer {access_token}',
+            'Content-Type': 'application/json',
+            'User-Agent': user_agent
+        }
+
+        settings_map = {
+            "vendor_msft_firewall_mdmstore_global_crlcheck": {
+                "displayName": "Certificate revocation list verification",
+                "options": {
+                    "vendor_msft_firewall_mdmstore_global_crlcheck_0": "None - Disables CRL checking",
+                    "vendor_msft_firewall_mdmstore_global_crlcheck_1": "Attempt - checking is attempted and that certificate validation fails only if the certificate is revoked",
+                    "vendor_msft_firewall_mdmstore_global_crlcheck_2": "Require - checking is required and that certificate validation fails if any error is encountered during CRL processing",
+                }
+            },
+            "vendor_msft_firewall_mdmstore_global_disablestatefulftp": {
+                "displayName": "Disable Stateful Ftp",
+                "options": {
+                    "vendor_msft_firewall_mdmstore_global_disablestatefulftp_false": "Stateful FTP enabled",
+                    "vendor_msft_firewall_mdmstore_global_disablestatefulftp_true": "Stateful FTP disabled",
+                }
+            },
+            "vendor_msft_firewall_mdmstore_global_enablepacketqueue": {
+                "displayName": "Enable Packet Queue",
+                "options": {
+                    "vendor_msft_firewall_mdmstore_global_enablepacketqueue_0": "Disabled - Indicates that all queuing is to be disabled",
+                    "vendor_msft_firewall_mdmstore_global_enablepacketqueue_1": "Queue Inbound - inbound encrypted packets are to be queued",
+                    "vendor_msft_firewall_mdmstore_global_enablepacketqueue_2": "Queue Outbound - packets are to be queued after decryption is performed for forwarding",
+                }
+            },
+            "vendor_msft_firewall_mdmstore_global_ipsecexempt": {
+                "displayName": "IPsec Exceptions",
+                "options": {
+                    "vendor_msft_firewall_mdmstore_global_ipsecexempt_0": "FW_GLOBAL_CONFIG_IPSEC_EXEMPT_NONE:  No IPsec exemptions.",
+                    "vendor_msft_firewall_mdmstore_global_ipsecexempt_1": "FW_GLOBAL_CONFIG_IPSEC_EXEMPT_NEIGHBOR_DISC:  Exempt neighbor discover IPv6 ICMP type-codes from IPsec.",
+                    "vendor_msft_firewall_mdmstore_global_ipsecexempt_2": "FW_GLOBAL_CONFIG_IPSEC_EXEMPT_ICMP:  Exempt ICMP from IPsec.",
+                    "vendor_msft_firewall_mdmstore_global_ipsecexempt_4": "FW_GLOBAL_CONFIG_IPSEC_EXEMPT_ROUTER_DISC:  Exempt router discover IPv6 ICMP type-codes from IPsec.",
+                    "vendor_msft_firewall_mdmstore_global_ipsecexempt_8": "FW_GLOBAL_CONFIG_IPSEC_EXEMPT_DHCP:  Exempt both IPv4 and IPv6 DHCP traffic from IPsec.",
+                }
+            },
+            "vendor_msft_firewall_mdmstore_global_opportunisticallymatchauthsetperkm": {
+                "displayName": "Opportunistically Match Auth Set Per KM",
+                "options": {
+                    "vendor_msft_firewall_mdmstore_global_opportunisticallymatchauthsetperkm_false": "FALSE",
+                    "vendor_msft_firewall_mdmstore_global_opportunisticallymatchauthsetperkm_true": "TRUE",
+                }
+            },
+            "vendor_msft_firewall_mdmstore_global_presharedkeyencoding": {
+                "displayName": "Preshared Key Encoding",
+                "options": {
+                    "vendor_msft_firewall_mdmstore_global_presharedkeyencoding_0": "FW_GLOBAL_CONFIG_PRESHARED_KEY_ENCODING_NONE:  Preshared key is not encoded. Instead, it is kept in its wide-character format. This symbolic constant has a value of 0.",
+                    "vendor_msft_firewall_mdmstore_global_presharedkeyencoding_1": "FW_GLOBAL_CONFIG_PRESHARED_KEY_ENCODING_UTF_8:  Encode the preshared key using UTF-8. This symbolic constant has a value of 1.",
+                }
+            },
+            "vendor_msft_firewall_mdmstore_global_saidletime": {
+                "displayName": "Security association idle time",
+                "options": {}
+            },
+            "vendor_msft_firewall_mdmstore_domainprofile_allowlocalipsecpolicymerge": {
+                "displayName": "Allow Local Ipsec Policy Merge",
+                "options": {
+                    "vendor_msft_firewall_mdmstore_domainprofile_allowlocalipsecpolicymerge_false": "AllowLocalIpsecPolicyMerge Off",
+                    "vendor_msft_firewall_mdmstore_domainprofile_allowlocalipsecpolicymerge_true": "AllowLocalIpsecPolicyMerge On",
+                }
+            },
+            "vendor_msft_firewall_mdmstore_domainprofile_authappsallowuserprefmerge": {
+                "displayName": "Auth Apps Allow User Pref Merge",
+                "options": {
+                    "vendor_msft_firewall_mdmstore_domainprofile_authappsallowuserprefmerge_false": "AuthAppsAllowUserPrefMerge Off",
+                    "vendor_msft_firewall_mdmstore_domainprofile_authappsallowuserprefmerge_true": "AuthAppsAllowUserPrefMerge On",
+                }
+            },
+            "vendor_msft_firewall_mdmstore_domainprofile_enablelogdroppedpackets": {
+                "displayName": "Enable Log Dropped Packets",
+                "options": {
+                    "vendor_msft_firewall_mdmstore_domainprofile_enablelogdroppedpackets_false": "Disable Logging Of Dropped Packets",
+                    "vendor_msft_firewall_mdmstore_domainprofile_enablelogdroppedpackets_true": "Enable Logging Of Dropped Packets",
+                }
+            },
+            "vendor_msft_firewall_mdmstore_domainprofile_disableunicastresponsestomulticastbroadcast": {
+                "displayName": "Disable Unicast Responses To Multicast Broadcast",
+                "options": {
+                    "vendor_msft_firewall_mdmstore_domainprofile_disableunicastresponsestomulticastbroadcast_false": "Unicast Responses Not Blocked",
+                    "vendor_msft_firewall_mdmstore_domainprofile_disableunicastresponsestomulticastbroadcast_true": "Unicast Responses Blocked",
+                }
+            },
+            "vendor_msft_firewall_mdmstore_domainprofile_shielded": {
+                "displayName": "Shielded",
+                "options": {
+                    "vendor_msft_firewall_mdmstore_domainprofile_shielded_false": "Shielding Off",
+                    "vendor_msft_firewall_mdmstore_domainprofile_shielded_true": "Shielding On",
+                }
+            },
+            "vendor_msft_firewall_mdmstore_domainprofile_allowlocalpolicymerge": {
+                "displayName": "Allow Local Policy Merge",
+                "options": {
+                    "vendor_msft_firewall_mdmstore_domainprofile_allowlocalpolicymerge_false": "AllowLocalPolicyMerge Off",
+                    "vendor_msft_firewall_mdmstore_domainprofile_allowlocalpolicymerge_true": "AllowLocalPolicyMerge On",
+                }
+            },
+            "vendor_msft_firewall_mdmstore_domainprofile_defaultoutboundaction": {
+                "displayName": "Default Outbound Action",
+                "options": {
+                    "vendor_msft_firewall_mdmstore_domainprofile_defaultoutboundaction_0": "Allow Outbound By Default",
+                    "vendor_msft_firewall_mdmstore_domainprofile_defaultoutboundaction_1": "Block Outbound By Default",
+                }
+            },
+            "vendor_msft_firewall_mdmstore_domainprofile_enablelogignoredrules": {
+                "displayName": "Enable Log Ignored Rules",
+                "options": {
+                    "vendor_msft_firewall_mdmstore_domainprofile_enablelogignoredrules_false": "Disable Logging Of Ignored Rules",
+                    "vendor_msft_firewall_mdmstore_domainprofile_enablelogignoredrules_true": "Enable Logging Of Ignored Rules",
+                }
+            },
+            "vendor_msft_firewall_mdmstore_domainprofile_disableinboundnotifications": {
+                "displayName": "Disable Inbound Notifications",
+                "options": {
+                    "vendor_msft_firewall_mdmstore_domainprofile_disableinboundnotifications_false": "Firewall May Display Notification",
+                    "vendor_msft_firewall_mdmstore_domainprofile_disableinboundnotifications_true": "Firewall Must Not Display Notification",
+                }
+            },
+            "vendor_msft_firewall_mdmstore_domainprofile_enablelogsuccessconnections": {
+                "displayName": "Enable Log Success Connections",
+                "options": {
+                    "vendor_msft_firewall_mdmstore_domainprofile_enablelogsuccessconnections_false": "Disable Logging Of Successful Connections",
+                    "vendor_msft_firewall_mdmstore_domainprofile_enablelogsuccessconnections_true": "Enable Logging Of Successful Connections",
+                }
+            },
+            "vendor_msft_firewall_mdmstore_domainprofile_logfilepath": {
+                "displayName": "Log File Path",
+                "options": {}
+            },
+            "vendor_msft_firewall_mdmstore_domainprofile_enablefirewall": {
+                "displayName": "Enable Domain Network Firewall",
+                "options": {
+                    "vendor_msft_firewall_mdmstore_domainprofile_enablefirewall_false": "Disable Firewall",
+                    "vendor_msft_firewall_mdmstore_domainprofile_enablefirewall_true": "Enable Firewall",
+                }
+            },
+            "vendor_msft_firewall_mdmstore_domainprofile_logmaxfilesize": {
+                "displayName": "Log Max File Size",
+                "options": {}
+            },
+            "vendor_msft_firewall_mdmstore_domainprofile_globalportsallowuserprefmerge": {
+                "displayName": "Global Ports Allow User Pref Merge",
+                "options": {
+                    "vendor_msft_firewall_mdmstore_domainprofile_globalportsallowuserprefmerge_false": "GlobalPortsAllowUserPrefMerge Off",
+                    "vendor_msft_firewall_mdmstore_domainprofile_globalportsallowuserprefmerge_true": "GlobalPortsAllowUserPrefMerge On",
+                }
+            },
+            "vendor_msft_firewall_mdmstore_domainprofile_defaultinboundaction": {
+                "displayName": "Default Inbound Action for Domain Profile",
+                "options": {
+                    "vendor_msft_firewall_mdmstore_domainprofile_defaultinboundaction_0": "Allow Inbound By Default",
+                    "vendor_msft_firewall_mdmstore_domainprofile_defaultinboundaction_1": "Block Inbound By Default",
+                }
+            },
+            "vendor_msft_firewall_mdmstore_domainprofile_disablestealthmodeipsecsecuredpacketexemption": {
+                "displayName": "Disable Stealth Mode Ipsec Secured Packet Exemption",
+                "options": {
+                    "vendor_msft_firewall_mdmstore_domainprofile_disablestealthmodeipsecsecuredpacketexemption_false": "FALSE",
+                    "vendor_msft_firewall_mdmstore_domainprofile_disablestealthmodeipsecsecuredpacketexemption_true": "TRUE",
+                }
+            },
+            "vendor_msft_firewall_mdmstore_domainprofile_disablestealthmode": {
+                "displayName": "Disable Stealth Mode",
+                "options": {
+                    "vendor_msft_firewall_mdmstore_domainprofile_disablestealthmode_false": "Use Stealth Mode",
+                    "vendor_msft_firewall_mdmstore_domainprofile_disablestealthmode_true": "Disable Stealth Mode",
+                }
+            },
+            "vendor_msft_firewall_mdmstore_privateprofile_allowlocalipsecpolicymerge": {
+                "displayName": "Allow Local Ipsec Policy Merge",
+                "options": {
+                    "vendor_msft_firewall_mdmstore_privateprofile_allowlocalipsecpolicymerge_false": "AllowLocalIpsecPolicyMerge Off",
+                    "vendor_msft_firewall_mdmstore_privateprofile_allowlocalipsecpolicymerge_true": "AllowLocalIpsecPolicyMerge On",
+                }
+            },
+            "vendor_msft_firewall_mdmstore_privateprofile_authappsallowuserprefmerge": {
+                "displayName": "Auth Apps Allow User Pref Merge",
+                "options": {
+                    "vendor_msft_firewall_mdmstore_privateprofile_authappsallowuserprefmerge_false": "AuthAppsAllowUserPrefMerge Off",
+                    "vendor_msft_firewall_mdmstore_privateprofile_authappsallowuserprefmerge_true": "AuthAppsAllowUserPrefMerge On",
+                }
+            },
+            "vendor_msft_firewall_mdmstore_privateprofile_enablefirewall": {
+                "displayName": "Enable Private Network Firewall",
+                "options": {
+                    "vendor_msft_firewall_mdmstore_privateprofile_enablefirewall_false": "Disable Firewall",
+                    "vendor_msft_firewall_mdmstore_privateprofile_enablefirewall_true": "Enable Firewall",
+                }
+            },
+            "vendor_msft_firewall_mdmstore_privateprofile_logmaxfilesize": {
+                "displayName": "Log Max File Size",
+                "options": {}
+            },
+            "vendor_msft_firewall_mdmstore_privateprofile_globalportsallowuserprefmerge": {
+                "displayName": "Global Ports Allow User Pref Merge",
+                "options": {
+                    "vendor_msft_firewall_mdmstore_privateprofile_globalportsallowuserprefmerge_false": "GlobalPortsAllowUserPrefMerge Off",
+                    "vendor_msft_firewall_mdmstore_privateprofile_globalportsallowuserprefmerge_true": "GlobalPortsAllowUserPrefMerge On",
+                }
+            },
+            "vendor_msft_firewall_mdmstore_privateprofile_defaultinboundaction": {
+                "displayName": "Default Inbound Action for Private Profile",
+                "options": {
+                    "vendor_msft_firewall_mdmstore_privateprofile_defaultinboundaction_0": "Allow Inbound By Default",
+                    "vendor_msft_firewall_mdmstore_privateprofile_defaultinboundaction_1": "Block Inbound By Default",
+                }
+            },
+            "vendor_msft_firewall_mdmstore_privateprofile_disableunicastresponsestomulticastbroadcast": {
+                "displayName": "Disable Unicast Responses To Multicast Broadcast",
+                "options": {
+                    "vendor_msft_firewall_mdmstore_privateprofile_disableunicastresponsestomulticastbroadcast_false": "Unicast Responses Not Blocked",
+                    "vendor_msft_firewall_mdmstore_privateprofile_disableunicastresponsestomulticastbroadcast_true": "Unicast Responses Blocked",
+                }
+            },
+            "vendor_msft_firewall_mdmstore_privateprofile_logfilepath": {
+                "displayName": "Log File Path",
+                "options": {}
+            },
+            "vendor_msft_firewall_mdmstore_privateprofile_disablestealthmode": {
+                "displayName": "Disable Stealth Mode",
+                "options": {
+                    "vendor_msft_firewall_mdmstore_privateprofile_disablestealthmode_false": "Use Stealth Mode",
+                    "vendor_msft_firewall_mdmstore_privateprofile_disablestealthmode_true": "Disable Stealth Mode",
+                }
+            },
+            "vendor_msft_firewall_mdmstore_privateprofile_enablelogdroppedpackets": {
+                "displayName": "Enable Log Dropped Packets",
+                "options": {
+                    "vendor_msft_firewall_mdmstore_privateprofile_enablelogdroppedpackets_false": "Disable Logging Of Dropped Packets",
+                    "vendor_msft_firewall_mdmstore_privateprofile_enablelogdroppedpackets_true": "Enable Logging Of Dropped Packets",
+                }
+            },
+            "vendor_msft_firewall_mdmstore_privateprofile_disablestealthmodeipsecsecuredpacketexemption": {
+                "displayName": "Disable Stealth Mode Ipsec Secured Packet Exemption",
+                "options": {
+                    "vendor_msft_firewall_mdmstore_privateprofile_disablestealthmodeipsecsecuredpacketexemption_false": "FALSE",
+                    "vendor_msft_firewall_mdmstore_privateprofile_disablestealthmodeipsecsecuredpacketexemption_true": "TRUE",
+                }
+            },
+            "vendor_msft_firewall_mdmstore_privateprofile_disableinboundnotifications": {
+                "displayName": "Disable Inbound Notifications",
+                "options": {
+                    "vendor_msft_firewall_mdmstore_privateprofile_disableinboundnotifications_false": "Firewall May Display Notification",
+                    "vendor_msft_firewall_mdmstore_privateprofile_disableinboundnotifications_true": "Firewall Must Not Display Notification",
+                }
+            },
+            "vendor_msft_firewall_mdmstore_privateprofile_enablelogsuccessconnections": {
+                "displayName": "Enable Log Success Connections",
+                "options": {
+                    "vendor_msft_firewall_mdmstore_privateprofile_enablelogsuccessconnections_false": "Disable Logging Of Successful Connections",
+                    "vendor_msft_firewall_mdmstore_privateprofile_enablelogsuccessconnections_true": "Enable Logging Of Successful Connections",
+                }
+            },
+            "vendor_msft_firewall_mdmstore_privateprofile_shielded": {
+                "displayName": "Shielded",
+                "options": {
+                    "vendor_msft_firewall_mdmstore_privateprofile_shielded_false": "Shielding Off",
+                    "vendor_msft_firewall_mdmstore_privateprofile_shielded_true": "Shielding On",
+                }
+            },
+            "vendor_msft_firewall_mdmstore_privateprofile_allowlocalpolicymerge": {
+                "displayName": "Allow Local Policy Merge",
+                "options": {
+                    "vendor_msft_firewall_mdmstore_privateprofile_allowlocalpolicymerge_false": "AllowLocalPolicyMerge Off",
+                    "vendor_msft_firewall_mdmstore_privateprofile_allowlocalpolicymerge_true": "AllowLocalPolicyMerge On",
+                }
+            },
+            "vendor_msft_firewall_mdmstore_privateprofile_defaultoutboundaction": {
+                "displayName": "Default Outbound Action",
+                "options": {
+                    "vendor_msft_firewall_mdmstore_privateprofile_defaultoutboundaction_0": "Allow Outbound By Default",
+                    "vendor_msft_firewall_mdmstore_privateprofile_defaultoutboundaction_1": "Block Outbound By Default",
+                }
+            },
+            "vendor_msft_firewall_mdmstore_privateprofile_enablelogignoredrules": {
+                "displayName": "Enable Log Ignored Rules",
+                "options": {
+                    "vendor_msft_firewall_mdmstore_privateprofile_enablelogignoredrules_false": "Disable Logging Of Ignored Rules",
+                    "vendor_msft_firewall_mdmstore_privateprofile_enablelogignoredrules_true": "Enable Logging Of Ignored Rules",
+                }
+            },
+            "vendor_msft_firewall_mdmstore_publicprofile_disableunicastresponsestomulticastbroadcast": {
+                "displayName": "Disable Unicast Responses To Multicast Broadcast",
+                "options": {
+                    "vendor_msft_firewall_mdmstore_publicprofile_disableunicastresponsestomulticastbroadcast_false": "Unicast Responses Not Blocked",
+                    "vendor_msft_firewall_mdmstore_publicprofile_disableunicastresponsestomulticastbroadcast_true": "Unicast Responses Blocked",
+                }
+            },
+            "vendor_msft_firewall_mdmstore_publicprofile_globalportsallowuserprefmerge": {
+                "displayName": "Global Ports Allow User Pref Merge",
+                "options": {
+                    "vendor_msft_firewall_mdmstore_publicprofile_globalportsallowuserprefmerge_false": "GlobalPortsAllowUserPrefMerge Off",
+                    "vendor_msft_firewall_mdmstore_publicprofile_globalportsallowuserprefmerge_true": "GlobalPortsAllowUserPrefMerge On",
+                }
+            },
+            "vendor_msft_firewall_mdmstore_publicprofile_disablestealthmodeipsecsecuredpacketexemption": {
+                "displayName": "Disable Stealth Mode Ipsec Secured Packet Exemption",
+                "options": {
+                    "vendor_msft_firewall_mdmstore_publicprofile_disablestealthmodeipsecsecuredpacketexemption_false": "FALSE",
+                    "vendor_msft_firewall_mdmstore_publicprofile_disablestealthmodeipsecsecuredpacketexemption_true": "TRUE",
+                }
+            },
+            "vendor_msft_firewall_mdmstore_publicprofile_shielded": {
+                "displayName": "Shielded",
+                "options": {
+                    "vendor_msft_firewall_mdmstore_publicprofile_shielded_false": "Shielding Off",
+                    "vendor_msft_firewall_mdmstore_publicprofile_shielded_true": "Shielding On",
+                }
+            },
+            "vendor_msft_firewall_mdmstore_publicprofile_allowlocalpolicymerge": {
+                "displayName": "Allow Local Policy Merge",
+                "options": {
+                    "vendor_msft_firewall_mdmstore_publicprofile_allowlocalpolicymerge_false": "AllowLocalPolicyMerge Off",
+                    "vendor_msft_firewall_mdmstore_publicprofile_allowlocalpolicymerge_true": "AllowLocalPolicyMerge On",
+                }
+            },
+            "vendor_msft_firewall_mdmstore_publicprofile_defaultoutboundaction": {
+                "displayName": "Default Outbound Action",
+                "options": {
+                    "vendor_msft_firewall_mdmstore_publicprofile_defaultoutboundaction_0": "Allow Outbound By Default",
+                    "vendor_msft_firewall_mdmstore_publicprofile_defaultoutboundaction_1": "Block Outbound By Default",
+                }
+            },
+            "vendor_msft_firewall_mdmstore_publicprofile_enablelogignoredrules": {
+                "displayName": "Enable Log Ignored Rules",
+                "options": {
+                    "vendor_msft_firewall_mdmstore_publicprofile_enablelogignoredrules_false": "Disable Logging Of Ignored Rules",
+                    "vendor_msft_firewall_mdmstore_publicprofile_enablelogignoredrules_true": "Enable Logging Of Ignored Rules",
+                }
+            },
+            "vendor_msft_firewall_mdmstore_publicprofile_disableinboundnotifications": {
+                "displayName": "Disable Inbound Notifications",
+                "options": {
+                    "vendor_msft_firewall_mdmstore_publicprofile_disableinboundnotifications_false": "Firewall May Display Notification",
+                    "vendor_msft_firewall_mdmstore_publicprofile_disableinboundnotifications_true": "Firewall Must Not Display Notification",
+                }
+            },
+            "vendor_msft_firewall_mdmstore_publicprofile_enablelogsuccessconnections": {
+                "displayName": "Enable Log Success Connections",
+                "options": {
+                    "vendor_msft_firewall_mdmstore_publicprofile_enablelogsuccessconnections_false": "Disable Logging Of Successful Connections",
+                    "vendor_msft_firewall_mdmstore_publicprofile_enablelogsuccessconnections_true": "Enable Logging Of Successful Connections",
+                }
+            },
+            "vendor_msft_firewall_mdmstore_publicprofile_allowlocalipsecpolicymerge": {
+                "displayName": "Allow Local Ipsec Policy Merge",
+                "options": {
+                    "vendor_msft_firewall_mdmstore_publicprofile_allowlocalipsecpolicymerge_false": "AllowLocalIpsecPolicyMerge Off",
+                    "vendor_msft_firewall_mdmstore_publicprofile_allowlocalipsecpolicymerge_true": "AllowLocalIpsecPolicyMerge On",
+                }
+            },
+            "vendor_msft_firewall_mdmstore_publicprofile_authappsallowuserprefmerge": {
+                "displayName": "Auth Apps Allow User Pref Merge",
+                "options": {
+                    "vendor_msft_firewall_mdmstore_publicprofile_authappsallowuserprefmerge_false": "AuthAppsAllowUserPrefMerge Off",
+                    "vendor_msft_firewall_mdmstore_publicprofile_authappsallowuserprefmerge_true": "AuthAppsAllowUserPrefMerge On",
+                }
+            },
+            "vendor_msft_firewall_mdmstore_publicprofile_logfilepath": {
+                "displayName": "Log File Path",
+                "options": {}
+            },
+            "vendor_msft_firewall_mdmstore_publicprofile_enablefirewall": {
+                "displayName": "Enable Public Network Firewall",
+                "options": {
+                    "vendor_msft_firewall_mdmstore_publicprofile_enablefirewall_false": "Disable Firewall",
+                    "vendor_msft_firewall_mdmstore_publicprofile_enablefirewall_true": "Enable Firewall",
+                }
+            },
+            "vendor_msft_firewall_mdmstore_publicprofile_logmaxfilesize": {
+                "displayName": "Log Max File Size",
+                "options": {}
+            },
+            "vendor_msft_firewall_mdmstore_publicprofile_enablelogdroppedpackets": {
+                "displayName": "Enable Log Dropped Packets",
+                "options": {
+                    "vendor_msft_firewall_mdmstore_publicprofile_enablelogdroppedpackets_false": "Disable Logging Of Dropped Packets",
+                    "vendor_msft_firewall_mdmstore_publicprofile_enablelogdroppedpackets_true": "Enable Logging Of Dropped Packets",
+                }
+            },
+            "vendor_msft_firewall_mdmstore_publicprofile_defaultinboundaction": {
+                "displayName": "Default Inbound Action for Public Profile",
+                "options": {
+                    "vendor_msft_firewall_mdmstore_publicprofile_defaultinboundaction_0": "Allow Inbound By Default",
+                    "vendor_msft_firewall_mdmstore_publicprofile_defaultinboundaction_1": "Block Inbound By Default",
+                }
+            },
+            "vendor_msft_firewall_mdmstore_publicprofile_disablestealthmode": {
+                "displayName": "Disable Stealth Mode",
+                "options": {
+                    "vendor_msft_firewall_mdmstore_publicprofile_disablestealthmode_false": "Use Stealth Mode",
+                    "vendor_msft_firewall_mdmstore_publicprofile_disablestealthmode_true": "Disable Stealth Mode",
+                }
+            },
+            "device_vendor_msft_policy_config_audit_objectaccess_auditfilteringplatformconnection": {
+                "displayName": "Object Access Audit Filtering Platform Connection",
+                "options": {
+                    "device_vendor_msft_policy_config_audit_objectaccess_auditfilteringplatformconnection_0": "Off/None",
+                    "device_vendor_msft_policy_config_audit_objectaccess_auditfilteringplatformconnection_1": "Success",
+                    "device_vendor_msft_policy_config_audit_objectaccess_auditfilteringplatformconnection_2": "Failure",
+                    "device_vendor_msft_policy_config_audit_objectaccess_auditfilteringplatformconnection_3": "Success+Failure",
+                }
+            },
+            "device_vendor_msft_policy_config_audit_objectaccess_auditfilteringplatformpacketdrop": {
+                "displayName": "Object Access Audit Filtering Platform Packet Drop",
+                "options": {
+                    "device_vendor_msft_policy_config_audit_objectaccess_auditfilteringplatformpacketdrop_0": "Off/None",
+                    "device_vendor_msft_policy_config_audit_objectaccess_auditfilteringplatformpacketdrop_1": "Success",
+                    "device_vendor_msft_policy_config_audit_objectaccess_auditfilteringplatformpacketdrop_2": "Failure",
+                    "device_vendor_msft_policy_config_audit_objectaccess_auditfilteringplatformpacketdrop_3": "Success+Failure",
+                }
+            },
+        }
+
+        def process_setting(setting, indent=""):
+            setting_instance = setting.get('settingInstance', {})
+            setting_id = setting_instance.get('settingDefinitionId', '')
+            
+            if setting_id in settings_map:
+                display_name = settings_map[setting_id]['displayName']
+                print(f"{indent}{display_name} : ", end="")
+            else:
+                print(f"{indent}Setting: {setting_id} : ", end="")
+
+            if '@odata.type' in setting_instance:
+                setting_type = setting_instance['@odata.type'].split('.')[-1]
+                
+                if setting_type == 'deviceManagementConfigurationChoiceSettingInstance':
+                    process_choice_setting(setting_instance, indent)
+                elif setting_type == 'deviceManagementConfigurationSimpleSettingInstance':
+                    process_simple_setting(setting_instance, indent)
+                elif setting_type == 'deviceManagementConfigurationChoiceSettingCollectionInstance':
+                    process_choice_collection_setting(setting_instance, indent)
+                else:
+                    print(f"Unsupported setting type: {setting_type}")
+
+        def process_choice_setting(setting_instance, indent):
+            choice_value = setting_instance.get('choiceSettingValue', {})
+            value = choice_value.get('value', '')
+            
+            setting_id = setting_instance.get('settingDefinitionId', '')
+            if setting_id in settings_map and value in settings_map[setting_id]['options']:
+                print(f"{settings_map[setting_id]['options'][value]}")
+            else:
+                print(f"{value}")
+            
+            for child in choice_value.get('children', []):
+                process_setting({'settingInstance': child}, indent + "  ")
+
+        def process_simple_setting(setting_instance, indent):
+            simple_value = setting_instance.get('simpleSettingValue', {})
+            value = simple_value.get('value', '')
+            print(f"{value}")
+
+        def process_choice_collection_setting(setting_instance, indent):
+            choice_collection = setting_instance.get('choiceSettingCollectionValue', [])
+            values = []
+            for choice in choice_collection:
+                value = choice.get('value', '')
+                
+                setting_id = setting_instance.get('settingDefinitionId', '')
+                if setting_id in settings_map and value in settings_map[setting_id]['options']:
+                    values.append(settings_map[setting_id]['options'][value])
+                else:
+                    values.append(value)
+            print(", ".join(values))
+
+        def print_profile_settings(response_json, profile_type):
+            print(f"\n{profile_type} Profile Settings")
+            print("-" * 80)
+            for setting in response_json.get('value', []):
+                setting_id = setting.get('settingInstance', {}).get('settingDefinitionId', '')
+                if profile_type.lower() in setting_id.lower():
+                    process_setting(setting)
+
+        response = requests.get(api_url, headers=headers)
+        if response.status_code == 200:
+            response_json = response.json()
+            
+            print("\nGlobal Settings")
+            print("-" * 80)
+            for setting in response_json.get('value', []):
+                setting_id = setting.get('settingInstance', {}).get('settingDefinitionId', '')
+                if 'global' in setting_id.lower():
+                    process_setting(setting)
+            
+            print("\nAudit Settings")
+            print("-" * 80)
+            for setting in response_json.get('value', []):
+                setting_id = setting.get('settingInstance', {}).get('settingDefinitionId', '')
+                if 'audit' in setting_id.lower():
+                    process_setting(setting)
+            
+            print_profile_settings(response_json, "Domain")
+            print_profile_settings(response_json, "Private")
+            print_profile_settings(response_json, "Public")
+        else:
+            print_red(f"[-] Failed to retrieve settings: {response.status_code}")
+            print_red(response.text)
+
+        print("=" * 80)
 
     # display-firewallrulepolicyrules - actual firewall rules
     elif args.command and args.command.lower() == "display-firewallrulepolicyrules":
