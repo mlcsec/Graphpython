@@ -240,6 +240,7 @@ Please refer to the [Wiki](https://github.com/mlcsec/Graphpython/wiki) for the f
 * **Display-AVPolicyRules** - Display antivirus policy rules
 * **Display-ASRPolicyRules** - Display Attack Surface Reduction (ASR) policy rules
 * **Display-DiskEncryptionPolicyRules** - Display disk encryption policy rules
+* **Display-FirewallConfigPolicyRules** - Display firewall configuration policy rules
 * **Display-FirewallRulePolicyRules** - Display firewall rule policy rules (firewall rules not firewall config policy)
 * **Display-EDRPolicyRules** - Display EDR policy rules
 * **Display-LAPSAccountProtectionPolicyRules** - Display LAPS account protection policy rules
@@ -650,7 +651,7 @@ Graph permission IDs applied to objects can be easily located with detailed expl
   - [ ] `Deploy-MaliciousWin32App` - use IntuneWinAppUtil.exe to package the EXE/MSI and deploy to devices
     - check also [here](https://learn.microsoft.com/en-us/graph/api/resources/intune-app-conceptual?view=graph-rest-1.0) for managing iOS, Android, LOB apps etc. via graph
   - [x] `Add-ApplicationCertificate` - similar to add-applicationpassword but gen and assign openssl cert to ent app
-  - [ ] `Display-FirewallPolicyRules` - get Intune firewall configuration policy rules (actually firewall rules already implemented in `Display-FirewallRulePolicyRules`)
+  - [x] `Display-FirewallConfigPolicyRules` - get Intune firewall configuration policy rules (actually firewall rules already implemented in `Display-FirewallRulePolicyRules`)
   - [ ] `Update/Deploy-Policy` - update existing rules for av, asr, etc. policy or deploy a new one with specific groups/devices
   - [x] `Update-DeviceConfig` - patch settings that aren't read only from existing managed device config, more info [here](https://learn.microsoft.com/en-us/graph/api/intune-devices-manageddevice-update?view=graph-rest-beta)
   - [x] `New-SignedJWT` - need to test this from sharpgraphview
