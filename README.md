@@ -225,6 +225,7 @@ Please refer to the [Wiki](https://github.com/mlcsec/Graphpython/wiki) for the f
 * **Get-DeviceGroupPolicyDefinition** - Get device group policy definition
 * **Get-RoleDefinitions** - Get role definitions
 * **Get-RoleAssignments** - Get role assignments
+* **Get-DeviceCompliancePolicies** - Get all device compliance policies (AV, ASR, Bitlocker, Firewall, EDR, LAPS) assignments
 
 ### Post-Auth Intune Exploitation
 
@@ -243,12 +244,12 @@ Please refer to the [Wiki](https://github.com/mlcsec/Graphpython/wiki) for the f
 * **Display-EDRPolicyRules** - Display EDR policy rules
 * **Display-LAPSAccountProtectionPolicyRules** - Display LAPS account protection policy rules
 * **Display-UserGroupAccountProtectionPolicyRules** - Display user group account protection policy rules
-* **Get-DeviceCompliancePolicies** - Get device compliance policies
 * **Add-ExclusionGroupToPolicy** - Bypass av, asr, etc. rules by adding an exclusion group containing compromised user or device
 * **Reboot-Device** - Reboot managed device
 * **Retire-Device** - Retire managed device
 * **Lock-Device** - Lock managed device
 * **Shutdown-Device** - Shutdown managed device
+* **Update-DeviceConfig** - Update properties of the managed device configuration
 
 ### Cleanup
 
