@@ -185,14 +185,15 @@ Please refer to the [Wiki](https://github.com/mlcsec/Graphpython/wiki) for the f
 * **Get-DeviceCategories** - Get device categories
 * **Get-DeviceComplianceSummary** - Get device compliance summary
 * **Get-DeviceConfigurations** - Get device configurations
-* **Get-DeviceConfigurationPolicies** - Get device configuration policies and assignment details (av, asr, diskenc, etc.)
 * **Get-DeviceConfigurationPolicySettings** - Get device configuration policy settings
 * **Get-DeviceEnrollmentConfigurations** - Get device enrollment configurations
 * **Get-DeviceGroupPolicyConfigurations** - Get device group policy configurations and assignment details
 * **Get-DeviceGroupPolicyDefinition** - Get device group policy definition
 * **Get-RoleDefinitions** - Get role definitions
 * **Get-RoleAssignments** - Get role assignments
-* **Get-DeviceCompliancePolicies** - Get all device compliance policies (AV, ASR, Bitlocker, Firewall, EDR, LAPS) assignments
+* **Get-DeviceCompliancePolicies** - Get all device compliance policies (Android, iOS, macOS, Windows, Linux, etc.)
+* **Get-DeviceConfigurationPolicies** - Get device configuration policies and assignment details (AV, ASR, DiskEnc, etc.)
+
 
 ### Post-Auth Intune Exploitation
 
