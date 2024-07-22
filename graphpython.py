@@ -314,8 +314,16 @@ def get_user_agent(args):
 
 def get_access_token(token_input):
     if os.path.isfile(token_input):
-        with open(token_input, 'r', encoding='utf-16') as file:
-            access_token = file.read().strip()
+        encodings = ['utf-8', 'utf-16', 'ascii', 'iso-8859-1']
+        for encoding in encodings:
+            try:
+                with open(token_input, 'r', encoding=encoding) as file:
+                    access_token = file.read().strip()
+                return access_token
+            except UnicodeDecodeError:
+                continue
+        
+        raise ValueError(f"Unable to decode the file {token_input} with any of the tried encodings.")
     else:
         access_token = token_input
     return access_token
@@ -7067,9 +7075,9 @@ openssl pkcs12 -export -out certificate.pfx -inkey private.key -in certificate.c
         print("=" * 80)
 
 
-    #############
-    # Resolvers #
-    #############
+    ############
+    # Locators #
+    ############
     
     # locate-objectid
     elif args.command and args.command.lower() == "locate-objectid":

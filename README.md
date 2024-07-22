@@ -64,42 +64,9 @@ pip3 install -r requirements.txt
 
 ## Usage
 
-```
-usage: graphpython.py [-h] [--command COMMAND] [--list-commands] [--token TOKEN] [--estsauthcookie ESTSAUTHCOOKIE] [--use-cae] [--cert CERT] [--domain DOMAIN] [--tenant TENANT] [--username USERNAME] [--secret SECRET] [--id ID] [--select SELECT] [--query QUERY]
-                      [--search SEARCH] [--entity {driveItem,message,chatMessage,site,event}] [--device {mac,windows,androidmobile,iphone}] [--browser {android,IE,chrome,firefox,edge,safari}] [--only-return-cookies]
-                      [--mail-folder {allitems,inbox,archive,drafts,sentitems,deleteditems,recoverableitemsdeletions}] [--top TOP] [--script SCRIPT] [--email EMAIL]
-
-options:
-  -h, --help            show this help message and exit
-  --command COMMAND     Command to execute
-  --list-commands       List available commands
-  --token TOKEN         Microsoft Graph access token or refresh token for FOCI abuse
-  --estsauthcookie ESTSAUTHCOOKIE
-                        'ESTSAuth' or 'ESTSAuthPersistent' cookie value
-  --use-cae             Flag to use Continuous Access Evaluation (CAE) - add 'cp1' as client claim to get an access token valid for 24 hours
-  --cert CERT           X509Certificate path (.pfx)
-  --domain DOMAIN       Target domain
-  --tenant TENANT       Target tenant ID
-  --username USERNAME   Username or file containing username (invoke-userenumerationasoutsider)
-  --secret SECRET       Enterprise application secretText (invoke-appsecrettoaccesstoken)
-  --id ID               ID of target object
-  --select SELECT       Fields to select from output
-  --query QUERY         Raw API query (GET only)
-  --search SEARCH       Search string
-  --entity {driveItem,message,chatMessage,site,event}
-                        Search entity type: driveItem(OneDrive), message(Mail), chatMessage(Teams), site(SharePoint), event(Calenders)
-  --device {mac,windows,androidmobile,iphone}
-                        Device type for User-Agent forging
-  --browser {android,IE,chrome,firefox,edge,safari}
-                        Browser type for User-Agent forging
-  --only-return-cookies
-                        Only return cookies from the request (open-owamailboxinbrowser)
-  --mail-folder {allitems,inbox,archive,drafts,sentitems,deleteditems,recoverableitemsdeletions}
-                        Mail folder to dump (dump-owamailbox)
-  --top TOP             Number (int) of messages to retrieve (dump-owamailbox)
-  --script SCRIPT       File containing the script content (deploy-maliciousscript and backdoor-script)
-  --email EMAIL         File containing OWA email message body content (spoof-owaemailmessage)
-```
+<p align="center">
+  <img src="./.github/usage.png" />
+</p>
 
 ## Commands
 
@@ -656,5 +623,4 @@ Graph permission IDs applied to objects can be easily located with detailed expl
   - [x] `Update-DeviceConfig` - patch settings that aren't read only from existing managed device config, more info [here](https://learn.microsoft.com/en-us/graph/api/intune-devices-manageddevice-update?view=graph-rest-beta)
   - [x] `New-SignedJWT` - need to test this from sharpgraphview
 - Options:
-  - [ ] add functionality for chaining commands e.g. --command get-user, get-currentuser, get-groups
-  - [ ] --proxy 
+  - [ ] --proxy option
