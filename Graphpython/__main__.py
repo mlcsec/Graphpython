@@ -14,21 +14,21 @@ def parseArgs():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=textwrap.dedent('''\
             examples:
-              graphpython --command invoke-reconasoutsider --domain company.com
-              graphpython --command invoke-userenumerationasoutsider --username <email@company.com/emails.txt>
-              graphpython --command get-graphtokens
-              graphpython --command invoke-refreshtoazuremanagementtoken --tenant <tenant-id> --token refresh-token
-              graphpython --command get-users --token eyJ0... -- select displayname,id [--id <userid>]
-              graphpython --command list-recentonedrivefiles --token token
-              graphpython --command invoke-search --search "credentials" --entity driveItem --token token
-              graphpython --command invoke-customquery --query https://graph.microsoft.com/v1.0/sites/{siteId}/drives --token token
-              graphpython --command assign-privilegedrole --token token
-              graphpython --command spoof-owaemailmessage [--id <userid to spoof>] --token token --email email-body.txt
-              graphpython --command get-manageddevices --token intune-token
-              graphpython --command deploy-maliciousscript --script malicious.ps1 --token token
-              graphpython --command backdoor-script --id <scriptid> --script backdoored-script.ps1 --token token
-              graphpython --command add-exclusiongrouptopolicy --id <policyid> --token token
-              graphpython --command reboot-device --id <deviceid> --token eyj0...
+              Graphpython --command invoke-reconasoutsider --domain company.com
+              Graphpython --command invoke-userenumerationasoutsider --username <email@company.com/emails.txt>
+              Graphpython --command get-graphtokens
+              Graphpython --command invoke-refreshtoazuremanagementtoken --tenant <tenant-id> --token refresh-token
+              Graphpython --command get-users --token eyJ0... -- select displayname,id [--id <userid>]
+              Graphpython --command list-recentonedrivefiles --token token
+              Graphpython --command invoke-search --search "credentials" --entity driveItem --token token
+              Graphpython --command invoke-customquery --query https://graph.microsoft.com/v1.0/sites/{siteId}/drives --token token
+              Graphpython --command assign-privilegedrole --token token
+              Graphpython --command spoof-owaemailmessage [--id <userid to spoof>] --token token --email email-body.txt
+              Graphpython --command get-manageddevices --token intune-token
+              Graphpython --command deploy-maliciousscript --script malicious.ps1 --token token
+              Graphpython --command backdoor-script --id <scriptid> --script backdoored-script.ps1 --token token
+              Graphpython --command add-exclusiongrouptopolicy --id <policyid> --token token
+              Graphpython --command reboot-device --id <deviceid> --token eyj0...
         ''')
     )
     parser.add_argument("--command", help="Command to execute")
