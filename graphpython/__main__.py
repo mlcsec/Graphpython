@@ -132,85 +132,93 @@ def main():
             print_red(f"[-] Error: --token is required for command")
             return
 
-    # Outsider commands
-    elif args.command in ["invoke-reconasoutsider", "invoke-userenumerationasoutsider"]:
-        getattr(outsider, args.command.replace("-", "_"))(args)
+    try:
+        # Outsider commands
+        if args.command in ["invoke-reconasoutsider", "invoke-userenumerationasoutsider"]:
+            getattr(outsider, args.command.replace("-", "_"))(args)
 
-    # Authentication commands
-    if args.command in ["get-graphtokens", "get-tenantid", "get-tokenscope", "decode-accesstoken",
-                        "invoke-refreshtomsgraphtoken", "invoke-refreshtoazuremanagementtoken",
-                        "invoke-refreshtovaulttoken", "invoke-refreshtomsteamstoken",
-                        "invoke-refreshtoofficeappstoken", "invoke-refreshtoofficemanagementtoken",
-                        "invoke-refreshtooutlooktoken", "invoke-refreshtosubstratetoken",
-                        "invoke-refreshtoyammertoken", "invoke-refreshtointuneenrollmenttoken",
-                        "invoke-refreshtoonedrivetoken", "invoke-refreshtosharepointtoken",
-                        "invoke-certtoaccesstoken", "invoke-estscookietoaccesstoken",
-                        "invoke-appsecrettoaccesstoken", "new-signedjwt"]:
-        getattr(auth, args.command.replace("-", "_"))(args)
+        # Authentication commands
+        elif args.command in ["get-graphtokens", "get-tenantid", "get-tokenscope", "decode-accesstoken",
+                            "invoke-refreshtomsgraphtoken", "invoke-refreshtoazuremanagementtoken",
+                            "invoke-refreshtovaulttoken", "invoke-refreshtomsteamstoken",
+                            "invoke-refreshtoofficeappstoken", "invoke-refreshtoofficemanagementtoken",
+                            "invoke-refreshtooutlooktoken", "invoke-refreshtosubstratetoken",
+                            "invoke-refreshtoyammertoken", "invoke-refreshtointuneenrollmenttoken",
+                            "invoke-refreshtoonedrivetoken", "invoke-refreshtosharepointtoken",
+                            "invoke-certtoaccesstoken", "invoke-estscookietoaccesstoken",
+                            "invoke-appsecrettoaccesstoken", "new-signedjwt"]:
+            getattr(auth, args.command.replace("-", "_"))(args)
 
-    # Enumeration commands
-    elif args.command in ["get-currentuser", "get-currentuseractivities", "get-orginfo", "get-domains",
-                      "get-user", "get-userproperties", "get-userprivileges",
-                      "get-usertransitivegroupmembership", "get-group", "get-groupmember",
-                      "get-userapproleassignments", "get-conditionalaccesspolicy",
-                      "get-application", "get-personalcontacts", "get-crosstenantaccesspolicy",
-                      "get-partnercrosstenantaccesspolicy", "get-userchatmessages",
-                      "get-administrativeunitmember", "get-onedrivefiles", "get-userpermissiongrants",
-                      "get-oauth2permissiongrants", "get-messages", "get-temporaryaccesspassword",
-                      "get-password", "list-authmethods", "list-directoryroles", "list-notebooks",
-                      "list-conditionalaccesspolicies", "list-conditionalauthenticationcontexts",
-                      "list-conditionalnamedlocations", "list-sharepointroot", "list-sharepointsites",
-                      "list-sharepointurls", "list-externalconnections", "list-applications", "list-onedriveurls",
-                      "list-serviceprincipals", "list-tenants", "list-joinedteams", "list-chats",
-                      "list-chatmessages", "list-devices", "list-administrativeunits", "list-onedrives",
-                      "list-recentonedrivefiles", "list-sharedonedrivefiles", "get-appserviceprincipal",
-                      "get-serviceprincipal", "get-serviceprincipalapproleassignments"]:
-        getattr(enum, args.command.replace("-", "_"))(args)
+        # Enumeration commands
+        elif args.command in ["get-currentuser", "get-currentuseractivities", "get-orginfo", "get-domains",
+                        "get-user", "get-userproperties", "get-userprivileges",
+                        "get-usertransitivegroupmembership", "get-group", "get-groupmember",
+                        "get-userapproleassignments", "get-conditionalaccesspolicy",
+                        "get-application", "get-personalcontacts", "get-crosstenantaccesspolicy",
+                        "get-partnercrosstenantaccesspolicy", "get-userchatmessages",
+                        "get-administrativeunitmember", "get-onedrivefiles", "get-userpermissiongrants",
+                        "get-oauth2permissiongrants", "get-messages", "get-temporaryaccesspassword",
+                        "get-password", "list-authmethods", "list-directoryroles", "list-notebooks",
+                        "list-conditionalaccesspolicies", "list-conditionalauthenticationcontexts",
+                        "list-conditionalnamedlocations", "list-sharepointroot", "list-sharepointsites",
+                        "list-sharepointurls", "list-externalconnections", "list-applications", "list-onedriveurls",
+                        "list-serviceprincipals", "list-tenants", "list-joinedteams", "list-chats",
+                        "list-chatmessages", "list-devices", "list-administrativeunits", "list-onedrives",
+                        "list-recentonedrivefiles", "list-sharedonedrivefiles", "get-appserviceprincipal",
+                        "get-serviceprincipal", "get-serviceprincipalapproleassignments"]:
+            getattr(enum, args.command.replace("-", "_"))(args)
 
-    # Exploitation commands
-    elif args.command in ["invoke-customquery","invoke-search", "find-privilegedroleusers", "find-privilegedapplications",
-                          "find-updatablegroups","find-dynamicgroups", "find-securitygroups",
-                          "update-userpassword", "update-userproperties", "add-usertap", "add-groupmember",
-                          "create-application", "create-newuser", "invite-guestuser",
-                          "assign-privilegedrole", "open-owamailboxinbrowser", "dump-owamailbox",
-                          "spoof-owaemailmessage", "add-applicationpermission", "add-applicationcertificate",
-                          "add-applicationpassword", "grant-appadminconsent"]:
-        getattr(exploit, args.command.replace("-", "_"))(args)
+        # Exploitation commands
+        elif args.command in ["invoke-customquery","invoke-search", "find-privilegedroleusers", "find-privilegedapplications",
+                            "find-updatablegroups","find-dynamicgroups", "find-securitygroups",
+                            "update-userpassword", "update-userproperties", "add-usertap", "add-groupmember",
+                            "create-application", "create-newuser", "invite-guestuser",
+                            "assign-privilegedrole", "open-owamailboxinbrowser", "dump-owamailbox",
+                            "spoof-owaemailmessage", "add-applicationpermission", "add-applicationcertificate",
+                            "add-applicationpassword", "grant-appadminconsent"]:
+            getattr(exploit, args.command.replace("-", "_"))(args)
 
-    # Intune enum commands
-    elif args.command in ["get-manageddevices", "get-userdevices", "get-caps", "get-devicecategories",
-                          "get-devicecompliancesummary", "get-deviceconfigurations",
-                          "get-deviceconfigurationpolicies", "get-deviceconfigurationpolicysettings",
-                          "get-deviceenrollmentconfigurations", "get-devicegrouppolicyconfigurations",
-                          "get-devicegrouppolicydefinition", "get-roledefinitions", "get-roleassignments",
-                          "get-devicecompliancepolicies"]:
-        getattr(intune_enum, args.command.replace("-", "_"))(args)
+        # Intune enum commands
+        elif args.command in ["get-manageddevices", "get-userdevices", "get-caps", "get-devicecategories",
+                            "get-devicecompliancesummary", "get-deviceconfigurations",
+                            "get-deviceconfigurationpolicies", "get-deviceconfigurationpolicysettings",
+                            "get-deviceenrollmentconfigurations", "get-devicegrouppolicyconfigurations",
+                            "get-devicegrouppolicydefinition", "get-roledefinitions", "get-roleassignments",
+                            "get-devicecompliancepolicies"]:
+            getattr(intune_enum, args.command.replace("-", "_"))(args)
+        
+        # Intune exploit commands
+        elif args.command in ["dump-devicemanagementscripts","dump-windowsapps", "dump-iosapps", 
+                            "dump-androidapps", "dump-macosapps","get-scriptcontent",
+                            "display-avpolicyrules", "display-asrpolicyrules",
+                            "display-diskencryptionpolicyrules", "display-firewallconfigpolicyrules",
+                            "display-firewallrulepolicyrules", "display-edrpolicyrules",
+                            "display-lapsaccountprotectionpolicyrules",
+                            "display-usergroupaccountprotectionpolicyrules", "add-exclusiongrouptopolicy",
+                            "deploy-maliciousscript", "deploy-maliciousweblink", "backdoor-script",
+                            "update-deviceconfig", "reboot-device", "retire-device", "lock-device",
+                            "shutdown-device"]:
+            getattr(intune_exploit, args.command.replace("-", "_"))(args)
+
+        # Cleanup commands
+        elif args.command in ["delete-user", "delete-group", "remove-groupmember", "delete-application",
+                            "delete-device", "wipe-device"]:
+            getattr(cleanup, args.command.replace("-", "_"))(args)
+
+        # Locator commands
+        elif args.command in ["locate-objectid", "locate-permissionid"]:
+            getattr(locators, args.command.replace("-", "_"))(args)
+
+        # ...
+        elif args.command and args.command.lower() not in available_commands:
+            print_red(f"[-] Error: Unknown command '{args.command}'. Use --list-commands to see available commands")
     
-    # Intune exploit commands
-    elif args.command in ["dump-devicemanagementscripts","dump-windowsapps", "dump-iosapps", 
-                          "dump-androidapps", "dump-macosapps","get-scriptcontent",
-                          "display-avpolicyrules", "display-asrpolicyrules",
-                          "display-diskencryptionpolicyrules", "display-firewallconfigpolicyrules",
-                          "display-firewallrulepolicyrules", "display-edrpolicyrules",
-                          "display-lapsaccountprotectionpolicyrules",
-                          "display-usergroupaccountprotectionpolicyrules", "add-exclusiongrouptopolicy",
-                          "deploy-maliciousscript", "deploy-maliciousweblink", "backdoor-script",
-                          "update-deviceconfig", "reboot-device", "retire-device", "lock-device",
-                          "shutdown-device"]:
-        getattr(intune_exploit, args.command.replace("-", "_"))(args)
-
-    # Cleanup commands
-    elif args.command in ["delete-user", "delete-group", "remove-groupmember", "delete-application",
-                          "delete-device", "wipe-device"]:
-        getattr(cleanup, args.command.replace("-", "_"))(args)
-
-    # Locator commands
-    elif args.command in ["locate-objectid", "locate-permissionid"]:
-        getattr(locators, args.command.replace("-", "_"))(args)
-
-    # ...
-    elif args.command and args.command.lower() not in available_commands:
-        print_red(f"[-] Error: Unknown command '{args.command}'. Use --list-commands to see available commands")
+    except KeyboardInterrupt:
+        print_red("\n[-] Operation cancelled by user")
+        sys.exit(1)
+    except Exception as e:
+        print_red(f"\n[-] An error occurred while executing '{args.command}': {str(e)}")
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()
