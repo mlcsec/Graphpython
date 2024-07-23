@@ -63,14 +63,14 @@ Either install via pip:
 git clone https://github.com/mlcsec/Graphpython.git
 cd Graphpython
 pip install .
-graphpython
+Graphpython -h
 ```
 Or run as before via git and Python3:
 ```
 git clone https://github.com/mlcsec/Graphpython.git
 cd Graphpython
 pip3 install -r requirements.txt
-python3 graphpython.py
+python3 Graphpython.py -h
 ```
 
 ## Usage
