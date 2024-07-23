@@ -10,7 +10,7 @@ if os.path.exists('requirements.txt'):
         requirements = [x.strip() for x in f.readlines()]
 
 setup(
-    name="graphpython",
+    name="Graphpython",
     version="1.0",
     packages=find_packages(),
     author="mlcsec",
@@ -32,11 +32,11 @@ setup(
     python_requires='>=3.6',
     entry_points={
         "console_scripts": [
-            "graphpython=graphpython.__main__:main",
+            "Graphpython=Graphpython.__main__:main",
         ],
     },
     include_package_data=True,
     package_data={
-        'graphpython': ['commands/graphpermissions.txt'],
+        'Graphpython': ['commands/graphpermissions.txt'],
     },
 )
