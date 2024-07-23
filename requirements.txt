@@ -1,0 +1,8 @@
+requests
+pyjwt
+dnspython
+tqdm
+tabulate
+cryptography
+beautifulsoup4
+termcolor
