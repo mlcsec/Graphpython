@@ -56,16 +56,14 @@ Graphpython covers external reconnaissance, authentication/token manipulation, e
 
 ## Install
 
-> Reformatted entire codebase, more installation options are available now. PyPi install will be supported soon.
-
-Either install via pip:
+Install via git and pip:
 ```
 git clone https://github.com/mlcsec/Graphpython.git
 cd Graphpython
 pip install .
 Graphpython -h
 ```
-Or run as before via git and Python3:
+Or run manually with Python3:
 ```
 git clone https://github.com/mlcsec/Graphpython.git
 cd Graphpython
