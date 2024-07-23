@@ -1,7 +1,7 @@
 import requests 
 import json
-from graphpython.utils.helpers import print_yellow, print_green, print_red, get_user_agent, get_access_token
-from graphpython.utils.helpers import graph_api_get
+from Graphpython.utils.helpers import print_yellow, print_green, print_red, get_user_agent, get_access_token
+from Graphpython.utils.helpers import graph_api_get
 
 ################################
 # Post-Auth Intune Enumeration #

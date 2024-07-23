@@ -3,8 +3,8 @@
 import sys
 import argparse
 import textwrap
-from graphpython.commands import outsider, auth, enum, exploit, intune_enum, intune_exploit, cleanup, locators
-from graphpython.utils.helpers import list_commands, print_red
+from Graphpython.commands import outsider, auth, enum, exploit, intune_enum, intune_exploit, cleanup, locators
+from Graphpython.utils.helpers import list_commands, print_red
 
 def parseArgs():
 
