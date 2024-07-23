@@ -56,10 +56,21 @@ Graphpython covers external reconnaissance, authentication/token manipulation, e
 
 ## Install
 
+> Reformatted entire codebase, more installation options are available now. PyPi install will be supported soon.
+
+Either install via pip:
+```
+git clone https://github.com/mlcsec/Graphpython.git
+cd Graphpython
+pip install .
+graphpython
+```
+Or run as before via git and Python3:
 ```
 git clone https://github.com/mlcsec/Graphpython.git
 cd Graphpython
 pip3 install -r requirements.txt
+python3 graphpython.py
 ```
 
 ## Usage
@@ -606,22 +617,12 @@ Graph permission IDs applied to objects can be easily located with detailed expl
 ## Todo
 
 - Update:
-  - [x] `Spoof-OWAEmailMessage` - add --email option containing formatted message as only accepts one line at the mo...
-  - [x] `Deploy-MaliciousScript` - add input options to choose runAsAccount, enforceSignatureCheck, etc. and more assignment options
-  - [x] `Get-DeviceConfigurationPolicies` - tidy up the templateReference and assignmentTarget output
-  - [x] `Add-ApplicationPermission` - updated logic and added ability to grant admin consent for admin permissions assigned from the same command - update `Grant-AppAdminConsent` to handle any failures so users don't have to repeat this whole command again
-  - [X] `Get-Application` - process the `requiredResourceAccess` attribute and resolved any Graph API app role IDs to their role name/description - `List-Applications` updated with this as well
+  - [ ] `Get-UserPrivileges` - update to flag any privileged directory role app ids
+  - [ ] `Locate-DirectoryRoleID` - similar to other locator functions but for resolving directory role ids 
 - New:
-  - [x] `Find-PrivilegedApplications` - identify enterprise applications which have privileged graph api permissions granted
-  - [x] `Grant-AppAdminConsent` - grant admin consent for requested/applied admin app permissions (if `Add-ApplicationPermission` fails)
-  - [x] `Backdoor-Script` - first user downloads target script content then adds their malicious code, supply updated script as args, encodes then [patch](https://learn.microsoft.com/en-us/graph/api/intune-shared-devicemanagementscript-update?view=graph-rest-beta)
-  - [x] `Dump-XApps` - dump-windowsapps, dump-iosapps, dump-macosapps, and dump-android apps managed via Intune to enrolled users/groups/devices 
-  - [ ] `Deploy-MaliciousWin32App` - use IntuneWinAppUtil.exe to package the EXE/MSI and deploy to devices
+  - [ ] `Deploy-MaliciousWin32Exe/MSI` - use IntuneWinAppUtil.exe to package the EXE/MSI and deploy to devices
     - check also [here](https://learn.microsoft.com/en-us/graph/api/resources/intune-app-conceptual?view=graph-rest-1.0) for managing iOS, Android, LOB apps etc. via graph
-  - [x] `Add-ApplicationCertificate` - similar to add-applicationpassword but gen and assign openssl cert to ent app
-  - [x] `Display-FirewallConfigPolicyRules` - get Intune firewall configuration policy rules (actually firewall rules already implemented in `Display-FirewallRulePolicyRules`)
   - [ ] `Update/Deploy-Policy` - update existing rules for av, asr, etc. policy or deploy a new one with specific groups/devices
-  - [x] `Update-DeviceConfig` - patch settings that aren't read only from existing managed device config, more info [here](https://learn.microsoft.com/en-us/graph/api/intune-devices-manageddevice-update?view=graph-rest-beta)
-  - [x] `New-SignedJWT` - need to test this from sharpgraphview
+  - [ ] `Invoke-MFASweep` - port mfa sweep and add to outsider commands 
 - Options:
   - [ ] --proxy option
