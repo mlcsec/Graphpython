@@ -38,7 +38,7 @@ python3 Graphpython.py -h
 
 ## Commands
 
-Please refer to the [Wiki](https://github.com/mlcsec/Graphpython/wiki) for more details on the available functionality:
+Please refer to the [Wiki](https://github.com/mlcsec/Graphpython/wiki/Commands) for more details on the available functionality:
 
 ### Outsider
 
