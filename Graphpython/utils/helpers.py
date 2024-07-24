@@ -161,7 +161,6 @@ def list_commands():
         ["Display-UserGroupAccountProtectionPolicyRules", "Display user group account protection policy rules"],
         ["Add-ExclusionGroupToPolicy", "Bypass av, asr, etc. rules by adding an exclusion group containing compromised user or device"],
         ["Reboot-Device", "Reboot managed device"],
-        ["Retire-Device", "Retire managed device"],
         ["Lock-Device", "Lock managed device"],
         ["Shutdown-Device", "Shutdown managed device"],
         ["Update-DeviceConfig", "Update properties of the managed device configuration"]
@@ -174,6 +173,7 @@ def list_commands():
         ["Delete-Application", "Delete an application"],
         ["Delete-Device", "Delete managed device"],
         ["Wipe-Device", "Wipe managed device"],
+        ["Retire-Device", "Retire managed device"]
     ]
 
     locator_commands = [
