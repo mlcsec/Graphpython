@@ -32,13 +32,15 @@ python3 Graphpython.py -h
 
 ## Usage
 
+Please refer to the [Wiki](https://github.com/mlcsec/Graphpython/wiki/Usage) for more details
+
 <p align="center">
   <img src="./.github/usage.png" />
 </p>
 
 ## Commands
 
-Please refer to the [Wiki](https://github.com/mlcsec/Graphpython/wiki/Commands) for more details on the available functionality:
+Please refer to the [Wiki](https://github.com/mlcsec/Graphpython/wiki/Commands) for more details on the available commands
 
 ### Outsider
 
@@ -206,7 +208,7 @@ Please refer to the [Wiki](https://github.com/mlcsec/Graphpython/wiki/Commands) 
 
 # Demos
 
-The following demos can be found on the [Wiki](https://github.com/mlcsec/Graphpython/wiki/Demos):
+Please refer to the [Wiki](https://github.com/mlcsec/Graphpython/wiki/Demos) for the following demos
 
 - [Outsider](https://github.com/mlcsec/Graphpython/wiki/Demos#outsider)
     - [Invoke-ReconAsOutsider](https://github.com/mlcsec/Graphpython/wiki/Demos#invoke-reconasoutsider)
