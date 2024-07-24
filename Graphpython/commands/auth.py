@@ -833,7 +833,7 @@ def invoke_refreshtosharepointtoken(args):
 # invoke-certtoaccesstoken
 def invoke_certtoaccesstoken(args):
     if not args.tenant or not args.cert or not args.id:
-        print_red("[-] Error: --tenant, --cert, and --id arguments are required for Invoke-CertToAccessToken command")
+        print_red("[-] Error: --tenant, --cert, and --id <appid> arguments are required for Invoke-CertToAccessToken command")
         return
 
     print_yellow("[*] Invoke-CertToAccessToken")
