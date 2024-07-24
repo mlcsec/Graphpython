@@ -196,13 +196,12 @@ def main():
                             "display-lapsaccountprotectionpolicyrules",
                             "display-usergroupaccountprotectionpolicyrules", "add-exclusiongrouptopolicy",
                             "deploy-maliciousscript", "deploy-maliciousweblink", "backdoor-script",
-                            "update-deviceconfig", "reboot-device", "retire-device", "lock-device",
-                            "shutdown-device"]:
+                            "update-deviceconfig", "reboot-device", "lock-device", "shutdown-device"]:
             getattr(intune_exploit, args.command.replace("-", "_"))(args)
 
         # Cleanup commands
         elif args.command in ["delete-user", "delete-group", "remove-groupmember", "delete-application",
-                            "delete-device", "wipe-device"]:
+                            "delete-device", "wipe-device", "retire-device"]:
             getattr(cleanup, args.command.replace("-", "_"))(args)
 
         # Locator commands

@@ -5,6 +5,7 @@ from Graphpython.utils.helpers import print_yellow, print_green, print_red, get_
 # Cleanup #
 ###########
 
+# delete-user
 def delete_user(args):
     if not args.id:
         print_red("[-] Error: --id argument is required for Delete-User command")
@@ -27,6 +28,7 @@ def delete_user(args):
         print_red(response.text)
     print("=" * 80)
 
+# delete-group
 def delete_group(args):
     if not args.id:
         print_red("[-] Error: --id argument is required for Delete-Group command")
@@ -49,6 +51,7 @@ def delete_group(args):
         print_red(response.text)
     print("=" * 80)
 
+# remove-groupmember
 def remove_groupmember(args):
     if not args.id:
         print_red("[-] Error: --id groupid,objectid required for Remove-GroupMember command")
@@ -77,6 +80,7 @@ def remove_groupmember(args):
         print_red(response.text)
     print("=" * 80)
 
+# delete-application
 def delete_application(args):
     if not args.id:
         print_red("[-] Error: --id argument is required for Delete-Application command")
@@ -99,6 +103,7 @@ def delete_application(args):
         print_red(response.text)
     print("=" * 80)
 
+# delete-device
 def delete_device(args):
     if not args.id:
         print_red("[-] Error: --id argument is required for Delete-Device command")
@@ -121,6 +126,7 @@ def delete_device(args):
         print_red(response.text)
     print("=" * 80)
 
+# wipe-device 
 def wipe_device(args):
     if not args.id:
         print_red("[-] Error: --id argument is required for Wipe-Device command")
@@ -148,5 +154,29 @@ def wipe_device(args):
         print_green(f"[+] Device wipe initiated successfully")
     else:
         print_red(f"[-] Failed to initiate device wipe: {response.status_code}")
+        print_red(response.text)
+    print("=" * 80)
+
+# retire-device
+def retire_device(args):
+    if not args.id:
+        print_red("[-] Error: --id argument is required for Retire-Device command")
+        return
+
+    print_yellow("[*] Retire-Device")
+    print("=" * 80)
+    api_url = f"https://graph.microsoft.com/beta/deviceManagement/managedDevices/{args.id}/retire"
+    user_agent = get_user_agent(args)
+    
+    headers = {
+        'Authorization': f'Bearer {get_access_token(args.token)}',
+        'User-Agent': user_agent
+    }
+    
+    response = requests.post(api_url, headers=headers)
+    if response.ok:
+        print_green(f"[+] Device retire initiated successfully")
+    else:
+        print_red(f"[-] Failed to initiate device retire: {response.status_code}")
         print_red(response.text)
     print("=" * 80)
