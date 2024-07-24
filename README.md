@@ -172,6 +172,7 @@ Please refer to the [Wiki](https://github.com/mlcsec/Graphpython/wiki) for more 
 - Get-ScriptContent
 - Backdoor-Script
 - Deploy-MaliciousScript
+- Deploy-MaliciousWebLink
 - Display-AVPolicyRules
 - Display-ASRPolicyRules
 - Display-DiskEncryptionPolicyRules
@@ -182,7 +183,6 @@ Please refer to the [Wiki](https://github.com/mlcsec/Graphpython/wiki) for more 
 - Display-UserGroupAccountProtectionPolicyRules
 - Add-ExclusionGroupToPolicy
 - Reboot-Device
-- Retire-Device
 - Lock-Device
 - Shutdown-Device
 - Update-DeviceConfig
@@ -195,6 +195,7 @@ Please refer to the [Wiki](https://github.com/mlcsec/Graphpython/wiki) for more 
 - Delete-Application
 - Delete-Device
 - Wipe-Device
+- Retire-Device
 
 ### Locators
 
@@ -212,13 +213,17 @@ The following demos can be found on the [Wiki](https://github.com/mlcsec/Graphpy
     - [Invoke-UserEnumerationAsOutsider](https://github.com/mlcsec/Graphpython/wiki/Demos#invoke-userenumerationasoutsider)
 - [Authentication](https://github.com/mlcsec/Graphpython/wiki/Demos#authentication)
     - [Get-GraphTokens](https://github.com/mlcsec/Graphpython/wiki/Demos#get-graphtokens)
+    - [Get-TenantID](https://github.com/mlcsec/Graphpython/wiki/Demos#get-tenantid)
     - [Invoke-RefreshToAzureManagementToken](https://github.com/mlcsec/Graphpython/wiki/Demos#invoke-refreshtoazuremanagementtoken)
-    - [Invoke-RefreshToMSGraphToken]((https://github.com/mlcsec/Graphpython/wiki/Demos#invoke-refreshtomsgraphtoken))
+    - [Invoke-RefreshToMSGraphToken](https://github.com/mlcsec/Graphpython/wiki/Demos#invoke-refreshtomsgraphtoken)
     - [Invoke-CertToAccessToken](https://github.com/mlcsec/Graphpython/wiki/Demos#invoke-certtoaccesstoken)
     - [Invoke-ESTSCookieToAccessToken](https://github.com/mlcsec/Graphpython/wiki/Demos#invoke-estscookietoaccesstoken)
 - [Post-Auth Enumeration](https://github.com/mlcsec/Graphpython/wiki/Demos#post-auth-enumeration)    
+    - [Get-CurrentUser](https://github.com/mlcsec/Graphpython/wiki/Demos#get-currentuser)
     - [Get-User](https://github.com/mlcsec/Graphpython/wiki/Demos#get-user)
+    - [Get-Group](https://github.com/mlcsec/Graphpython/wiki/Demos#get-group)
     - [Get-UserPrivileges](https://github.com/mlcsec/Graphpython/wiki/Demos#get-userprivileges)
+    - [Get-Domains](https://github.com/mlcsec/Graphpython/wiki/Demos#get-domains)
     - [Get-Application](https://github.com/mlcsec/Graphpython/wiki/Demos#get-application)
     - [List-RecentOneDriveFiles](https://github.com/mlcsec/Graphpython/wiki/Demos#list-recentonedrivefiles)
 - [Post-Auth Exploitation](https://github.com/mlcsec/Graphpython/wiki/Demos#post-auth-exploitation)    
@@ -226,6 +231,7 @@ The following demos can be found on the [Wiki](https://github.com/mlcsec/Graphpy
     - [Find-PrivilegedRoleUsers](https://github.com/mlcsec/Graphpython/wiki/Demos#find-privilegedroleusers)
     - [Assign-PrivilegedRole](https://github.com/mlcsec/Graphpython/wiki/Demos#assign-privilegedrole)
     - [Find-PrivilegedApplications](https://github.com/mlcsec/Graphpython/wiki/Demos#find-privilegedapplications)
+    - [Add-ApplicationCertificate](https://github.com/mlcsec/Graphpython/wiki/Demos#add-applicationcertificate)
     - [Add-ApplicationPermission](https://github.com/mlcsec/Graphpython/wiki/Demos#add-applicationpermission)
     - [Spoof-OWAEmailMessage](https://github.com/mlcsec/Graphpython/wiki/Demos#spoof-owaemailmessage)
     - [Find-DynamicGroups](https://github.com/mlcsec/Graphpython/wiki/Demos#find-dynamicgroups)
@@ -234,12 +240,14 @@ The following demos can be found on the [Wiki](https://github.com/mlcsec/Graphpy
 - [Post-Auth Intune Enumeration](https://github.com/mlcsec/Graphpython/wiki/Demos#post-auth-intune-enumeration)
     - [Get-ManagedDevices](https://github.com/mlcsec/Graphpython/wiki/Demos#get-manageddevices)
     - [Get-UserDevices](https://github.com/mlcsec/Graphpython/wiki/Demos#get-userdevices) 
+    - [Get-DeviceCompliancePolicies](https://github.com/mlcsec/Graphpython/wiki/Demos#get-devicecompliancepolicies)
     - [Get-DeviceConfigurationPolicies](https://github.com/mlcsec/Graphpython/wiki/Demos#get-deviceconfigurationpolicies)
 - [Post-Auth Intune Exploitation](https://github.com/mlcsec/Graphpython/wiki/Demos#post-auth-intune-exploitation)
     - [Display-AVPolicyRules](https://github.com/mlcsec/Graphpython/wiki/Demos#display-avpolicyrules)
     - [Get-ScriptContent](https://github.com/mlcsec/Graphpython/wiki/Demos#get-scriptcontent)
     - [Backdoor-Script](https://github.com/mlcsec/Graphpython/wiki/Demos#backdoor-script)
     - [Deploy-MaliciousScript](https://github.com/mlcsec/Graphpython/wiki/Demos#deploy-maliciousscript)
+    - [Deploy-MaliciousWebLink](https://github.com/mlcsec/Graphpython/wiki/Demos#deploy-maliciousweblink)
     - [Add-ExclusionGroupToPolicy](https://github.com/mlcsec/Graphpython/wiki/Demos#add-exclusiongrouptopolicy)
 - [Cleanup](https://github.com/mlcsec/Graphpython/wiki/Demos#cleanup)
     - [Remove-GroupMember](https://github.com/mlcsec/Graphpython/wiki/Demos#remove-groupmember)
@@ -263,8 +271,9 @@ The following demos can be found on the [Wiki](https://github.com/mlcsec/Graphpy
 ## Todo
 
 - Update:
-  - [ ] `Get-UserPrivileges` - update to flag any privileged directory role app ids
-  - [ ] `Locate-DirectoryRoleID` - similar to other locator functions but for resolving directory role ids 
+  - [ ] `Get-UserPrivileges` - update to flag any privileged directory role app ids green
+  - [ ] `Locate-DirectoryRoleID` - similar to other locator functions but for resolving directory role ids
+  - [ ] `Deploy-MaliciousWebLink` - add option to deploy script which copies link new link to all user desktops
 - New:
   - [ ] `Deploy-MaliciousWin32Exe/MSI` - use IntuneWinAppUtil.exe to package the EXE/MSI and deploy to devices
     - check also [here](https://learn.microsoft.com/en-us/graph/api/resources/intune-app-conceptual?view=graph-rest-1.0) for managing iOS, Android, LOB apps etc. via graph
