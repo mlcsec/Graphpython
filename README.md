@@ -203,6 +203,7 @@ Please refer to the [Wiki](https://github.com/mlcsec/Graphpython/wiki/Commands) 
 
 - Locate-ObjectID
 - Locate-PermissionID
+- Locate-DirectoryRole
 
 <br>
 
@@ -256,6 +257,7 @@ Please refer to the [Wiki](https://github.com/mlcsec/Graphpython/wiki/Demos) for
 - [Locators](https://github.com/mlcsec/Graphpython/wiki/Demos#locators)
     - [Locate-ObjectID](https://github.com/mlcsec/Graphpython/wiki/Demos#locate-objectid)
     - [Locate-PermissionID](https://github.com/mlcsec/Graphpython/wiki/Demos#locate-permissionid)
+    - [Locate-DirectoryRole](https://github.com/mlcsec/Graphpython/wiki/Demos#locate-directoryrole)
   
 <br>
 
@@ -274,7 +276,7 @@ Please refer to the [Wiki](https://github.com/mlcsec/Graphpython/wiki/Demos) for
 
 - Update:
   - [ ] `Get-UserPrivileges` - update to flag any privileged directory role app ids green
-  - [ ] `Locate-DirectoryRoleID` - similar to other locator functions but for resolving directory role ids
+  - [x] `Locate-DirectoryRoleID` - similar to other locator functions but for resolving directory role ids
   - [ ] `Deploy-MaliciousWebLink` - add option to deploy script which copies new windows web app link to all user desktops
 - New:
   - [ ] `Deploy-MaliciousWin32Exe/MSI` - use IntuneWinAppUtil.exe to package the EXE/MSI and deploy to devices
