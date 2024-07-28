@@ -1,1 +1,4 @@
-include graphpython/commands/graphpermissions.txt
+include Graphpython/commands/graphpermissions.txt
+include Graphpython/commands/directoryroles.txt
+include requirements.txt
+include README.md
