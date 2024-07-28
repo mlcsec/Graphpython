@@ -38,5 +38,6 @@ setup(
     include_package_data=True,
     package_data={
         'Graphpython': ['commands/graphpermissions.txt'],
+        'Graphpython': ['commands/directoryroles.txt']
     },
 )
