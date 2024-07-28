@@ -1,2 +1,1 @@
 include graphpython/commands/graphpermissions.txt
-include graphpython/commands/directoryroles.txt
