@@ -178,7 +178,8 @@ def list_commands():
 
     locator_commands = [
         ["Locate-ObjectID", "Locate object ID and display object properties"],
-        ["Locate-PermissionID", "Locate Graph permission details (application/delegated, description, admin consent required, ...) for ID"]
+        ["Locate-PermissionID", "Locate Graph permission details (application/delegated, description, admin consent required) for ID or permission name"],
+        ["Locate-DirectoryRole", "Locate Entra directory role information for template ID or role name"]
     ]
 
     print("Outsider")

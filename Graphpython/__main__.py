@@ -78,7 +78,7 @@ def main():
         "list-sharedonedrivefiles", "invoke-customquery", "invoke-search", "find-privilegedroleusers", "find-updatablegroups", "find-dynamicgroups","find-securitygroups", 
         "locate-objectid", "update-userpassword", "add-applicationpassword", "add-usertap", "add-groupmember", "create-application", 
         "create-newuser", "invite-guestuser", "assign-privilegedrole", "open-owamailboxinbrowser", "dump-owamailbox", "spoof-owaemailmessage", 
-        "delete-user", "delete-group", "remove-groupmember", "delete-application", "delete-device", "wipe-device", "retire-device",
+        "delete-user", "delete-group", "remove-groupmember", "delete-application", "delete-device", "wipe-device", "retire-device", "locate-directoryrole",
         "get-manageddevices", "get-userdevices", "get-caps", "get-devicecategories", "get-devicecompliancepolicies", "update-deviceconfig",
         "get-devicecompliancesummary", "get-deviceconfigurations", "get-deviceconfigurationpolicies", "get-deviceconfigurationpolicysettings", 
         "get-deviceenrollmentconfigurations", "get-devicegrouppolicyconfigurations","update-userproperties", "dump-windowsapps", "dump-iosapps", "dump-androidapps",
@@ -205,7 +205,7 @@ def main():
             getattr(cleanup, args.command.replace("-", "_"))(args)
 
         # Locator commands
-        elif args.command in ["locate-objectid", "locate-permissionid"]:
+        elif args.command in ["locate-objectid", "locate-permissionid", "locate-directoryrole"]:
             getattr(locators, args.command.replace("-", "_"))(args)
 
         # ...

@@ -1,0 +1,526 @@
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Description</th>
+<th>Template ID</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#application-administrator" data-linktype="self-bookmark">Application Administrator</a></td>
+<td>Can create and manage all aspects of app registrations and enterprise apps.<br><a href="privileged-roles-permissions" data-linktype="relative-path"><img src="media/permissions-reference/privileged-label.png" alt="Privileged label icon." data-linktype="relative-path"></a></td>
+<td>9b895d92-2cd3-44c7-9d02-a6ac2d5ea5c3</td>
+</tr>
+<tr>
+<td><a href="#application-developer" data-linktype="self-bookmark">Application Developer</a></td>
+<td>Can create application registrations independent of the 'Users can register applications' setting.<br><a href="privileged-roles-permissions" data-linktype="relative-path"><img src="media/permissions-reference/privileged-label.png" alt="Privileged label icon." data-linktype="relative-path"></a></td>
+<td>cf1c38e5-3621-4004-a7cb-879624dced7c</td>
+</tr>
+<tr>
+<td><a href="#attack-payload-author" data-linktype="self-bookmark">Attack Payload Author</a></td>
+<td>Can create attack payloads that an administrator can initiate later.</td>
+<td>9c6df0f2-1e7c-4dc3-b195-66dfbd24aa8f</td>
+</tr>
+<tr>
+<td><a href="#attack-simulation-administrator" data-linktype="self-bookmark">Attack Simulation Administrator</a></td>
+<td>Can create and manage all aspects of attack simulation campaigns.</td>
+<td>c430b396-e693-46cc-96f3-db01bf8bb62a</td>
+</tr>
+<tr>
+<td><a href="#attribute-assignment-administrator" data-linktype="self-bookmark">Attribute Assignment Administrator</a></td>
+<td>Assign custom security attribute keys and values to supported Microsoft Entra objects.</td>
+<td>58a13ea3-c632-46ae-9ee0-9c0d43cd7f3d</td>
+</tr>
+<tr>
+<td><a href="#attribute-assignment-reader" data-linktype="self-bookmark">Attribute Assignment Reader</a></td>
+<td>Read custom security attribute keys and values for supported Microsoft Entra objects.</td>
+<td>ffd52fa5-98dc-465c-991d-fc073eb59f8f</td>
+</tr>
+<tr>
+<td><a href="#attribute-definition-administrator" data-linktype="self-bookmark">Attribute Definition Administrator</a></td>
+<td>Define and manage the definition of custom security attributes.</td>
+<td>8424c6f0-a189-499e-bbd0-26c1753c96d4</td>
+</tr>
+<tr>
+<td><a href="#attribute-definition-reader" data-linktype="self-bookmark">Attribute Definition Reader</a></td>
+<td>Read the definition of custom security attributes.</td>
+<td>1d336d2c-4ae8-42ef-9711-b3604ce3fc2c</td>
+</tr>
+<tr>
+<td><a href="#attribute-log-administrator" data-linktype="self-bookmark">Attribute Log Administrator</a></td>
+<td>Read audit logs and configure diagnostic settings for events related to custom security attributes.</td>
+<td>5b784334-f94b-471a-a387-e7219fc49ca2</td>
+</tr>
+<tr>
+<td><a href="#attribute-log-reader" data-linktype="self-bookmark">Attribute Log Reader</a></td>
+<td>Read audit logs related to custom security attributes.</td>
+<td>9c99539d-8186-4804-835f-fd51ef9e2dcd</td>
+</tr>
+<tr>
+<td><a href="#authentication-administrator" data-linktype="self-bookmark">Authentication Administrator</a></td>
+<td>Can access to view, set and reset authentication method information for any non-admin user.<br><a href="privileged-roles-permissions" data-linktype="relative-path"><img src="media/permissions-reference/privileged-label.png" alt="Privileged label icon." data-linktype="relative-path"></a></td>
+<td>c4e39bd9-1100-46d3-8c65-fb160da0071f</td>
+</tr>
+<tr>
+<td><a href="#authentication-extensibility-administrator" data-linktype="self-bookmark">Authentication Extensibility Administrator</a></td>
+<td>Customize sign in and sign up experiences for users by creating and managing custom authentication extensions.<br><a href="privileged-roles-permissions" data-linktype="relative-path"><img src="media/permissions-reference/privileged-label.png" alt="Privileged label icon." data-linktype="relative-path"></a></td>
+<td>25a516ed-2fa0-40ea-a2d0-12923a21473a</td>
+</tr>
+<tr>
+<td><a href="#authentication-policy-administrator" data-linktype="self-bookmark">Authentication Policy Administrator</a></td>
+<td>Can create and manage the authentication methods policy, tenant-wide MFA settings, password protection policy, and verifiable credentials.</td>
+<td>0526716b-113d-4c15-b2c8-68e3c22b9f80</td>
+</tr>
+<tr>
+<td><a href="#azure-devops-administrator" data-linktype="self-bookmark">Azure DevOps Administrator</a></td>
+<td>Can manage Azure DevOps policies and settings.</td>
+<td>e3973bdf-4987-49ae-837a-ba8e231c7286</td>
+</tr>
+<tr>
+<td><a href="#azure-information-protection-administrator" data-linktype="self-bookmark">Azure Information Protection Administrator</a></td>
+<td>Can manage all aspects of the Azure Information Protection product.</td>
+<td>7495fdc4-34c4-4d15-a289-98788ce399fd</td>
+</tr>
+<tr>
+<td><a href="#b2c-ief-keyset-administrator" data-linktype="self-bookmark">B2C IEF Keyset Administrator</a></td>
+<td>Can manage secrets for federation and encryption in the Identity Experience Framework (IEF).<br><a href="privileged-roles-permissions" data-linktype="relative-path"><img src="media/permissions-reference/privileged-label.png" alt="Privileged label icon." data-linktype="relative-path"></a></td>
+<td>aaf43236-0c0d-4d5f-883a-6955382ac081</td>
+</tr>
+<tr>
+<td><a href="#b2c-ief-policy-administrator" data-linktype="self-bookmark">B2C IEF Policy Administrator</a></td>
+<td>Can create and manage trust framework policies in the Identity Experience Framework (IEF).</td>
+<td>3edaf663-341e-4475-9f94-5c398ef6c070</td>
+</tr>
+<tr>
+<td><a href="#billing-administrator" data-linktype="self-bookmark">Billing Administrator</a></td>
+<td>Can perform common billing related tasks like updating payment information.</td>
+<td>b0f54661-2d74-4c50-afa3-1ec803f12efe</td>
+</tr>
+<tr>
+<td><a href="#cloud-app-security-administrator" data-linktype="self-bookmark">Cloud App Security Administrator</a></td>
+<td>Can manage all aspects of the Defender for Cloud Apps product.</td>
+<td>892c5842-a9a6-463a-8041-72aa08ca3cf6</td>
+</tr>
+<tr>
+<td><a href="#cloud-application-administrator" data-linktype="self-bookmark">Cloud Application Administrator</a></td>
+<td>Can create and manage all aspects of app registrations and enterprise apps except App Proxy.<br><a href="privileged-roles-permissions" data-linktype="relative-path"><img src="media/permissions-reference/privileged-label.png" alt="Privileged label icon." data-linktype="relative-path"></a></td>
+<td>158c047a-c907-4556-b7ef-446551a6b5f7</td>
+</tr>
+<tr>
+<td><a href="#cloud-device-administrator" data-linktype="self-bookmark">Cloud Device Administrator</a></td>
+<td>Limited access to manage devices in Microsoft Entra ID.<br><a href="privileged-roles-permissions" data-linktype="relative-path"><img src="media/permissions-reference/privileged-label.png" alt="Privileged label icon." data-linktype="relative-path"></a></td>
+<td>7698a772-787b-4ac8-901f-60d6b08affd2</td>
+</tr>
+<tr>
+<td><a href="#compliance-administrator" data-linktype="self-bookmark">Compliance Administrator</a></td>
+<td>Can read and manage compliance configuration and reports in Microsoft Entra ID and Microsoft 365.</td>
+<td>17315797-102d-40b4-93e0-432062caca18</td>
+</tr>
+<tr>
+<td><a href="#compliance-data-administrator" data-linktype="self-bookmark">Compliance Data Administrator</a></td>
+<td>Creates and manages compliance content.</td>
+<td>e6d1a23a-da11-4be4-9570-befc86d067a7</td>
+</tr>
+<tr>
+<td><a href="#conditional-access-administrator" data-linktype="self-bookmark">Conditional Access Administrator</a></td>
+<td>Can manage Conditional Access capabilities.<br><a href="privileged-roles-permissions" data-linktype="relative-path"><img src="media/permissions-reference/privileged-label.png" alt="Privileged label icon." data-linktype="relative-path"></a></td>
+<td>b1be1c3e-b65d-4f19-8427-f6fa0d97feb9</td>
+</tr>
+<tr>
+<td><a href="#customer-lockbox-access-approver" data-linktype="self-bookmark">Customer LockBox Access Approver</a></td>
+<td>Can approve Microsoft support requests to access customer organizational data.</td>
+<td>5c4f9dcd-47dc-4cf7-8c9a-9e4207cbfc91</td>
+</tr>
+<tr>
+<td><a href="#desktop-analytics-administrator" data-linktype="self-bookmark">Desktop Analytics Administrator</a></td>
+<td>Can access and manage Desktop management tools and services.</td>
+<td>38a96431-2bdf-4b4c-8b6e-5d3d8abac1a4</td>
+</tr>
+<tr>
+<td><a href="#directory-readers" data-linktype="self-bookmark">Directory Readers</a></td>
+<td>Can read basic directory information. Commonly used to grant directory read access to applications and guests.</td>
+<td>88d8e3e3-8f55-4a1e-953a-9b9898b8876b</td>
+</tr>
+<tr>
+<td><a href="#directory-synchronization-accounts" data-linktype="self-bookmark">Directory Synchronization Accounts</a></td>
+<td>Only used by Microsoft Entra Connect and Microsoft Entra Cloud Sync services.<br><a href="privileged-roles-permissions" data-linktype="relative-path"><img src="media/permissions-reference/privileged-label.png" alt="Privileged label icon." data-linktype="relative-path"></a></td>
+<td>d29b2b05-8046-44ba-8758-1e26182fcf32</td>
+</tr>
+<tr>
+<td><a href="#directory-writers" data-linktype="self-bookmark">Directory Writers</a></td>
+<td>Can read and write basic directory information. For granting access to applications, not intended for users.<br><a href="privileged-roles-permissions" data-linktype="relative-path"><img src="media/permissions-reference/privileged-label.png" alt="Privileged label icon." data-linktype="relative-path"></a></td>
+<td>9360feb5-f418-4baa-8175-e2a00bac4301</td>
+</tr>
+<tr>
+<td><a href="#domain-name-administrator" data-linktype="self-bookmark">Domain Name Administrator</a></td>
+<td>Can manage domain names in cloud and on-premises.<br><a href="privileged-roles-permissions" data-linktype="relative-path"><img src="media/permissions-reference/privileged-label.png" alt="Privileged label icon." data-linktype="relative-path"></a></td>
+<td>8329153b-31d0-4727-b945-745eb3bc5f31</td>
+</tr>
+<tr>
+<td><a href="#dynamics-365-administrator" data-linktype="self-bookmark">Dynamics 365 Administrator</a></td>
+<td>Can manage all aspects of the Dynamics 365 product.</td>
+<td>44367163-eba1-44c3-98af-f5787879f96a</td>
+</tr>
+<tr>
+<td><a href="#dynamics-365-business-central-administrator" data-linktype="self-bookmark">Dynamics 365 Business Central Administrator</a></td>
+<td>Access and perform all administrative tasks on Dynamics 365 Business Central environments.</td>
+<td>963797fb-eb3b-4cde-8ce3-5878b3f32a3f</td>
+</tr>
+<tr>
+<td><a href="#edge-administrator" data-linktype="self-bookmark">Edge Administrator</a></td>
+<td>Manage all aspects of Microsoft Edge.</td>
+<td>3f1acade-1e04-4fbc-9b69-f0302cd84aef</td>
+</tr>
+<tr>
+<td><a href="#exchange-administrator" data-linktype="self-bookmark">Exchange Administrator</a></td>
+<td>Can manage all aspects of the Exchange product.</td>
+<td>29232cdf-9323-42fd-ade2-1d097af3e4de</td>
+</tr>
+<tr>
+<td><a href="#exchange-recipient-administrator" data-linktype="self-bookmark">Exchange Recipient Administrator</a></td>
+<td>Can create or update Exchange Online recipients within the Exchange Online organization.</td>
+<td>31392ffb-586c-42d1-9346-e59415a2cc4e</td>
+</tr>
+<tr>
+<td><a href="#external-id-user-flow-administrator" data-linktype="self-bookmark">External ID User Flow Administrator</a></td>
+<td>Can create and manage all aspects of user flows.</td>
+<td>6e591065-9bad-43ed-90f3-e9424366d2f0</td>
+</tr>
+<tr>
+<td><a href="#external-id-user-flow-attribute-administrator" data-linktype="self-bookmark">External ID User Flow Attribute Administrator</a></td>
+<td>Can create and manage the attribute schema available to all user flows.</td>
+<td>0f971eea-41eb-4569-a71e-57bb8a3eff1e</td>
+</tr>
+<tr>
+<td><a href="#external-identity-provider-administrator" data-linktype="self-bookmark">External Identity Provider Administrator</a></td>
+<td>Can configure identity providers for use in direct federation.<br><a href="privileged-roles-permissions" data-linktype="relative-path"><img src="media/permissions-reference/privileged-label.png" alt="Privileged label icon." data-linktype="relative-path"></a></td>
+<td>be2f45a1-457d-42af-a067-6ec1fa63bc45</td>
+</tr>
+<tr>
+<td><a href="#fabric-administrator" data-linktype="self-bookmark">Fabric Administrator</a></td>
+<td>Can manage all aspects of the Fabric and Power BI products.</td>
+<td>a9ea8996-122f-4c74-9520-8edcd192826c</td>
+</tr>
+<tr>
+<td><a href="#global-administrator" data-linktype="self-bookmark">Global Administrator</a></td>
+<td>Can manage all aspects of Microsoft Entra ID and Microsoft services that use Microsoft Entra identities.<br><a href="privileged-roles-permissions" data-linktype="relative-path"><img src="media/permissions-reference/privileged-label.png" alt="Privileged label icon." data-linktype="relative-path"></a></td>
+<td>62e90394-69f5-4237-9190-012177145e10</td>
+</tr>
+<tr>
+<td><a href="#global-reader" data-linktype="self-bookmark">Global Reader</a></td>
+<td>Can read everything that a Global Administrator can, but not update anything.<br><a href="privileged-roles-permissions" data-linktype="relative-path"><img src="media/permissions-reference/privileged-label.png" alt="Privileged label icon." data-linktype="relative-path"></a></td>
+<td>f2ef992c-3afb-46b9-b7cf-a126ee74c451</td>
+</tr>
+<tr>
+<td><a href="#global-secure-access-administrator" data-linktype="self-bookmark">Global Secure Access Administrator</a></td>
+<td>Create and manage all aspects of Microsoft Entra Internet Access and Microsoft Entra Private Access, including managing access to public and private endpoints.</td>
+<td>ac434307-12b9-4fa1-a708-88bf58caabc1</td>
+</tr>
+<tr>
+<td><a href="#groups-administrator" data-linktype="self-bookmark">Groups Administrator</a></td>
+<td>Members of this role can create/manage groups, create/manage groups settings like naming and expiration policies, and view groups activity and audit reports.</td>
+<td>fdd7a751-b60b-444a-984c-02652fe8fa1c</td>
+</tr>
+<tr>
+<td><a href="#guest-inviter" data-linktype="self-bookmark">Guest Inviter</a></td>
+<td>Can invite guest users independent of the 'members can invite guests' setting.</td>
+<td>95e79109-95c0-4d8e-aee3-d01accf2d47b</td>
+</tr>
+<tr>
+<td><a href="#helpdesk-administrator" data-linktype="self-bookmark">Helpdesk Administrator</a></td>
+<td>Can reset passwords for non-administrators and Helpdesk Administrators.<br><a href="privileged-roles-permissions" data-linktype="relative-path"><img src="media/permissions-reference/privileged-label.png" alt="Privileged label icon." data-linktype="relative-path"></a></td>
+<td>729827e3-9c14-49f7-bb1b-9608f156bbb8</td>
+</tr>
+<tr>
+<td><a href="#hybrid-identity-administrator" data-linktype="self-bookmark">Hybrid Identity Administrator</a></td>
+<td>Manage Active Directory to Microsoft Entra cloud provisioning, Microsoft Entra Connect, pass-through authentication (PTA), password hash synchronization (PHS), seamless single sign-on (seamless SSO), and federation settings. Does not have access to manage Microsoft Entra Connect Health.<br><a href="privileged-roles-permissions" data-linktype="relative-path"><img src="media/permissions-reference/privileged-label.png" alt="Privileged label icon." data-linktype="relative-path"></a></td>
+<td>8ac3fc64-6eca-42ea-9e69-59f4c7b60eb2</td>
+</tr>
+<tr>
+<td><a href="#identity-governance-administrator" data-linktype="self-bookmark">Identity Governance Administrator</a></td>
+<td>Manage access using Microsoft Entra ID for identity governance scenarios.</td>
+<td>45d8d3c5-c802-45c6-b32a-1d70b5e1e86e</td>
+</tr>
+<tr>
+<td><a href="#insights-administrator" data-linktype="self-bookmark">Insights Administrator</a></td>
+<td>Has administrative access in the Microsoft 365 Insights app.</td>
+<td>eb1f4a8d-243a-41f0-9fbd-c7cdf6c5ef7c</td>
+</tr>
+<tr>
+<td><a href="#insights-analyst" data-linktype="self-bookmark">Insights Analyst</a></td>
+<td>Access the analytical capabilities in Microsoft Viva Insights and run custom queries.</td>
+<td>25df335f-86eb-4119-b717-0ff02de207e9</td>
+</tr>
+<tr>
+<td><a href="#insights-business-leader" data-linktype="self-bookmark">Insights Business Leader</a></td>
+<td>Can view and share dashboards and insights via the Microsoft 365 Insights app.</td>
+<td>31e939ad-9672-4796-9c2e-873181342d2d</td>
+</tr>
+<tr>
+<td><a href="#intune-administrator" data-linktype="self-bookmark">Intune Administrator</a></td>
+<td>Can manage all aspects of the Intune product.<br><a href="privileged-roles-permissions" data-linktype="relative-path"><img src="media/permissions-reference/privileged-label.png" alt="Privileged label icon." data-linktype="relative-path"></a></td>
+<td>3a2c62db-5318-420d-8d74-23affee5d9d5</td>
+</tr>
+<tr>
+<td><a href="#kaizala-administrator" data-linktype="self-bookmark">Kaizala Administrator</a></td>
+<td>Can manage settings for Microsoft Kaizala.</td>
+<td>74ef975b-6605-40af-a5d2-b9539d836353</td>
+</tr>
+<tr>
+<td><a href="#knowledge-administrator" data-linktype="self-bookmark">Knowledge Administrator</a></td>
+<td>Can configure knowledge, learning, and other intelligent features.</td>
+<td>b5a8dcf3-09d5-43a9-a639-8e29ef291470</td>
+</tr>
+<tr>
+<td><a href="#knowledge-manager" data-linktype="self-bookmark">Knowledge Manager</a></td>
+<td>Can organize, create, manage, and promote topics and knowledge.</td>
+<td>744ec460-397e-42ad-a462-8b3f9747a02c</td>
+</tr>
+<tr>
+<td><a href="#license-administrator" data-linktype="self-bookmark">License Administrator</a></td>
+<td>Can manage product licenses on users and groups.</td>
+<td>4d6ac14f-3453-41d0-bef9-a3e0c569773a</td>
+</tr>
+<tr>
+<td><a href="#lifecycle-workflows-administrator" data-linktype="self-bookmark">Lifecycle Workflows Administrator</a></td>
+<td>Create and manage all aspects of workflows and tasks associated with Lifecycle Workflows in Microsoft Entra ID.<br><a href="privileged-roles-permissions" data-linktype="relative-path"><img src="media/permissions-reference/privileged-label.png" alt="Privileged label icon." data-linktype="relative-path"></a></td>
+<td>59d46f88-662b-457b-bceb-5c3809e5908f</td>
+</tr>
+<tr>
+<td><a href="#message-center-privacy-reader" data-linktype="self-bookmark">Message Center Privacy Reader</a></td>
+<td>Can read security messages and updates in Office 365 Message Center only.</td>
+<td>ac16e43d-7b2d-40e0-ac05-243ff356ab5b</td>
+</tr>
+<tr>
+<td><a href="#message-center-reader" data-linktype="self-bookmark">Message Center Reader</a></td>
+<td>Can read messages and updates for their organization in Office 365 Message Center only.</td>
+<td>790c1fb9-7f7d-4f88-86a1-ef1f95c05c1b</td>
+</tr>
+<tr>
+<td><a href="#microsoft-365-migration-administrator" data-linktype="self-bookmark">Microsoft 365 Migration Administrator</a></td>
+<td>Perform all migration functionality to migrate content to Microsoft 365 using Migration Manager.</td>
+<td>8c8b803f-96e1-4129-9349-20738d9f9652</td>
+</tr>
+<tr>
+<td><a href="#microsoft-entra-joined-device-local-administrator" data-linktype="self-bookmark">Microsoft Entra Joined Device Local Administrator</a></td>
+<td>Users assigned to this role are added to the local administrators group on Microsoft Entra joined devices.</td>
+<td>9f06204d-73c1-4d4c-880a-6edb90606fd8</td>
+</tr>
+<tr>
+<td><a href="#microsoft-hardware-warranty-administrator" data-linktype="self-bookmark">Microsoft Hardware Warranty Administrator</a></td>
+<td>Create and manage all aspects warranty claims and entitlements for Microsoft manufactured hardware, like Surface and HoloLens.</td>
+<td>1501b917-7653-4ff9-a4b5-203eaf33784f</td>
+</tr>
+<tr>
+<td><a href="#microsoft-hardware-warranty-specialist" data-linktype="self-bookmark">Microsoft Hardware Warranty Specialist</a></td>
+<td>Create and read warranty claims for Microsoft manufactured hardware, like Surface and HoloLens.</td>
+<td>281fe777-fb20-4fbb-b7a3-ccebce5b0d96</td>
+</tr>
+<tr>
+<td><a href="#modern-commerce-administrator" data-linktype="self-bookmark">Modern Commerce Administrator</a></td>
+<td>Can manage commercial purchases for a company, department or team.</td>
+<td>d24aef57-1500-4070-84db-2666f29cf966</td>
+</tr>
+<tr>
+<td><a href="#network-administrator" data-linktype="self-bookmark">Network Administrator</a></td>
+<td>Can manage network locations and review enterprise network design insights for Microsoft 365 Software as a Service applications.</td>
+<td>d37c8bed-0711-4417-ba38-b4abe66ce4c2</td>
+</tr>
+<tr>
+<td><a href="#office-apps-administrator" data-linktype="self-bookmark">Office Apps Administrator</a></td>
+<td>Can manage Office apps cloud services, including policy and settings management, and manage the ability to select, unselect and publish 'what's new' feature content to end-user's devices.</td>
+<td>2b745bdf-0803-4d80-aa65-822c4493daac</td>
+</tr>
+<tr>
+<td><a href="#organizational-branding-administrator" data-linktype="self-bookmark">Organizational Branding Administrator</a></td>
+<td>Manage all aspects of organizational branding in a tenant.</td>
+<td>92ed04bf-c94a-4b82-9729-b799a7a4c178</td>
+</tr>
+<tr>
+<td><a href="#organizational-messages-approver" data-linktype="self-bookmark">Organizational Messages Approver</a></td>
+<td>Review, approve, or reject new organizational messages for delivery in the Microsoft 365 admin center before they are sent to users.</td>
+<td>e48398e2-f4bb-4074-8f31-4586725e205b</td>
+</tr>
+<tr>
+<td><a href="#organizational-messages-writer" data-linktype="self-bookmark">Organizational Messages Writer</a></td>
+<td>Write, publish, manage, and review the organizational messages for end-users through Microsoft product surfaces.</td>
+<td>507f53e4-4e52-4077-abd3-d2e1558b6ea2</td>
+</tr>
+<tr>
+<td><a href="#partner-tier1-support" data-linktype="self-bookmark">Partner Tier1 Support</a></td>
+<td>Do not use - not intended for general use.<br><a href="privileged-roles-permissions" data-linktype="relative-path"><img src="media/permissions-reference/privileged-label.png" alt="Privileged label icon." data-linktype="relative-path"></a></td>
+<td>4ba39ca4-527c-499a-b93d-d9b492c50246</td>
+</tr>
+<tr>
+<td><a href="#partner-tier2-support" data-linktype="self-bookmark">Partner Tier2 Support</a></td>
+<td>Do not use - not intended for general use.<br><a href="privileged-roles-permissions" data-linktype="relative-path"><img src="media/permissions-reference/privileged-label.png" alt="Privileged label icon." data-linktype="relative-path"></a></td>
+<td>e00e864a-17c5-4a4b-9c06-f5b95a8d5bd8</td>
+</tr>
+<tr>
+<td><a href="#password-administrator" data-linktype="self-bookmark">Password Administrator</a></td>
+<td>Can reset passwords for non-administrators and Password Administrators.<br><a href="privileged-roles-permissions" data-linktype="relative-path"><img src="media/permissions-reference/privileged-label.png" alt="Privileged label icon." data-linktype="relative-path"></a></td>
+<td>966707d0-3269-4727-9be2-8c3a10f19b9d</td>
+</tr>
+<tr>
+<td><a href="#permissions-management-administrator" data-linktype="self-bookmark">Permissions Management Administrator</a></td>
+<td>Manage all aspects of Microsoft Entra Permissions Management.</td>
+<td>af78dc32-cf4d-46f9-ba4e-4428526346b5</td>
+</tr>
+<tr>
+<td><a href="#power-platform-administrator" data-linktype="self-bookmark">Power Platform Administrator</a></td>
+<td>Can create and manage all aspects of Microsoft Dynamics 365, Power Apps and Power Automate.</td>
+<td>11648597-926c-4cf3-9c36-bcebb0ba8dcc</td>
+</tr>
+<tr>
+<td><a href="#printer-administrator" data-linktype="self-bookmark">Printer Administrator</a></td>
+<td>Can manage all aspects of printers and printer connectors.</td>
+<td>644ef478-e28f-4e28-b9dc-3fdde9aa0b1f</td>
+</tr>
+<tr>
+<td><a href="#printer-technician" data-linktype="self-bookmark">Printer Technician</a></td>
+<td>Can register and unregister printers and update printer status.</td>
+<td>e8cef6f1-e4bd-4ea8-bc07-4b8d950f4477</td>
+</tr>
+<tr>
+<td><a href="#privileged-authentication-administrator" data-linktype="self-bookmark">Privileged Authentication Administrator</a></td>
+<td>Can access to view, set and reset authentication method information for any user (admin or non-admin).<br><a href="privileged-roles-permissions" data-linktype="relative-path"><img src="media/permissions-reference/privileged-label.png" alt="Privileged label icon." data-linktype="relative-path"></a></td>
+<td>7be44c8a-adaf-4e2a-84d6-ab2649e08a13</td>
+</tr>
+<tr>
+<td><a href="#privileged-role-administrator" data-linktype="self-bookmark">Privileged Role Administrator</a></td>
+<td>Can manage role assignments in Microsoft Entra ID, and all aspects of Privileged Identity Management.<br><a href="privileged-roles-permissions" data-linktype="relative-path"><img src="media/permissions-reference/privileged-label.png" alt="Privileged label icon." data-linktype="relative-path"></a></td>
+<td>e8611ab8-c189-46e8-94e1-60213ab1f814</td>
+</tr>
+<tr>
+<td><a href="#reports-reader" data-linktype="self-bookmark">Reports Reader</a></td>
+<td>Can read sign-in and audit reports.</td>
+<td>4a5d8f65-41da-4de4-8968-e035b65339cf</td>
+</tr>
+<tr>
+<td><a href="#search-administrator" data-linktype="self-bookmark">Search Administrator</a></td>
+<td>Can create and manage all aspects of Microsoft Search settings.</td>
+<td>0964bb5e-9bdb-4d7b-ac29-58e794862a40</td>
+</tr>
+<tr>
+<td><a href="#search-editor" data-linktype="self-bookmark">Search Editor</a></td>
+<td>Can create and manage the editorial content such as bookmarks, Q and As, locations, floorplan.</td>
+<td>8835291a-918c-4fd7-a9ce-faa49f0cf7d9</td>
+</tr>
+<tr>
+<td><a href="#security-administrator" data-linktype="self-bookmark">Security Administrator</a></td>
+<td>Can read security information and reports, and manage configuration in Microsoft Entra ID and Office 365.<br><a href="privileged-roles-permissions" data-linktype="relative-path"><img src="media/permissions-reference/privileged-label.png" alt="Privileged label icon." data-linktype="relative-path"></a></td>
+<td>194ae4cb-b126-40b2-bd5b-6091b380977d</td>
+</tr>
+<tr>
+<td><a href="#security-operator" data-linktype="self-bookmark">Security Operator</a></td>
+<td>Creates and manages security events.<br><a href="privileged-roles-permissions" data-linktype="relative-path"><img src="media/permissions-reference/privileged-label.png" alt="Privileged label icon." data-linktype="relative-path"></a></td>
+<td>5f2222b1-57c3-48ba-8ad5-d4759f1fde6f</td>
+</tr>
+<tr>
+<td><a href="#security-reader" data-linktype="self-bookmark">Security Reader</a></td>
+<td>Can read security information and reports in Microsoft Entra ID and Office 365.<br><a href="privileged-roles-permissions" data-linktype="relative-path"><img src="media/permissions-reference/privileged-label.png" alt="Privileged label icon." data-linktype="relative-path"></a></td>
+<td>5d6b6bb7-de71-4623-b4af-96380a352509</td>
+</tr>
+<tr>
+<td><a href="#service-support-administrator" data-linktype="self-bookmark">Service Support Administrator</a></td>
+<td>Can read service health information and manage support tickets.</td>
+<td>f023fd81-a637-4b56-95fd-791ac0226033</td>
+</tr>
+<tr>
+<td><a href="#sharepoint-administrator" data-linktype="self-bookmark">SharePoint Administrator</a></td>
+<td>Can manage all aspects of the SharePoint service.</td>
+<td>f28a1f50-f6e7-4571-818b-6a12f2af6b6c</td>
+</tr>
+<tr>
+<td><a href="#sharepoint-embedded-administrator" data-linktype="self-bookmark">SharePoint Embedded Administrator</a></td>
+<td>Manage all aspects of SharePoint Embedded containers.</td>
+<td>1a7d78b6-429f-476b-b8eb-35fb715fffd4</td>
+</tr>
+<tr>
+<td><a href="#skype-for-business-administrator" data-linktype="self-bookmark">Skype for Business Administrator</a></td>
+<td>Can manage all aspects of the Skype for Business product.</td>
+<td>75941009-915a-4869-abe7-691bff18279e</td>
+</tr>
+<tr>
+<td><a href="#teams-administrator" data-linktype="self-bookmark">Teams Administrator</a></td>
+<td>Can manage the Microsoft Teams service.</td>
+<td>69091246-20e8-4a56-aa4d-066075b2a7a8</td>
+</tr>
+<tr>
+<td><a href="#teams-communications-administrator" data-linktype="self-bookmark">Teams Communications Administrator</a></td>
+<td>Can manage calling and meetings features within the Microsoft Teams service.</td>
+<td>baf37b3a-610e-45da-9e62-d9d1e5e8914b</td>
+</tr>
+<tr>
+<td><a href="#teams-communications-support-engineer" data-linktype="self-bookmark">Teams Communications Support Engineer</a></td>
+<td>Can troubleshoot communications issues within Teams using advanced tools.</td>
+<td>f70938a0-fc10-4177-9e90-2178f8765737</td>
+</tr>
+<tr>
+<td><a href="#teams-communications-support-specialist" data-linktype="self-bookmark">Teams Communications Support Specialist</a></td>
+<td>Can troubleshoot communications issues within Teams using basic tools.</td>
+<td>fcf91098-03e3-41a9-b5ba-6f0ec8188a12</td>
+</tr>
+<tr>
+<td><a href="#teams-devices-administrator" data-linktype="self-bookmark">Teams Devices Administrator</a></td>
+<td>Can perform management related tasks on Teams certified devices.</td>
+<td>3d762c5a-1b6c-493f-843e-55a3b42923d4</td>
+</tr>
+<tr>
+<td><a href="#teams-telephony-administrator" data-linktype="self-bookmark">Teams Telephony Administrator</a></td>
+<td>Manage voice and telephony features and troubleshoot communication issues within the Microsoft Teams service.</td>
+<td>aa38014f-0993-46e9-9b45-30501a20909d</td>
+</tr>
+<tr>
+<td><a href="#tenant-creator" data-linktype="self-bookmark">Tenant Creator</a></td>
+<td>Create new Microsoft Entra or Azure AD B2C tenants.</td>
+<td>112ca1a2-15ad-4102-995e-45b0bc479a6a</td>
+</tr>
+<tr>
+<td><a href="#usage-summary-reports-reader" data-linktype="self-bookmark">Usage Summary Reports Reader</a></td>
+<td>Read Usage reports and Adoption Score, but can't access user details.</td>
+<td>75934031-6c7e-415a-99d7-48dbd49e875e</td>
+</tr>
+<tr>
+<td><a href="#user-administrator" data-linktype="self-bookmark">User Administrator</a></td>
+<td>Can manage all aspects of users and groups, including resetting passwords for limited admins.<br><a href="privileged-roles-permissions" data-linktype="relative-path"><img src="media/permissions-reference/privileged-label.png" alt="Privileged label icon." data-linktype="relative-path"></a></td>
+<td>fe930be7-5e62-47db-91af-98c3a49a38b1</td>
+</tr>
+<tr>
+<td><a href="#user-experience-success-manager" data-linktype="self-bookmark">User Experience Success Manager</a></td>
+<td>View product feedback, survey results, and reports to find training and communication opportunities.</td>
+<td>27460883-1df1-4691-b032-3b79643e5e63</td>
+</tr>
+<tr>
+<td><a href="#virtual-visits-administrator" data-linktype="self-bookmark">Virtual Visits Administrator</a></td>
+<td>Manage and share Virtual Visits information and metrics from admin centers or the Virtual Visits app.</td>
+<td>e300d9e7-4a2b-4295-9eff-f1c78b36cc98</td>
+</tr>
+<tr>
+<td><a href="#viva-goals-administrator" data-linktype="self-bookmark">Viva Goals Administrator</a></td>
+<td>Manage and configure all aspects of Microsoft Viva Goals.</td>
+<td>92b086b3-e367-4ef2-b869-1de128fb986e</td>
+</tr>
+<tr>
+<td><a href="#viva-pulse-administrator" data-linktype="self-bookmark">Viva Pulse Administrator</a></td>
+<td>Can manage all settings for Microsoft Viva Pulse app.</td>
+<td>87761b17-1ed2-4af3-9acd-92a150038160</td>
+</tr>
+<tr>
+<td><a href="#windows-365-administrator" data-linktype="self-bookmark">Windows 365 Administrator</a></td>
+<td>Can provision and manage all aspects of Cloud PCs.</td>
+<td>11451d60-acb2-45eb-a7d6-43d0f0125c13</td>
+</tr>
+<tr>
+<td><a href="#windows-update-deployment-administrator" data-linktype="self-bookmark">Windows Update Deployment Administrator</a></td>
+<td>Can create and manage all aspects of Windows Update deployments through the Windows Update for Business deployment service.</td>
+<td>32696413-001a-46ae-978c-ce0f6b3620d2</td>
+</tr>
+<tr>
+<td><a href="#yammer-administrator" data-linktype="self-bookmark">Yammer Administrator</a></td>
+<td>Manage all aspects of the Yammer service.</td>
+<td>810a2642-a034-447f-a5e8-41beaa378541</td>
+</tr>
+</tbody>
+</table>

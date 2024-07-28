@@ -1,5 +1,6 @@
 import requests
 import os 
+import re
 from bs4 import BeautifulSoup
 from Graphpython.utils.helpers import print_yellow, print_green, print_red, get_user_agent, get_access_token
 
@@ -98,20 +99,19 @@ def locate_permissionid(args):
     if not args.id:
         print_red("[-] Error: --id argument is required for Locate-PermissionID command")
         return
-
     print_yellow("[*] Locate-PermissionID")
     print("=" * 80)
 
     def parse_html(content):
         soup = BeautifulSoup(content, 'html.parser')
         permissions = {}
-    
+   
         for h3 in soup.find_all('h3'):
             title = h3.text
             table = h3.find_next('table')
             headers = [th.text for th in table.find('thead').find_all('th')]
             rows = table.find('tbody').find_all('tr')
-        
+       
             permission_data = {}
             for row in rows:
                 cells = row.find_all('td')
@@ -123,20 +123,20 @@ def locate_permissionid(args):
                     headers[2]: delegated
                 }
             permissions[title] = permission_data
-    
+   
         return permissions
 
     def highlight(text, should_highlight):
         if should_highlight:
             return f"\033[92m{text}\033[0m"
         return text
-    
-    def print_permission(permission, data, app_ids, delegated_ids):
+   
+    def print_permission(permission, data, identifiers):
         print_green(f"{permission}")
         for category, values in data.items():
             print(f"  {category}:")
-            app_highlight = data['Identifier']['Application'] in app_ids
-            delegated_highlight = data['Identifier']['Delegated'] in delegated_ids
+            app_highlight = data['Identifier']['Application'] in identifiers or permission in identifiers
+            delegated_highlight = data['Identifier']['Delegated'] in identifiers or permission in identifiers
             print(f"    Application: {highlight(values['Application'], app_highlight)}")
             print(f"    Delegated: {highlight(values['Delegated'], delegated_highlight)}")
         print()
@@ -144,7 +144,7 @@ def locate_permissionid(args):
     identifiers = args.id.split(',')
     script_dir = os.path.dirname(os.path.abspath(__file__))
     file_path = os.path.join(script_dir, 'graphpermissions.txt')
-    
+   
     try:
         with open(file_path, 'r') as file:
             content = file.read()
@@ -156,25 +156,80 @@ def locate_permissionid(args):
         print_red(f"[-] An error occurred: {e}")
         print("=" * 80)
         return
-    
+   
     permissions = parse_html(content)
-    app_ids = []
-    delegated_ids = []
-    
-    for permission, data in permissions.items():
-        if data['Identifier']['Application'] in identifiers:
-            app_ids.append(data['Identifier']['Application'])
-        if data['Identifier']['Delegated'] in identifiers:
-            delegated_ids.append(data['Identifier']['Delegated'])
-
     found_permissions = False
-    
+   
     for permission, data in permissions.items():
-        if data['Identifier']['Application'] in app_ids or data['Identifier']['Delegated'] in delegated_ids:
-            print_permission(permission, data, app_ids, delegated_ids)
+        if (data['Identifier']['Application'] in identifiers or
+            data['Identifier']['Delegated'] in identifiers or
+            permission in identifiers):
+            print_permission(permission, data, identifiers)
             found_permissions = True
-    
+   
     if not found_permissions:
-        print_red("[-] Permission ID not found")
+        print_red("[-] Permission ID or name not found")
+   
+    print("=" * 80)
+
+def locate_directoryrole(args):
+    if not args.id:
+        print_red("[-] Error: --id argument is required for Locate-DirectoryRole command")
+        return
+    print_yellow("[*] Locate-DirectoryRole")
+    print("=" * 80)
+
+    def parse_html(content):
+        soup = BeautifulSoup(content, 'html.parser')
+        roles = []
+        for row in soup.find_all('tr')[1:]: # skip header row 
+            cells = row.find_all('td')
+            if len(cells) == 3:
+                role_name = cells[0].text.strip()
+                description = cells[1].text.strip()
+                template_id = cells[2].text.strip()
+                privileged = 'privileged-roles-permissions' in str(cells[1])
+                roles.append({
+                    'name': role_name,
+                    'description': description,
+                    'template_id': template_id,
+                    'privileged': privileged
+                })
+        return roles
+
+    def print_role(role):
+        print(f"Role: \033[92m{role['name']}\033[0m") 
+        print(f"Description: \033[92m{role['description']}\033[0m")
+        print(f"Template ID: \033[92m{role['template_id']}\033[0m")
+        print(f"Privileged: \033[92m{'Yes' if role['privileged'] else 'No'}\033[0m")
+        print()
+
+    identifier = args.id.lower()
     
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    file_path = os.path.join(script_dir, 'directoryroles.txt')
+    
+    try:
+        with open(file_path, 'r', encoding='utf-8') as file:
+            content = file.read()
+    except FileNotFoundError:
+        print_red(f"[-] The file {file_path} does not exist.")
+        print("=" * 80)
+        return
+    except Exception as e:
+        print_red(f"[-] An error occurred while reading the file: {e}")
+        print("=" * 80)
+        return
+
+    roles = parse_html(content)
+    found_role = False
+
+    for role in roles:
+        if identifier in role['name'].lower() or identifier == role['template_id'].lower():
+            print_role(role)
+            found_role = True
+
+    if not found_role:
+        print_red("[-] Directory role ID or name not found")
+
     print("=" * 80)
