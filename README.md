@@ -275,6 +275,7 @@ Please refer to the [Wiki](https://github.com/mlcsec/Graphpython/wiki/Demos) for
 ## Todo
 
 - Update:
+  - [ ] Implement prompt tooklit instead of typing long cmdlets
   - [ ] Add nextlink for `get-user` and `get-group` 
   - [ ] `Get-UserPrivileges` - update to flag any privileged directory role app ids green
   - [x] `Locate-DirectoryRoleID` - similar to other locator functions but for resolving directory role ids
