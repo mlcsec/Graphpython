@@ -4,3 +4,5 @@ dist/
 __pycache__/
 .venv/
 logs/
+*_tokens.txt
+.graphpython_history
