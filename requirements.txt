@@ -6,3 +6,4 @@ tabulate
 cryptography
 beautifulsoup4
 termcolor
+prompt_toolkit

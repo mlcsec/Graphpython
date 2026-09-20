@@ -11,8 +11,8 @@ def delete_user(args):
         print_red("[-] Error: --id argument is required for Delete-User command")
         return
 
-    print_yellow("[*] Delete-User")
-    print("=" * 80)
+    print_yellow(">>> Delete-User")
+    
     api_url = f"https://graph.microsoft.com/v1.0/users/{args.id}"
     user_agent = get_user_agent(args)
     headers = {
@@ -26,7 +26,7 @@ def delete_user(args):
     else:
         print_red(f"[-] Failed to delete user: {response.status_code}")
         print_red(response.text)
-    print("=" * 80)
+    
 
 # delete-group
 def delete_group(args):
@@ -34,8 +34,8 @@ def delete_group(args):
         print_red("[-] Error: --id argument is required for Delete-Group command")
         return
 
-    print_yellow("[*] Delete-Group")
-    print("=" * 80)
+    print_yellow(">>> Delete-Group")
+    
     api_url = f"https://graph.microsoft.com/v1.0/groups/{args.id}"
     user_agent = get_user_agent(args)
     headers = {
@@ -49,7 +49,7 @@ def delete_group(args):
     else:
         print_red(f"[-] Failed to delete group: {response.status_code}")
         print_red(response.text)
-    print("=" * 80)
+    
 
 # remove-groupmember
 def remove_groupmember(args):
@@ -63,8 +63,8 @@ def remove_groupmember(args):
         return
 
     group_id, member_id = ids[0].strip(), ids[1].strip()
-    print_yellow("[*] Remove-GroupMember")
-    print("=" * 80)
+    print_yellow(">>> Remove-GroupMember")
+    
     api_url = f"https://graph.microsoft.com/v1.0/groups/{group_id}/members/{member_id}/$ref"
     user_agent = get_user_agent(args)
     headers = {
@@ -78,7 +78,7 @@ def remove_groupmember(args):
     else: 
         print_red(f"[-] Failed to remove group member: {response.status_code}")
         print_red(response.text)
-    print("=" * 80)
+    
 
 # delete-application
 def delete_application(args):
@@ -86,8 +86,8 @@ def delete_application(args):
         print_red("[-] Error: --id argument is required for Delete-Application command")
         return
 
-    print_yellow("[*] Delete-Application")
-    print("=" * 80)
+    print_yellow(">>> Delete-Application")
+    
     api_url = f"https://graph.microsoft.com/v1.0/applications/{args.id}"
     user_agent = get_user_agent(args)
     headers = {
@@ -101,7 +101,7 @@ def delete_application(args):
     else:
         print_red(f"[-] Failed to delete application: {response.status_code}")
         print_red(response.text)
-    print("=" * 80)
+    
 
 # delete-device
 def delete_device(args):
@@ -109,8 +109,8 @@ def delete_device(args):
         print_red("[-] Error: --id argument is required for Delete-Device command")
         return
 
-    print_yellow("[*] Delete-Device")
-    print("=" * 80)
+    print_yellow(">>> Delete-Device")
+    
     api_url = f"https://graph.microsoft.com/v1.0/devices/{args.id}"
     user_agent = get_user_agent(args)
     headers = {
@@ -124,7 +124,7 @@ def delete_device(args):
     else:
         print_red(f"[-] Failed to delete device: {response.status_code}")
         print_red(response.text)
-    print("=" * 80)
+    
 
 # wipe-device 
 def wipe_device(args):
@@ -132,8 +132,8 @@ def wipe_device(args):
         print_red("[-] Error: --id argument is required for Wipe-Device command")
         return
 
-    print_yellow("[*] Wipe-Device")
-    print("=" * 80)
+    print_yellow(">>> Wipe-Device")
+    
     api_url = f"https://graph.microsoft.com/beta/deviceManagement/managedDevices/{args.id}/wipe"
     
     user_agent = get_user_agent(args)
@@ -155,7 +155,7 @@ def wipe_device(args):
     else:
         print_red(f"[-] Failed to initiate device wipe: {response.status_code}")
         print_red(response.text)
-    print("=" * 80)
+    
 
 # retire-device
 def retire_device(args):
@@ -163,8 +163,8 @@ def retire_device(args):
         print_red("[-] Error: --id argument is required for Retire-Device command")
         return
 
-    print_yellow("[*] Retire-Device")
-    print("=" * 80)
+    print_yellow(">>> Retire-Device")
+    
     api_url = f"https://graph.microsoft.com/beta/deviceManagement/managedDevices/{args.id}/retire"
     user_agent = get_user_agent(args)
     
@@ -179,4 +179,4 @@ def retire_device(args):
     else:
         print_red(f"[-] Failed to initiate device retire: {response.status_code}")
         print_red(response.text)
-    print("=" * 80)
+    

@@ -14,8 +14,8 @@ def invoke_reconasoutsider(args):
         print_red("[-] Error: --domain argument is required for Invoke-ReconAsOutsider command")
         return
 
-    print_yellow("[*] Invoke-ReconAsOutsider")
-    print("=" * 80)
+    print_yellow(">>> Invoke-ReconAsOutsider")
+    
     domain = args.domain
     # get tenant id
     tenant_id = ""
@@ -27,7 +27,7 @@ def invoke_reconasoutsider(args):
         print_red("[-] Failed to retrieve tenant ID")
     if not tenant_id:
         print_red(f"[-] Domain {domain} is not registered to Azure AD")
-        print("=" * 80)
+        
         return
     tenant_name = ""
     tenant_brand = ""
@@ -203,7 +203,7 @@ def invoke_reconasoutsider(args):
     print("----                                       ---   ---   ----   -----   ----   -------  ----        ---")
     for domain_info in domain_information:
         print(f"{domain_info['Name']:<42} {str(domain_info['DNS']):<5} {str(domain_info['MX']):<5} {str(domain_info['SPF']):<6} {str(domain_info['DMARC']):<7} {str(domain_info['DKIM']):<6} {str(domain_info['MTA-STS']):<8} {domain_info['Type']:<11} {domain_info['STS'] or ''}")
-    print("=" * 80)
+    
 
 
 def invoke_userenumerationasoutsider(args):
@@ -211,8 +211,8 @@ def invoke_userenumerationasoutsider(args):
         print_red("[-] Error: --username argument is required for Invoke-UserEnumerationAsOutsider command")
         return
         
-    print_yellow("[*] Invoke-UserEnumerationAsOutsider")
-    print("=" * 80)
+    print_yellow(">>> Invoke-UserEnumerationAsOutsider")
+    
     usernames = []
     if os.path.isfile(args.username):
         with open(args.username, 'r') as file:
@@ -252,4 +252,4 @@ def invoke_userenumerationasoutsider(args):
             print_green(f"[+] {username:<16}")# : {exists}")
         else:
             print_red(f"[-] {username:<16}")# : {exists}")
-    print("=" * 80)
+    

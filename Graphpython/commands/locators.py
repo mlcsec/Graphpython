@@ -13,8 +13,8 @@ def locate_objectid(args):
         print_red("[-] Error: --id required for Locate-ObjectID command")
         return
 
-    print_yellow("[*] Locate-ObjectID")
-    print("=" * 80)
+    print_yellow(">>> Locate-ObjectID")
+    
     graph_api_url = f"https://graph.microsoft.com/v1.0/directoryObjects/{args.id}"
 
     user_agent = get_user_agent(args)
@@ -93,14 +93,14 @@ def locate_objectid(args):
     except requests.exceptions.RequestException as e:
         print_red(f"[-] An error occurred while making the request: {str(e)}")
 
-    print("=" * 80)
+    
 
 def locate_permissionid(args):
     if not args.id:
         print_red("[-] Error: --id argument is required for Locate-PermissionID command")
         return
-    print_yellow("[*] Locate-PermissionID")
-    print("=" * 80)
+    print_yellow(">>> Locate-PermissionID")
+    
 
     def parse_html(content):
         soup = BeautifulSoup(content, 'html.parser')
@@ -150,11 +150,11 @@ def locate_permissionid(args):
             content = file.read()
     except FileNotFoundError:
         print_red(f"[-] The file {file_path} does not exist.")
-        print("=" * 80)
+        
         return
     except Exception as e:
         print_red(f"[-] An error occurred: {e}")
-        print("=" * 80)
+        
         return
    
     permissions = parse_html(content)
@@ -170,14 +170,14 @@ def locate_permissionid(args):
     if not found_permissions:
         print_red("[-] Permission ID or name not found")
    
-    print("=" * 80)
+    
 
 def locate_directoryrole(args):
     if not args.id:
         print_red("[-] Error: --id argument is required for Locate-DirectoryRole command")
         return
-    print_yellow("[*] Locate-DirectoryRole")
-    print("=" * 80)
+    print_yellow(">>> Locate-DirectoryRole")
+    
 
     def parse_html(content):
         soup = BeautifulSoup(content, 'html.parser')
@@ -214,11 +214,11 @@ def locate_directoryrole(args):
             content = file.read()
     except FileNotFoundError:
         print_red(f"[-] The file {file_path} does not exist.")
-        print("=" * 80)
+        
         return
     except Exception as e:
         print_red(f"[-] An error occurred while reading the file: {e}")
-        print("=" * 80)
+        
         return
 
     roles = parse_html(content)
@@ -232,4 +232,4 @@ def locate_directoryrole(args):
     if not found_role:
         print_red("[-] Directory role ID or name not found")
 
-    print("=" * 80)
+    

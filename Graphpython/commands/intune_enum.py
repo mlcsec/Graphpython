@@ -9,15 +9,15 @@ from Graphpython.utils.helpers import graph_api_get
 
 # get-manageddevices
 def get_manageddevices(args):
-    print_yellow("[*] Get-ManagedDevices")
-    print("=" * 80)
+    print_yellow(">>> Get-ManagedDevices")
+    
     api_url = "https://graph.microsoft.com/v1.0/deviceManagement/managedDevices"
     
     if args.select:
         api_url += "?$select=" + args.select
     
     graph_api_get(get_access_token(args.token), api_url, args)
-    print("=" * 80)
+    
 
 # get-userdevices
 def get_userdevices(args):
@@ -25,44 +25,44 @@ def get_userdevices(args):
         print_red("[-] Error: --id argument is required for Get-UserDevices command")
         return
     
-    print_yellow("[*] Get-UserDevices")
-    print("=" * 80)
+    print_yellow(">>> Get-UserDevices")
+    
     api_url = f"https://graph.microsoft.com/v1.0/deviceManagement/managedDevices?$filter=userPrincipalName eq '{args.id}'"
     
     if args.select:
         api_url += "&$select=" + args.select
     
     graph_api_get(get_access_token(args.token), api_url, args)
-    print("=" * 80)
+    
 
 # get-caps
 def get_caps(args):
-    print_yellow("[*] Get-CAPs")
-    print("=" * 80)
+    print_yellow(">>> Get-CAPs")
+    
     api_url = "https://graph.microsoft.com//beta/identity/conditionalAccess/policies"
     
     if args.select:
         api_url += "?$select=" + args.select
     
     graph_api_get(get_access_token(args.token), api_url, args)
-    print("=" * 80)
+    
 
 # get-devicecategories
 def get_devicecategories(args):
-    print_yellow("[*] Get-DeviceCategories")
-    print("=" * 80)
+    print_yellow(">>> Get-DeviceCategories")
+    
     api_url = "https://graph.microsoft.com/v1.0/deviceManagement/deviceCategories"
     
     if args.select:
         api_url += "?$select=" + args.select
 
     graph_api_get(get_access_token(args.token), api_url, args)
-    print("=" * 80)
+    
 
 # get-devicecompliancesummary
 def get_devicecompliancesummary(args):
-    print_yellow("[*] Get-DeviceComplianceSummary")
-    print("=" * 80)
+    print_yellow(">>> Get-DeviceComplianceSummary")
+    
     api_url = "https://graph.microsoft.com/v1.0/deviceManagement/deviceCompliancePolicyDeviceStateSummary"
     if args.select:
         api_url += "?$select=" + args.select
@@ -83,19 +83,19 @@ def get_devicecompliancesummary(args):
     else:
         print_red(f"[-] Failed to retrieve settings: {response.status_code}")
         print_red(response.text)
-    print("=" * 80)
+    
 
 # get-deviceconfigurations
 def get_deviceconfigurations(args):
-    print_yellow("[*] Get-DeviceConfigurations")
-    print("=" * 80)
+    print_yellow(">>> Get-DeviceConfigurations")
+    
     api_url = "https://graph.microsoft.com/v1.0/deviceManagement/deviceConfigurations"
     
     if args.select:
         api_url += "?$select=" + args.select
 
     graph_api_get(get_access_token(args.token), api_url, args)
-    print("=" * 80)
+    
 
 # get-deviceconfigurationpolicysettings
 def get_deviceconfigurationpolicysettings(args):
@@ -103,8 +103,8 @@ def get_deviceconfigurationpolicysettings(args):
         print_red("[-] Error: --id argument is required for Get-DeviceConfigurationPolicySettings command")
         return
 
-    print_yellow("[*] Get-DeviceConfigurationPolicySettings")
-    print("=" * 80)
+    print_yellow(">>> Get-DeviceConfigurationPolicySettings")
+    
     api_url = f"https://graph.microsoft.com/beta/deviceManagement/configurationPolicies('{args.id}')/settings?expand=settingDefinitions"
     user_agent = get_user_agent(args)
     headers = {
@@ -123,22 +123,22 @@ def get_deviceconfigurationpolicysettings(args):
     else:
         print_red(f"[-] Failed to retrieve settings: {response.status_code}")
         print_red(response.text)
-    print("=" * 80)
+    
 
 # get-deviceenrollmentconfigurations
 def get_deviceenrollmentconfigurations(args):
-    print_yellow("[*] Get-DeviceEnrollmentConfigurations")
-    print("=" * 80)
+    print_yellow(">>> Get-DeviceEnrollmentConfigurations")
+    
     api_url = "https://graph.microsoft.com/v1.0/deviceManagement/deviceEnrollmentConfigurations"
     if args.select:
         api_url += "?$select=" + args.select
     graph_api_get(get_access_token(args.token), api_url, args)
-    print("=" * 80)
+    
 
 # get-devicegrouppolicyconfigurations
 def get_devicegrouppolicyconfigurations(args):
-    print_yellow("[*] Get-DeviceGroupPolicyConfigurations")
-    print("=" * 80)
+    print_yellow(">>> Get-DeviceGroupPolicyConfigurations")
+    
     api_url = "https://graph.microsoft.com/beta/deviceManagement/groupPolicyConfigurations"
    
     if args.select:
@@ -196,7 +196,7 @@ def get_devicegrouppolicyconfigurations(args):
                 else:
                     print_red(f"[-] Error: API request for assignments failed with status code {assignments_response.status_code}")
             print("\n")
-        print("=" * 80)
+        
 
 # get-devicegrouppolicydefinition
 # - remove 
@@ -205,44 +205,44 @@ def get_devicegrouppolicydefinition(args):
         print_red("[-] Error: --id argument is required for Get-DeviceGroupPolicyDefinition command")
         return
         
-    print_yellow("[*] Get-DeviceGroupPolicyDefinition")
-    print("=" * 80)
+    print_yellow(">>> Get-DeviceGroupPolicyDefinition")
+    
     api_url = f"https://graph.microsoft.com//beta/deviceManagement/groupPolicyConfigurations('{args.id}')/definitionValues?$expand=definition($select=id,classType,displayName,policyType,hasRelatedDefinitions,version,minUserCspVersion,minDeviceCspVersion)"
     
     if args.select:
         api_url += "?$select=" + args.select
     
     graph_api_get(get_access_token(args.token), api_url, args)
-    print("=" * 80)
+    
     
 # get-roledefinitions
 def get_roledefinitions(args):
-    print_yellow("[*] Get-RoleDefinitions")
-    print("=" * 80)
+    print_yellow(">>> Get-RoleDefinitions")
+    
     api_url = "https://graph.microsoft.com/v1.0/deviceManagement/roleDefinitions"
     
     if args.select:
         api_url += "?$select=" + args.select
 
     graph_api_get(get_access_token(args.token), api_url, args)
-    print("=" * 80)
+    
     
 # get-roleassignments
 def get_roleassignments(args):
-    print_yellow("[*] Get-RoleAssignments")
-    print("=" * 80)
+    print_yellow(">>> Get-RoleAssignments")
+    
     api_url = "https://graph.microsoft.com/v1.0/deviceManagement/roleAssignments"
     
     if args.select:
         api_url += "?$select=" + args.select
     
     graph_api_get(get_access_token(args.token), api_url, args)
-    print("=" * 80)
+    
 
 # get-devicecompliancepolicies
 def get_devicecompliancepolicies(args):
-    print_yellow("[*] Get-DeviceCompliancePolicies")
-    print("=" * 80)
+    print_yellow(">>> Get-DeviceCompliancePolicies")
+    
     api_url = "https://graph.microsoft.com/v1.0/deviceManagement/deviceCompliancePolicies?$expand=scheduledActionsForRule($expand=scheduledActionConfigurations)"
     if args.select:
         api_url += "&$select=" + args.select
@@ -312,12 +312,12 @@ def get_devicecompliancepolicies(args):
             print_red("[-] No data found")
     except requests.exceptions.RequestException as ex:
         print_red(f"[-] HTTP Error: {ex}")
-    print("=" * 80)
+    
 
 # get-deviceconfigurationpolicies
 def get_deviceconfigurationpolicies(args):
-    print_yellow("[*] Get-DeviceConfigurationPolicies")
-    print("=" * 80)
+    print_yellow(">>> Get-DeviceConfigurationPolicies")
+    
     api_url = "https://graph.microsoft.com/beta/deviceManagement/configurationPolicies"
     if args.select:
         api_url += "?$select=" + args.select
@@ -336,7 +336,7 @@ def get_deviceconfigurationpolicies(args):
     else:
         print_red(f"[-] Error: API request failed with status code {response.status_code}")
         policies = None
-        print("=" * 80)
+        
     
     if policies and 'value' in policies:
         for policy in policies['value']:
@@ -377,4 +377,4 @@ def get_deviceconfigurationpolicies(args):
                 else:
                     print_red(f"[-] Error: API request for assignments failed with status code {assignments_response.status_code}")
             print("\n")
-        print("=" * 80)
+        

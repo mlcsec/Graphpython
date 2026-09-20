@@ -183,35 +183,35 @@ def list_commands():
     ]
 
     print("Outsider")
-    print("=" * 80)
+    
     print(tabulate(outsider_commands, tablefmt="plain"))
 
     print("\nAuthentication")
-    print("=" * 80)
+    
     print(tabulate(auth_commands, tablefmt="plain"))
 
     print("\nPost-Auth Enumeration")
-    print("=" * 80)
+    
     print(tabulate(post_authenum_commands, tablefmt="plain"))
 
     print("\nPost-Auth Exploitation")
-    print("=" * 80)
+    
     print(tabulate(post_authexploit_commands, tablefmt="plain"))
 
     print("\nPost-Auth Intune Enumeration")
-    print("=" * 80)
+    
     print(tabulate(intune_enum, tablefmt="plain"))
 
     print("\nPost-Auth Intune Exploitation")
-    print("=" * 80)
+    
     print(tabulate(intune_exploit, tablefmt="plain"))
 
     print("\nCleanup")
-    print("=" * 80)
+    
     print(tabulate(cleanup_commands, tablefmt="plain"))
 
     print("\nLocators")
-    print("=" * 80)
+    
     print(tabulate(locator_commands, tablefmt="plain"))
     print("\n")
 

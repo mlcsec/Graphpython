@@ -11,7 +11,7 @@ Graphpython covers external reconnaissance, authentication/token manipulation, e
 ## Index
 
 - [Installation](#Installation)
-- [Usage](#Usage)
+- [Usage - Updated 2026 Prompt Toolkit](#usage---updated-2026-prompt-toolkit)
 - [Commands](#Commands)
 - [Demos](#Demos)
  
@@ -30,17 +30,79 @@ Graphpython -h
 python3 Graphpython.py -h
 ```
 
-## Usage
+## ⚠️ Usage - Updated 2026 Prompt Toolkit
 
-Please refer to the [Wiki](https://github.com/mlcsec/Graphpython/wiki/Usage) for more details
+> [!IMPORTANT]
+> **UPDATED** - Running Graphpython without arguments now launches an interactive shell with Tab completion, command history, and inline descriptions for all commands and flags. One-shot CLI mode remains fully supported and unchanged.
+
+```bash
+# interactive shell (new)
+python Graphpython.py
+
+# one-shot CLI (unchanged)
+python Graphpython.py --command get-currentuser --token eyJ0...
+
+# interactive shell with logging enabled from start
+python Graphpython.py --log-all-commands
+```
+
+> [!TIP]
+> Use `set-token` in the interactive shell to persist a token for the session, removing the need to pass `--token` on every command. Supports direct paste or importing from a local file:
+> ```
+> set-token <tok>              Paste raw token directly
+> set-token access <file>      Import access_token from file
+> set-token refresh <file>     Import refresh_token from file
+> ```
+
+<p align="center">
+  <img src="./.github/prompt-toolkit-1.png" />
+</p>
+
+All existing commands are accessible from the interactive shell with Tab completion and inline descriptions:
+
+<p align="center">
+  <img src="./.github/prompt-toolkit-2.png" />
+</p>
+
+### Logging
+
+Command logging can be enabled at launch via `--log-all-commands` or toggled at any time from within the interactive shell using `log-enable` / `log-disable`. When enabled, each command and its full output is written to a timestamped file in a `logs/` directory created in the current working directory:
+
+```
+Graphpython ❯ log-enable
+[+] Logging enabled → /mnt/c/Users/user0/Documents/GitHub/Graphpython/logs
+```
+
+<p align="center">
+  <img src="./.github/prompt-toolkit-4.png" />
+</p>
+
+```bash
+$ ls logs/ -la
+total 20
+drwxrwxrwx 1 user0 user0 4096 Sep 20 10:36 .
+drwxrwxrwx 1 user0 user0 4096 Sep 20 10:31 ..
+-rwxrwxrwx 1 user0 user0 1421 Sep 20 10:32 20260920_103228_get-tokenscope.txt
+-rwxrwxrwx 1 user0 user0  576 Sep 20 10:35 20260920_103502_get-currentuser.txt
+-rwxrwxrwx 1 user0 user0 1857 Sep 20 10:35 20260920_103545_find-privilegedapplications.txt
+-rwxrwxrwx 1 user0 user0 6640 Sep 20 10:36 20260920_103634_find-privilegedroleusers.txt
+```
+
+> [!IMPORTANT]
+> Not every function has been tested via the new interactive shell - if you encounter any issues or have improvements, please raise a [GitHub Issue](https://github.com/mlcsec/Graphpython/issues).
+
+
+
+## Commands
+
+> [!NOTE]
+> All commands are available via Tab completion in the interactive shell with inline descriptions. Please refer to the [Wiki](https://github.com/mlcsec/Graphpython/wiki/Commands) for full details on available commands and flags.
+
+The initial version with the following flags and arguments still functions as before, however, the improved interactive prompt improves usability signifcantly.
 
 <p align="center">
   <img src="./.github/usage.png" />
 </p>
-
-## Commands
-
-Please refer to the [Wiki](https://github.com/mlcsec/Graphpython/wiki/Commands) for more details on the available commands
 
 ### Outsider
 
@@ -275,8 +337,8 @@ Please refer to the [Wiki](https://github.com/mlcsec/Graphpython/wiki/Demos) for
 ## Todo
 
 - Update:
-  - [ ] Implement prompt tooklit instead of typing long cmdlets
-  - [ ] Add nextlink for `get-user` and `get-group` 
+  - [x] Implement prompt tooklit instead of typing long cmdlets
+  - [x] Add nextlink for `get-user` and `get-group` 
   - [ ] `Get-UserPrivileges` - update to flag any privileged directory role app ids green
   - [x] `Locate-DirectoryRoleID` - similar to other locator functions but for resolving directory role ids
   - [ ] `Deploy-MaliciousWebLink` - add option to deploy script which copies new windows web app link to all user desktops

@@ -20,8 +20,8 @@ from Graphpython.utils.helpers import print_yellow, print_green, print_red, get_
 
 # get-graphtokens
 def get_graphtokens(args):
-    print_yellow("[*] Get-GraphTokens")
-    print("=" * 80)
+    print_yellow(">>> Get-GraphTokens")
+    
     client_id = "d3590ed6-52b3-4102-aeff-aad2292ab01c"
     resource = "https://graph.microsoft.com"
     user_agent = get_user_agent(args) 
@@ -47,7 +47,7 @@ def get_graphtokens(args):
     
     except Exception as ex:
         print_red(f"[-] Failed to parse device code response: {ex}")
-        print("=" * 80)
+        
         exit()
     
     print(f"{message}\n")
@@ -91,7 +91,7 @@ def get_graphtokens(args):
             exit()
     
     print_red("[-] Polling expired. Token not obtained.")
-    print("=" * 80)
+    
 
 # get-tenantid
 def get_tenantid(args):
@@ -99,8 +99,8 @@ def get_tenantid(args):
         print_red("[-] Error: --domain argument is required for Get-TenantID command")
         return
     
-    print_yellow("[*] Get-TenantID")
-    print("=" * 80)
+    print_yellow(">>> Get-TenantID")
+    
     user_agent = get_user_agent(args) 
     headers = {
         "User-Agent": user_agent
@@ -118,13 +118,13 @@ def get_tenantid(args):
     
     except requests.exceptions.RequestException as ex:
         print_red(f"[-] Error retrieving OpenID configuration: {ex}")
-    print("=" * 80)
+    
 
 
 # get-tokenscope
 def get_tokenscope(args):
-    print_yellow("[*] Get-TokenScope")
-    print("=" * 80)
+    print_yellow(">>> Get-TokenScope")
+    
     
     try:
         json_token = jwt.decode(get_access_token(args.token), options={"verify_signature": False})
@@ -138,12 +138,12 @@ def get_tokenscope(args):
     
     except jwt.DecodeError:
         print_red("[-] Invalid access token format")
-    print("=" * 80)
+    
 
 # decode-accesstoken
 def decode_accesstoken(args):
-    print_yellow("[*] Decode-AccessToken")
-    print("=" * 80)
+    print_yellow(">>> Decode-AccessToken")
+    
     
     try:
         json_token = jwt.decode(get_access_token(args.token), options={"verify_signature": False})
@@ -153,7 +153,7 @@ def decode_accesstoken(args):
     except jwt.DecodeError:
         print_red("[-] Invalid access token format")
     
-    print("=" * 80)
+    
 
 # invoke-refreshtomsgraphtoken
 def invoke_refreshtomsgraphtoken(args):
@@ -161,8 +161,8 @@ def invoke_refreshtomsgraphtoken(args):
         print_red("[-] Error: --tenant argument is required for Invoke-RefreshToMSGraphToken command")
         return
 
-    print_yellow("[*] Invoke-RefreshToMSGraphToken")
-    print("=" * 80)
+    print_yellow(">>> Invoke-RefreshToMSGraphToken")
+    
     user_agent = get_user_agent(args)
     client_id = "d3590ed6-52b3-4102-aeff-aad2292ab01c"
     refresh_token = get_access_token(args.token)
@@ -209,7 +209,7 @@ def invoke_refreshtomsgraphtoken(args):
     else:
         print_red(f"[-] Failed to get Microsoft Graph token: {response.status_code}")
         print_red(response.text)
-    print("=" * 80)
+    
 
 # invoke-refreshtoazuremanagementtoken
 def invoke_refreshtoazuremanagementtoken(args):
@@ -217,8 +217,8 @@ def invoke_refreshtoazuremanagementtoken(args):
         print_red("[-] Error: --tenant argument is required for Invoke-RefreshToAzureManagementToken command")
         return
 
-    print_yellow("[*] Invoke-RefreshToAzureManagementToken")
-    print("=" * 80)
+    print_yellow(">>> Invoke-RefreshToAzureManagementToken")
+    
     user_agent = get_user_agent(args)
     client_id = "d3590ed6-52b3-4102-aeff-aad2292ab01c"
     refresh_token = get_access_token(args.token)
@@ -264,7 +264,7 @@ def invoke_refreshtoazuremanagementtoken(args):
     else:
         print_red(f"[-] Failed to get Azure Management token: {response.status_code}")
         print_red(response.text)
-    print("=" * 80)
+    
 
 # invoke-refreshtovaulttoken
 def invoke_refreshtovaulttoken(args):
@@ -272,8 +272,8 @@ def invoke_refreshtovaulttoken(args):
         print_red("[-] Error: --tenant argument is required for Invoke-RefreshToAzureManagementToken command")
         return
 
-    print_yellow("[*] Invoke-RefreshToVaultToken")
-    print("=" * 80)
+    print_yellow(">>> Invoke-RefreshToVaultToken")
+    
     user_agent = get_user_agent(args)
     client_id = "d3590ed6-52b3-4102-aeff-aad2292ab01c"
     refresh_token = get_access_token(args.token)
@@ -310,7 +310,7 @@ def invoke_refreshtovaulttoken(args):
     except requests.exceptions.RequestException as e:
         print_red(f"[-] Failed to get Azure Vault token: {str(e)}")
         print_red(response.text)
-    print("=" * 80)
+    
 
 # invoke-refreshtomsteamstoken
 def invoke_refreshtomsteamstoken(args):
@@ -318,8 +318,8 @@ def invoke_refreshtomsteamstoken(args):
         print_red("[-] Error: --tenant argument is required for Invoke-RefreshToMSTeamsToken command")
         return
 
-    print_yellow("[*] Invoke-RefreshToMSTeamsToken")
-    print("=" * 80)
+    print_yellow(">>> Invoke-RefreshToMSTeamsToken")
+    
     user_agent = get_user_agent(args)
     client_id = "1fec8e78-bce4-4aaf-ab1b-5451cc387264"
     refresh_token = get_access_token(args.token)
@@ -363,7 +363,7 @@ def invoke_refreshtomsteamstoken(args):
     except requests.exceptions.RequestException as e:
         print_red(f"[-] Failed to get MS Teams token: {str(e)}")
         print_red(response.text)
-    print("=" * 80)
+    
 
 # invoke-refreshtoofficeappstoken
 def invoke_refreshtoofficeappstoken(args):
@@ -371,8 +371,8 @@ def invoke_refreshtoofficeappstoken(args):
         print_red("[-] Error: --tenant argument is required for Invoke-RefreshToOfficeAppsToken command")
         return
 
-    print_yellow("[*] Invoke-RefreshToOfficeAppsToken")
-    print("=" * 80)
+    print_yellow(">>> Invoke-RefreshToOfficeAppsToken")
+    
     user_agent = get_user_agent(args)
     client_id = "ab9b8c07-8f02-4f72-87fa-80105867a763"
     refresh_token = get_access_token(args.token)
@@ -422,7 +422,7 @@ def invoke_refreshtoofficeappstoken(args):
     except requests.exceptions.RequestException as e:
         print_red(f"[-] Failed to get Office Apps token: {str(e)}")
         print_red(response.text)
-    print("=" * 80)
+    
 
 # invoke-refreshtoofficemanagementtoken
 def invoke_refreshtoofficemanagementtoken(args):
@@ -430,8 +430,8 @@ def invoke_refreshtoofficemanagementtoken(args):
         print_red("[-] Error: --tenant argument is required for Invoke-RefreshToOfficeManagementToken command")
         return
 
-    print_yellow("[*] Invoke-RefreshToOfficeManagementToken")
-    print("=" * 80)
+    print_yellow(">>> Invoke-RefreshToOfficeManagementToken")
+    
     user_agent = get_user_agent(args)
     client_id = "00b41c95-dab0-4487-9791-b9d2c32c80f2"
     refresh_token = get_access_token(args.token)
@@ -480,7 +480,7 @@ def invoke_refreshtoofficemanagementtoken(args):
     except requests.exceptions.RequestException as e:
         print_red(f"[-] Failed to get Office Management token: {str(e)}")
         print_red(response.text)
-    print("=" * 80)
+    
 
 # invoke-refreshtooutlooktoken
 def invoke_refreshtooutlooktoken(args):
@@ -488,8 +488,8 @@ def invoke_refreshtooutlooktoken(args):
         print_red("[-] Error: --tenant argument is required for Invoke-RefreshToOutlookToken command")
         return
 
-    print_yellow("[*] Invoke-RefreshToOutlookToken")
-    print("=" * 80)
+    print_yellow(">>> Invoke-RefreshToOutlookToken")
+    
     user_agent = get_user_agent(args)
     client_id = "d3590ed6-52b3-4102-aeff-aad2292ab01c"
     refresh_token = get_access_token(args.token)
@@ -538,7 +538,7 @@ def invoke_refreshtooutlooktoken(args):
     except requests.exceptions.RequestException as e:
         print_red(f"[-] Failed to get Outlook token: {str(e)}")
         print_red(response.text)
-    print("=" * 80)
+    
 
 # invoke-refreshtosubstratetoken
 def invoke_refreshtosubstratetoken(args):
@@ -546,8 +546,8 @@ def invoke_refreshtosubstratetoken(args):
         print_red("[-] Error: --tenant argument is required for Invoke-RefreshToSubstrateToken command")
         return
 
-    print_yellow("[*] Invoke-RefreshToSubstrateToken")
-    print("=" * 80)
+    print_yellow(">>> Invoke-RefreshToSubstrateToken")
+    
     user_agent = get_user_agent(args)
     client_id = "d3590ed6-52b3-4102-aeff-aad2292ab01c"
     refresh_token = get_access_token(args.token)
@@ -596,7 +596,7 @@ def invoke_refreshtosubstratetoken(args):
     except requests.exceptions.RequestException as e:
         print_red(f"[-] Failed to get Substrate token: {str(e)}")
         print_red(response.text)
-    print("=" * 80)
+    
 
 # invoke-refreshtoyammertoken
 def invoke_refreshtoyammertoken(args):
@@ -604,8 +604,8 @@ def invoke_refreshtoyammertoken(args):
         print_red("[-] Error: --tenant argument is required for Invoke-RefreshToYammerToken command")
         return
 
-    print_yellow("[*] Invoke-RefreshToYammerToken")
-    print("=" * 80)
+    print_yellow(">>> Invoke-RefreshToYammerToken")
+    
     user_agent = get_user_agent(args)
     client_id = "d3590ed6-52b3-4102-aeff-aad2292ab01c"
     refresh_token = get_access_token(args.token)
@@ -654,7 +654,7 @@ def invoke_refreshtoyammertoken(args):
     except requests.exceptions.RequestException as e:
         print_red(f"[-] Failed to get Yammer token: {str(e)}")
         print_red(response.text)
-    print("=" * 80)
+    
 
 # invoke-refreshtointuneenrollmenttoken
 def invoke_refreshtointuneenrollmenttoken(args):
@@ -662,8 +662,8 @@ def invoke_refreshtointuneenrollmenttoken(args):
         print_red("[-] Error: --tenant argument is required for Invoke-RefreshToIntuneEnrollment command")
         return
 
-    print_yellow("[*] Invoke-RefreshToIntuneEnrollment")
-    print("=" * 80)
+    print_yellow(">>> Invoke-RefreshToIntuneEnrollment")
+    
     user_agent = get_user_agent(args)
     client_id = "d3590ed6-52b3-4102-aeff-aad2292ab01c"
     refresh_token = get_access_token(args.token)
@@ -703,7 +703,7 @@ def invoke_refreshtointuneenrollmenttoken(args):
     except requests.exceptions.RequestException as e:
         print_red(f"[-] Failed to get Intune Enrollment token: {str(e)}")
         print_red(response.text)
-    print("=" * 80)
+    
 
 # invoke-refreshtoonedrivetoken
 def invoke_refreshtoonedrivetoken(args):
@@ -711,8 +711,8 @@ def invoke_refreshtoonedrivetoken(args):
         print_red("[-] Error: --tenant argument is required for Invoke-RefreshToOneDriveToken command")
         return
 
-    print_yellow("[*] Invoke-RefreshToOneDriveToken")
-    print("=" * 80)
+    print_yellow(">>> Invoke-RefreshToOneDriveToken")
+    
     user_agent = get_user_agent(args)
     client_id = "ab9b8c07-8f02-4f72-87fa-80105867a763"
     refresh_token = get_access_token(args.token)
@@ -761,7 +761,7 @@ def invoke_refreshtoonedrivetoken(args):
     except requests.exceptions.RequestException as e:
         print_red(f"[-] Failed to get OneDrive token: {str(e)}")
         print_red(response.text)
-    print("=" * 80)
+    
 
 # invoke-refreshtosharepointtoken
 def invoke_refreshtosharepointtoken(args):
@@ -769,8 +769,8 @@ def invoke_refreshtosharepointtoken(args):
         print_red("[-] Error: --tenant argument is required for Invoke-RefreshToSharePointToken command")
         return
         
-    print_yellow("[*] Invoke-RefreshToSharePointToken")
-    print("=" * 80)
+    print_yellow(">>> Invoke-RefreshToSharePointToken")
+    
     user_agent = get_user_agent(args)
     client_id = "ab9b8c07-8f02-4f72-87fa-80105867a763"
     refresh_token = get_access_token(args.token)
@@ -828,7 +828,7 @@ def invoke_refreshtosharepointtoken(args):
     except requests.exceptions.RequestException as e:
         print_red(f"[-] Failed to get SharePoint token: {str(e)}")
         print_red(response.text)
-    print("=" * 80)
+    
 
 # invoke-certtoaccesstoken
 def invoke_certtoaccesstoken(args):
@@ -836,8 +836,8 @@ def invoke_certtoaccesstoken(args):
         print_red("[-] Error: --tenant, --cert, and --id <appid> arguments are required for Invoke-CertToAccessToken command")
         return
 
-    print_yellow("[*] Invoke-CertToAccessToken")
-    print("=" * 80)
+    print_yellow(">>> Invoke-CertToAccessToken")
+    
     tenant_id = args.tenant
     client_id = args.id
     cert_path = args.cert
@@ -903,7 +903,7 @@ def invoke_certtoaccesstoken(args):
             print_red(response.text)
     except Exception as e:
         print_red(f"[-] Error loading .pfx file: {str(e)}")
-    print("=" * 80)
+    
 
 # invoke-estscookietoaccesstoken
 def invoke_estscookietoaccesstoken(args):
@@ -911,8 +911,8 @@ def invoke_estscookietoaccesstoken(args):
         print_red("[-] Error: --tenant and --estsauthcookie are required for Invoke-ESTSCookieToAccessToken command")
         return
 
-    print_yellow("[*] Invoke-ESTSCookieToAccessToken")
-    print("=" * 80)
+    print_yellow(">>> Invoke-ESTSCookieToAccessToken")
+    
     user_agent = get_user_agent(args)
 
     try:
@@ -928,7 +928,7 @@ def invoke_estscookietoaccesstoken(args):
             client_id = "1950a258-227b-4e31-a9cf-717495945fc2"
         else:
             print_red(f"[-] Invalid client: {client}")
-            print("=" * 80)
+            
             sys.exit()
 
     except KeyboardInterrupt:
@@ -949,7 +949,7 @@ def invoke_estscookietoaccesstoken(args):
         session.cookies.set("ESTSAUTHPERSISTENT", ests_auth_cookie.split("=", 1)[1], domain="login.microsoftonline.com")
     else:
         print_red("[-] Invalid ESTS cookie format")
-        print("=" * 80)
+        
         sys.exit()
 
     state = str(uuid.uuid4())
@@ -969,14 +969,14 @@ def invoke_estscookietoaccesstoken(args):
             print_red(f"    Requested URL: {auth_url}")
             print_red(f"    Response Code: {response.status_code}")
             print_red(f"    Response URI:  {location}")
-            print("=" * 80)
+            
             return None
     else:
         print_red("[-] Expected 302 redirect but received other status")
         print_red(f"[-] Requested URL: {auth_url}")
         print_red(f"[-] Response Code: {response.status_code}")
         print_red("[-] The request may require user interaction to complete, or the provided cookie is invalid")
-        print("=" * 80)
+        
         return None
 
     if refresh_token:
@@ -1017,14 +1017,14 @@ def invoke_estscookietoaccesstoken(args):
                 writer.write("\n")
 
             print_green(f"\n[+] Token information written to '{file_path}'.")
-            print("=" * 80)
+            
         else:
             print_red("[-] Failed to obtain access token.")
-            print("=" * 80)
+            
             return None
     else:
         print_red("[-] Refresh token is missing.")
-        print("=" * 80)
+        
         return None
 
 # invoke-appsecrettoaccesstoken
@@ -1033,8 +1033,8 @@ def invoke_appsecrettoaccesstoken(args):
         print_red("[-] Error: --tenant, --id, and --secret required for Invoke-AppSecretToAccessToken command")
         return
     
-    print_yellow("[*] Invoke-AppSecretToAccessToken")
-    print("=" * 80)
+    print_yellow(">>> Invoke-AppSecretToAccessToken")
+    
     
     tenant_id = args.tenant
     client_id = args.id
@@ -1077,7 +1077,7 @@ def invoke_appsecrettoaccesstoken(args):
         if 'token_response' in locals():
             print_red(token_response.text)
     
-    print("=" * 80)
+    
 
 # new-signedjwt
 def new_signedjwt(args):
@@ -1085,8 +1085,8 @@ def new_signedjwt(args):
         print_red("[-] Error: --tenant and --id required for New-SignedJWT command")
         return
 
-    print_yellow("[*] New-SignedJWT")
-    print("=" * 80)
+    print_yellow(">>> New-SignedJWT")
+    
     
     try:
         kvURI = input("\nEnter Key Vault Certificate Identifier URL: ").strip()
@@ -1197,4 +1197,4 @@ def new_signedjwt(args):
         response_json = response.json()
         for key, value in response_json.items():
             print(f"[*] {key}: {value}")
-    print("=" * 80)
+    

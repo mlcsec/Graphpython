@@ -13,8 +13,8 @@ from Graphpython.utils.helpers import graph_api_get
 
 # get-currentuser
 def get_currentuser(args):
-    print_yellow("[*] Get-CurrentUser")
-    print("=" * 80)
+    print_yellow(">>> Get-CurrentUser")
+    
     api_url = "https://graph.microsoft.com/v1.0/me"
     if args.select:
         api_url += "?$select=" + args.select
@@ -34,45 +34,46 @@ def get_currentuser(args):
     else:
         print_red(f"[-] Failed to retrieve current user: {response.status_code}")
         print_red(response.text)
-    print("=" * 80)
+    
 
 # get-currentuseractivities
 def get_currentuseractivities(args):
-    print_yellow("[*] Get-CurrentUserActivities")
-    print("=" * 80)
+    print_yellow(">>> Get-CurrentUserActivities")
+    
     api_url = "https://graph.microsoft.com/v1.0/me/activities"
     if args.select:
         api_url += "?$select=" + args.select
     
     graph_api_get(get_access_token(args.token), api_url, args)
-    print("=" * 80)
+    
 
 # get-orginfo
 def get_orginfo(args):
-    print_yellow("[*] Get-OrgInfo")
-    print("=" * 80)
+    print_yellow(">>> Get-OrgInfo")
+    
     api_url = "https://graph.microsoft.com/v1.0/organization"
     if args.select:
         api_url += "?$select=" + args.select
     
     graph_api_get(get_access_token(args.token), api_url, args)
-    print("=" * 80)
+    
     
 # get-domains
 def get_domains(args):
-    print_yellow("[*] Get-Domains")
-    print("=" * 80)
+    print_yellow(">>> Get-Domains")
+    
     api_url = "https://graph.microsoft.com/v1.0/domains"
     if args.select:
         api_url += "?$select=" + args.select
     
     graph_api_get(get_access_token(args.token), api_url, args)
-    print("=" * 80)
+    
 
 # get-user
 def get_user(args):
-    print_yellow("[*] Get-User")
-    print("=" * 80)
+    print_yellow(">>> Get-User")
+    
+    
     api_url = "https://graph.microsoft.com/v1.0/users"
     
     if args.id:
@@ -87,25 +88,33 @@ def get_user(args):
         'User-Agent': user_agent
     }
     
-    response = requests.get(api_url, headers=headers)
-    if response.status_code == 200:
-        response_json = response.json()
-        if args.id:
-            for key, value in response_json.items():
-                if key != "@odata.context":
-                    print(f"{key}: {value}")
-        else:
-            if 'value' in response_json:
-                for user in response_json['value']:
-                    for key, value in user.items():
+    while api_url:
+        response = requests.get(api_url, headers=headers)
+        
+        if response.status_code == 200:
+            response_json = response.json()
+            
+            # If an ID is provided, print details for that user
+            if args.id:
+                for key, value in response_json.items():
+                    if key != "@odata.context":
                         print(f"{key}: {value}")
-                    print()
             else:
-                print_red("[-] No users found or unexpected response format")
-    else:
-        print_red(f"[-] Failed to retrieve user(s): {response.status_code}")
-        print_red(response.text)
-    print("=" * 80)
+                if 'value' in response_json:
+                    for user in response_json['value']:
+                        for key, value in user.items():
+                            print(f"{key}: {value}")
+                        print()
+                else:
+                    print_red("[-] No users found or unexpected response format")
+            
+            # Check if there is a nextLink for the next page of results
+            api_url = response_json.get('@odata.nextLink', None)
+        else:
+            print_red(f"[-] Failed to retrieve user(s): {response.status_code}")
+            print_red(response.text)
+            break  # Stop if there's an error
+    
 
 # get-userproperties
 def get_userproperties(args):
@@ -125,8 +134,8 @@ def get_userproperties(args):
         "surname", "usageLocation", "userPrincipalName", "userType", "webUrl"
     ]
     
-    print_yellow("[*] Get-UserProperties")
-    print("=" * 80)
+    print_yellow(">>> Get-UserProperties")
+    
     
     for p in properties:
         if not args.id:
@@ -146,12 +155,12 @@ def get_userproperties(args):
         else:
             print_red(f"[-] Failed to retrieve {p}: {response.status_code}")
             print_red(response.text)
-    print("=" * 80)
+    
 
 # get-userprivileges
 def get_userprivileges(args):
-    print_yellow("[*] Get-UserPrivileges")
-    print("=" * 80)
+    print_yellow(">>> Get-UserPrivileges")
+    
     api_url = "https://graph.microsoft.com/v1.0/me/memberOf"
     
     if args.id:
@@ -160,12 +169,12 @@ def get_userprivileges(args):
         api_url += "?$select=" + args.select
     
     graph_api_get(get_access_token(args.token), api_url, args)
-    print("=" * 80)
+    
 
 # get-usertransitivegroupmembership
 def get_usertransitivegroupmembership(args):
-    print_yellow("[*] Get-UserTransitiveGroupMembership")
-    print("=" * 80)
+    print_yellow(">>> Get-UserTransitiveGroupMembership")
+    
     api_url = "https://graph.microsoft.com/v1.0/me/transitiveMemberOf"
     
     if args.id:
@@ -174,12 +183,13 @@ def get_usertransitivegroupmembership(args):
         api_url += "?$select=" + args.select
     
     graph_api_get(get_access_token(args.token), api_url, args)
-    print("=" * 80)
+    
 
 # get-group
 def get_group(args):
-    print_yellow("[*] Get-Group")
-    print("=" * 80)
+    print_yellow(">>> Get-Group")
+    
+    
     api_url = "https://graph.microsoft.com/v1.0/groups"
     
     if args.id:
@@ -193,33 +203,41 @@ def get_group(args):
         'User-Agent': user_agent
     }
     
-    response = requests.get(api_url, headers=headers)
-    if response.status_code == 200:
-        response_json = response.json()
-        if args.id:
-            for key, value in response_json.items():
-                if key != "@odata.context":
-                    print(f"{key}: {value}")
-        else:
-            if 'value' in response_json:
-                for user in response_json['value']:
-                    for key, value in user.items():
+    while api_url:
+        response = requests.get(api_url, headers=headers)
+        
+        if response.status_code == 200:
+            response_json = response.json()
+            
+            # Print details for a specific group if an ID is provided
+            if args.id:
+                for key, value in response_json.items():
+                    if key != "@odata.context":
                         print(f"{key}: {value}")
-                    print()
             else:
-                print_red("[-] No users found or unexpected response format")
-    else:
-        print_red(f"[-] Failed to retrieve user(s): {response.status_code}")
-        print_red(response.text)
-    print("=" * 80)
+                if 'value' in response_json:
+                    for group in response_json['value']:
+                        for key, value in group.items():
+                            print(f"{key}: {value}")
+                        print()
+                else:
+                    print_red("[-] No groups found or unexpected response format")
+            
+            # Check if there is a next link to fetch more results
+            api_url = response_json.get('@odata.nextLink', None)
+        else:
+            print_red(f"[-] Failed to retrieve group(s): {response.status_code}")
+            print_red(response.text)
+            break  # Stop if there's an error
+    
 
 # get-groupmember
 def get_groupmember(args):
     if not args.id:
         print_red("[-] Error: --id argument is required for Get-GroupMember command")
         return
-    print_yellow("[*] Get-GroupMember")
-    print("=" * 80)
+    print_yellow(">>> Get-GroupMember")
+    
     api_url = f"https://graph.microsoft.com/v1.0/groups/{args.id}/members"
     
     if args.select:
@@ -253,12 +271,12 @@ def get_groupmember(args):
     else:
         print_red(f"[-] Failed to retrieve group members: {response.status_code}")
         print_red(response.text)
-    print("=" * 80)
+    
 
 # get-userapproleassignments
 def get_userapproleassignments(args):
-    print_yellow("[*] Get-UserAppRoleAssignments")
-    print("=" * 80)
+    print_yellow(">>> Get-UserAppRoleAssignments")
+    
     api_url = "https://graph.microsoft.com/v1.0/me/appRoleAssignments"
     
     if args.id:
@@ -267,7 +285,7 @@ def get_userapproleassignments(args):
         api_url += "?$select=" + args.select
     
     graph_api_get(get_access_token(args.token), api_url, args)
-    print("=" * 80)
+    
 
 # get-conditionalaccesspolicy
 def get_conditionalaccesspolicy(args):
@@ -275,8 +293,8 @@ def get_conditionalaccesspolicy(args):
         print_red("[-] Error: --id argument is required for Get-ConditionalAccessPolicy command")
         return
     
-    print_yellow("[*] Get-ConditionalAccessPolicy")
-    print("=" * 80)
+    print_yellow(">>> Get-ConditionalAccessPolicy")
+    
     api_url = f"https://graph.microsoft.com/v1.0/identity/conditionalAccess/policies/{args.id}"
     
     if args.select:
@@ -296,7 +314,7 @@ def get_conditionalaccesspolicy(args):
     else:
         print_red(f"[-] Failed to retrieve CAP: {response.status_code}")
         print_red(response.text)
-    print("=" * 80)
+    
 
 # get-application
 def get_application(args):
@@ -304,8 +322,8 @@ def get_application(args):
         print_red("[-] Error: --id <appid> argument is required for Get-Application command")
         return
     
-    print_yellow("[*] Get-Application")
-    print("=" * 80)
+    print_yellow(">>> Get-Application")
+    
     api_url = f"https://graph.microsoft.com/beta/myorganization/applications(appId='{args.id}')" # app id
     #api_url = f"https://graph.microsoft.com/v1.0/applications/{args.id}" # object id
     
@@ -376,7 +394,7 @@ def get_application(args):
     else:
         print_red(f"[-] Failed to retrieve Azure Application details: {response.status_code}")
         print_red(response.text)
-    print("=" * 80)
+    
 
 # get-appserviceprincipal
 def get_appserviceprincipal(args):
@@ -384,8 +402,8 @@ def get_appserviceprincipal(args):
         print_red("[-] Error: --id <app id> argument is required for Get-AppServicePrincipal command")
         return
         
-    print_yellow("[*] Get-AppServicePrincipal")
-    print("=" * 80)
+    print_yellow(">>> Get-AppServicePrincipal")
+    
     api_url = f"https://graph.microsoft.com/v1.0/servicePrincipals?$filter=appId+eq+'{args.id}'"
     user_agent = get_user_agent(args)
     headers = {
@@ -394,7 +412,7 @@ def get_appserviceprincipal(args):
     }
     
     graph_api_get(get_access_token(args.token), api_url, args)
-    print("=" * 80)
+    
 
 # get-serviceprincipal
 def get_serviceprincipal(args):
@@ -402,8 +420,8 @@ def get_serviceprincipal(args):
         print_red("[-] Error: --id <id> argument is required for Get-ServicePrincipal command")
         return
         
-    print_yellow("[*] Get-ServicePrincipal")
-    print("=" * 80)
+    print_yellow(">>> Get-ServicePrincipal")
+    
     api_url = f"https://graph.microsoft.com/v1.0/servicePrincipals/{args.id}"
     if args.select:
         api_url += "?$select=" + args.select
@@ -423,36 +441,36 @@ def get_serviceprincipal(args):
     else:
         print_red(f"[-] Failed to retrieve Service Principal details: {response.status_code}")
         print_red(response.text)
-    print("=" * 80)
+    
 
 # get-serviceprincipalapproleassignments
 def get_serviceprincipalapproleassignments(args):
-    print_yellow("[*] Get-ServicePrincipalAppRoleAssignments")
-    print("=" * 80)
+    print_yellow(">>> Get-ServicePrincipalAppRoleAssignments")
+    
     api_url = f"https://graph.microsoft.com/v1.0/servicePrincipals/{args.id}/appRoleAssignments"
     
     if args.select:
         api_url += "?$select=" + args.select
     
     graph_api_get(get_access_token(args.token), api_url, args)
-    print("=" * 80)
+    
 
 # get-personalcontacts
 def get_personalcontacts(args):
-    print_yellow("[*] Get-PersonalContacts")
-    print("=" * 80)
+    print_yellow(">>> Get-PersonalContacts")
+    
     api_url = "https://graph.microsoft.com/v1.0/me/contacts"
     
     if args.select:
         api_url += "?$select=" + args.select
     
     graph_api_get(get_access_token(args.token), api_url, args)
-    print("=" * 80)
+    
 
 # get-crosstenantaccesspolicy
 def get_crosstenantaccesspolicy(args):
-    print_yellow("[*] Get-CrossTenantAccessPolicy")
-    print("=" * 80)
+    print_yellow(">>> Get-CrossTenantAccessPolicy")
+    
     api_url = "https://graph.microsoft.com/v1.0/policies/crossTenantAccessPolicy"
     
     if args.id:
@@ -461,12 +479,12 @@ def get_crosstenantaccesspolicy(args):
         api_url += "?$select=" + args.select
     
     graph_api_get(get_access_token(args.token), api_url, args)
-    print("=" * 80)
+    
 
 # get-partnercrosstenantaccesspolicy
 def get_partnercrosstenantaccesspolicy(args):
-    print_yellow("[*] Get-PartnerCrossTenantAccessPolicy")
-    print("=" * 80)
+    print_yellow(">>> Get-PartnerCrossTenantAccessPolicy")
+    
     api_url = "https://graph.microsoft.com/v1.0/policies/crossTenantAccessPolicy/templates/multiTenantOrganizationPartnerConfiguration"
     
     if args.id:
@@ -475,22 +493,22 @@ def get_partnercrosstenantaccesspolicy(args):
         api_url += "?$select=" + args.select
     
     graph_api_get(get_access_token(args.token), api_url, args)
-    print("=" * 80)
+    
 
 # get-userchatmessages
 def get_userchatmessages(args):
     if not args.id:
         print_red("[-] Error: --id argument is required for Get-UserChatMessages command")
         return
-    print_yellow("[*] Get-UserChatMessages")
-    print("=" * 80)
+    print_yellow(">>> Get-UserChatMessages")
+    
     api_url = f"https://graph.microsoft.com/v1.0/users/{args.id}/chats"
     
     if args.select:
         api_url += "?$select=" + args.select
     
     graph_api_get(get_access_token(args.token), api_url, args)
-    print("=" * 80)
+    
 
 # get-administrativeunitmember
 def get_administrativeunitmember(args):
@@ -498,19 +516,19 @@ def get_administrativeunitmember(args):
         print_red("[-] Error: --id argument is required for Get-AdministrativeUnitMember command")
         return
     
-    print_yellow("[*] Get-AdministrativeUnitMember")
-    print("=" * 80)
+    print_yellow(">>> Get-AdministrativeUnitMember")
+    
     api_url = f"https://graph.microsoft.com/v1.0/directory/administrativeUnits/{args.id}/members"
     
     if args.select:
         api_url += "?$select=" + args.select
     graph_api_get(get_access_token(args.token), api_url, args)
-    print("=" * 80)
+    
 
 # get-onedrivefiles
 def get_onedrivefiles(args):
-    print_yellow("[*] Get-OneDriveFiles")
-    print("=" * 80)
+    print_yellow(">>> Get-OneDriveFiles")
+    
     api_url = "https://graph.microsoft.com/v1.0/me/drive/root/children"
     
     if args.id:
@@ -519,12 +537,12 @@ def get_onedrivefiles(args):
         api_url += "?$select=" + args.select
     
     graph_api_get(get_access_token(args.token), api_url, args)
-    print("=" * 80)
+    
 
 # get-userpermissiongrants
 def get_userpermissiongrants(args):
-    print_yellow("[*] Get-UserPermissionGrants")
-    print("=" * 80)
+    print_yellow(">>> Get-UserPermissionGrants")
+    
     api_url = "https://graph.microsoft.com/v1.0/me/permissionGrants"
     
     if args.id:
@@ -533,12 +551,12 @@ def get_userpermissiongrants(args):
         api_url += "?$select=" + args.select
     
     graph_api_get(get_access_token(args.token), api_url, args)
-    print("=" * 80)
+    
 
 # get-oauth2permissiongrants
 def get_oauth2permissiongrants(args):
-    print_yellow("[*] Get-oauth2PermissionGrants")
-    print("=" * 80)
+    print_yellow(">>> Get-oauth2PermissionGrants")
+    
     api_url = "https://graph.microsoft.com/v1.0/me/oauth2PermissionGrants"
     
     if args.id:
@@ -547,12 +565,12 @@ def get_oauth2permissiongrants(args):
         api_url += "?$select=" + args.select
     
     graph_api_get(get_access_token(args.token), api_url, args)
-    print("=" * 80)
+    
 
 # get-messages
 def get_messages(args):
-    print_yellow("[*] Get-Messages")
-    print("=" * 80)
+    print_yellow(">>> Get-Messages")
+    
     api_url = "https://graph.microsoft.com/v1.0/me/messages"
     
     if args.id:
@@ -561,42 +579,42 @@ def get_messages(args):
         api_url += "?$select=" + args.select
     
     graph_api_get(get_access_token(args.token), api_url, args)
-    print("=" * 80)
+    
 
 # get-temporaryaccesspassword
 def get_temporaryaccesspassword(args):
     if not args.id:
         print_red("[-] Error: --id argument is required for Get-TemporaryAccessPassword command")
         return
-    print_yellow("[*] Get-TemporaryAccessPassword")
-    print("=" * 80)
+    print_yellow(">>> Get-TemporaryAccessPassword")
+    
     api_url = f"https://graph.microsoft.com/v1.0/users/{args.id}/authentication/passwordMethods"
     
     if args.select:
         api_url += "?$select=" + args.select
     
     graph_api_get(get_access_token(args.token), api_url, args)
-    print("=" * 80)
+    
 
 # get-password
 def get_password(args):
     if not args.id:
         print_red("[-] Error: --id argument is required for Get-Password command")
         return
-    print_yellow("[*] Get-Password")
-    print("=" * 80)
+    print_yellow(">>> Get-Password")
+    
     api_url = f"https://graph.microsoft.com/v1.0/users/{args.id}/passwordCredentials"
     
     if args.select:
         api_url += "?$select=" + args.select
     
     graph_api_get(get_access_token(args.token), api_url, args)
-    print("=" * 80)
+    
 
 # list-authmethods
 def list_authmethods(args):
-    print_yellow("[*] List-AuthMethods")
-    print("=" * 80)
+    print_yellow(">>> List-AuthMethods")
+    
     api_url = "https://graph.microsoft.com/v1.0/me/authentication/methods"
     
     if args.id:
@@ -605,24 +623,24 @@ def list_authmethods(args):
         api_url += "?$select=" + args.select
     
     graph_api_get(get_access_token(args.token), api_url, args)
-    print("=" * 80)
+    
     
 # list-directoryroles
 def list_directoryroles(args):
-    print_yellow("[*] List-DirectoryRoles")
-    print("=" * 80)
+    print_yellow(">>> List-DirectoryRoles")
+    
     api_url = "https://graph.microsoft.com/v1.0/directoryRoles"
     
     if args.select:
         api_url += "?$select=" + args.select
     
     graph_api_get(get_access_token(args.token), api_url, args)
-    print("=" * 80)
+    
 
 # list-notebooks
 def list_notebooks(args):
-    print_yellow("[*] List-Notebooks")
-    print("=" * 80)
+    print_yellow(">>> List-Notebooks")
+    
     api_url = "https://graph.microsoft.com/v1.0/me/onenote/notebooks"
     
     if args.id:
@@ -631,48 +649,48 @@ def list_notebooks(args):
         api_url += "?$select=" + args.select
     
     graph_api_get(get_access_token(args.token), api_url, args)
-    print("=" * 80)
+    
 
 # list-conditionalaccesspolicies
 def list_conditionalaccesspolicies(args):
-    print_yellow("[*] List-ConditionalAccessPolicies")
-    print("=" * 80)
+    print_yellow(">>> List-ConditionalAccessPolicies")
+    
     api_url = "https://graph.microsoft.com/v1.0/identity/conditionalAccess/policies"
     
     if args.select:
         api_url += "?$select=" + args.select
     
     graph_api_get(get_access_token(args.token), api_url, args)
-    print("=" * 80)
+    
 
 # list-conditionalauthenticationcontexts
 def list_conditionalauthenticationcontexts(args):
-    print_yellow("[*] List-ConditionalAuthenticationContexts")
-    print("=" * 80)
+    print_yellow(">>> List-ConditionalAuthenticationContexts")
+    
     api_url = "https://graph.microsoft.com/v1.0/identity/conditionalAccess/authenticationContextClassReferences"
     
     if args.select:
         api_url += "?$select=" + args.select
     
     graph_api_get(get_access_token(args.token), api_url, args)
-    print("=" * 80)
+    
 
 # list-conditionalnamedlocations
 def list_conditionalnamedlocations(args):
-    print_yellow("[*] List-ConditionalNamedLocations")
-    print("=" * 80)
+    print_yellow(">>> List-ConditionalNamedLocations")
+    
     api_url = "https://graph.microsoft.com/v1.0/identity/conditionalAccess/namedLocations"
     
     if args.select:
         api_url += "?$select=" + args.select
     
     graph_api_get(get_access_token(args.token), api_url, args)
-    print("=" * 80)
+    
 
 # list-sharepointroot
 def list_sharepointroot(args):
-    print_yellow("[*] List-SharePointRoot")
-    print("=" * 80)
+    print_yellow(">>> List-SharePointRoot")
+    
     api_url = "https://graph.microsoft.com/v1.0/sites/root"
     
     if args.select:
@@ -692,25 +710,25 @@ def list_sharepointroot(args):
     else:
         print_red(f"[-] Failed to retrieve current user: {response.status_code}")
         print_red(response.text)
-    print("=" * 80)
+    
 
 
 # list-sharepointsites
 def list_sharepointsites(args):
-    print_yellow("[*] List-SharePointSites")
-    print("=" * 80)
+    print_yellow(">>> List-SharePointSites")
+    
     api_url = "https://graph.microsoft.com/v1.0/sites"
     
     if args.select:
         api_url += "?$select=" + args.select
     
     graph_api_get(get_access_token(args.token), api_url, args)
-    print("=" * 80)
+    
 
 # list-sharepointurls
 def list_sharepointurls(args):
-    print_yellow("[*] List-SharePointURLs")
-    print("=" * 80)
+    print_yellow(">>> List-SharePointURLs")
+    
     api_url = "https://graph.microsoft.com/v1.0/search/query"
     user_agent = get_user_agent(args)
     headers = {
@@ -772,24 +790,24 @@ def list_sharepointurls(args):
         if hasattr(e, 'response'):
             print_red(e.response.text)
     
-    print("=" * 80)
+    
 
 # list-externalconnections
 def list_externalconnections(args):
-    print_yellow("[*] List-ExternalConnections")
-    print("=" * 80)
+    print_yellow(">>> List-ExternalConnections")
+    
     api_url = "https://graph.microsoft.com/v1.0/external/connections"
     
     if args.select:
         api_url += "?$select=" + args.select
     
     graph_api_get(get_access_token(args.token), api_url, args)
-    print("=" * 80)
+    
 
 # list-applications
 def list_applications(args):
-    print_yellow("[*] List-Applications")
-    print("=" * 80)
+    print_yellow(">>> List-Applications")
+    
     api_url = "https://graph.microsoft.com/v1.0/applications"
     if args.select:
         api_url += "?$select=" + args.select
@@ -868,36 +886,36 @@ def list_applications(args):
                 else:
                     print(f"{key} : {value}")
             print("\n")
-    print("=" * 80)
+    
 
 # list-serviceprincipals
 def list_serviceprincipals(args):
-    print_yellow("[*] List-ServicePrincipals")
-    print("=" * 80)
+    print_yellow(">>> List-ServicePrincipals")
+    
     api_url = "https://graph.microsoft.com/v1.0/servicePrincipals"
     
     if args.select:
         api_url += "?$select=" + args.select
     
     graph_api_get(get_access_token(args.token), api_url, args)
-    print("=" * 80)
+    
 
 # list-tenants
 def list_tenants(args):
-    print_yellow("[*] List-Tenants")
-    print("=" * 80)
+    print_yellow(">>> List-Tenants")
+    
     api_url = "https://graph.microsoft.com/v1.0/tenantRelationships/multiTenantOrganization/tenants"
     
     if args.select:
         api_url += "?$select=" + args.select
     
     graph_api_get(get_access_token(args.token), api_url, args)
-    print("=" * 80)
+    
 
 # list-joinedteams
 def list_joinedteams(args):
-    print_yellow("[*] List-JoinedTeams")
-    print("=" * 80)
+    print_yellow(">>> List-JoinedTeams")
+    
     api_url = "https://graph.microsoft.com/v1.0/me/joinedTeams"
     
     if args.id:
@@ -906,12 +924,12 @@ def list_joinedteams(args):
         api_url += "?$select=" + args.select
     
     graph_api_get(get_access_token(args.token), api_url, args)
-    print("=" * 80)
+    
 
 # list-chats
 def list_chats(args):
-    print_yellow("[*] List-Chats")
-    print("=" * 80)
+    print_yellow(">>> List-Chats")
+    
     api_url = "https://graph.microsoft.com/v1.0/me/chats"
     
     if args.id:
@@ -920,7 +938,7 @@ def list_chats(args):
         api_url += "?$select=" + args.select
     
     graph_api_get(get_access_token(args.token), api_url, args)
-    print("=" * 80)
+    
 
 # list-chatmessages
 def list_chatmessages(args):
@@ -928,44 +946,44 @@ def list_chatmessages(args):
         print_red("[-] Error: --id argument is required for List-ChatMessages command")
         return
     
-    print_yellow("[*] List-ChatMessages")
-    print("=" * 80)
+    print_yellow(">>> List-ChatMessages")
+    
     api_url = f"https://graph.microsoft.com/v1.0/chats/{args.id}/messages"
     
     if args.select:
         api_url += "?$select=" + args.select
     
     graph_api_get(get_access_token(args.token), api_url, args)
-    print("=" * 80)
+    
 
 # list-devices
 def list_devices(args):
-    print_yellow("[*] List-Devices")
-    print("=" * 80)
+    print_yellow(">>> List-Devices")
+    
     api_url = "https://graph.microsoft.com/v1.0/devices"
     
     if args.select:
         api_url += "?$select=" + args.select
     
     graph_api_get(get_access_token(args.token), api_url, args)
-    print("=" * 80)
+    
 
 # list-administrativeunits
 def list_administrativeunits(args):
-    print_yellow("[*] List-AdministrativeUnits")
-    print("=" * 80)
+    print_yellow(">>> List-AdministrativeUnits")
+    
     api_url = "https://graph.microsoft.com/v1.0/directory/administrativeUnits"
     
     if args.select:
         api_url += "?$select=" + args.select
     
     graph_api_get(get_access_token(args.token), api_url, args)
-    print("=" * 80)
+    
 
 # list-onedrives
 def list_onedrives(args):
-    print_yellow("[*] List-OneDrives")
-    print("=" * 80)
+    print_yellow(">>> List-OneDrives")
+    
     api_url = "https://graph.microsoft.com/v1.0/me/drives"
     
     if args.id:
@@ -974,12 +992,12 @@ def list_onedrives(args):
         api_url += "?$select=" + args.select
     
     graph_api_get(get_access_token(args.token), api_url, args)
-    print("=" * 80)
+    
 
 # list-recentonedrivefiles
 def list_recentonedrivefiles(args):
-    print_yellow("[*] List-RecentOneDriveFiles")
-    print("=" * 80)
+    print_yellow(">>> List-RecentOneDriveFiles")
+    
     api_url = "https://graph.microsoft.com/v1.0/me/drive/recent"
     user_agent = get_user_agent(args)
     headers = {
@@ -1026,24 +1044,24 @@ def list_recentonedrivefiles(args):
             api_url = response_body.get("@odata.nextLink")
     except requests.RequestException as e:
         print_red(f"[-] Error making request: {str(e)}")
-    print("=" * 80)
+    
 
 # list-sharedonedrivefiles
 def list_sharedonedrivefiles(args):
-    print_yellow("[*] List-SharedOneDriveFiles")
-    print("=" * 80)
+    print_yellow(">>> List-SharedOneDriveFiles")
+    
     api_url = "https://graph.microsoft.com/v1.0/me/drive/sharedWithMe"
     
     if args.select:
         api_url += "?$select=" + args.select
     
     graph_api_get(get_access_token(args.token), api_url, args)
-    print("=" * 80)
+    
 
 # list-onedriveurls
 def list_onedriveurls(args):
-    print_yellow("[*] List-OneDriveURLs")
-    print("=" * 80)
+    print_yellow(">>> List-OneDriveURLs")
+    
     api_url = "https://graph.microsoft.com/v1.0/search/query"
     user_agent = get_user_agent(args)
     headers = {
@@ -1105,4 +1123,4 @@ def list_onedriveurls(args):
         if hasattr(e, 'response'):
             print_red(e.response.text)
     
-    print("=" * 80)
+    
